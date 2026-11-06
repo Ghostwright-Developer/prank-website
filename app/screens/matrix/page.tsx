@@ -132,7 +132,7 @@ export default function MatrixScreen() {
     let i = 0
     const interval = setInterval(() => {
       if (i < hackSequence.length) {
-        setLines(prev => [...prev, hackSequence[i]])
+        { const __next = hackSequence[i]; setLines(prev => [...prev, __next]) }
         i++
         // Auto-scroll terminal
         if (terminalRef.current) {

@@ -1,17 +1,17 @@
-'use client'
-import { FullscreenPrank } from '@/components/fullscreen-prank'
+"use client"
+
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { WinSpinner, useBelievableProgress } from "@/components/prank-kit"
 
 export default function Win8UpdateScreen() {
+  const pct = useBelievableProgress({ from: 12, max: 98, perSecond: 0.3, stalls: [40, 72] })
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-[#1d1d1d] flex flex-col items-center justify-center">
-        <div className="flex gap-2 mb-8">
-          {[0,1,2,3,4].map(i => (
-            <div key={i} className="w-3 h-3 bg-white rounded-full animate-bounce" style={{animationDelay: `${i * 0.15}s`}} />
-          ))}
-        </div>
-        <div className="text-white text-xl">Installing update 3 of 47...</div>
-        <div className="text-gray-400 mt-4">Do not turn off your computer</div>
+    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-[#00539f] font-segoe text-white">
+      <div className="flex h-full flex-col items-center justify-center gap-6 text-center">
+        <WinSpinner size={44} dot={5} />
+        <div className="text-[30px] font-light">Working on updates</div>
+        <div className="text-[30px] font-light">{Math.floor(pct)}% complete</div>
+        <div className="text-[20px] font-light">Don&apos;t turn off your computer</div>
       </div>
     </FullscreenPrank>
   )

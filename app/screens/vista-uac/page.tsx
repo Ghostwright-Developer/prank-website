@@ -1,132 +1,80 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
 
-interface UACDialog {
-  id: number
-  program: string
-  publisher: string
-}
+interface UAC { id: number; program: string; publisher: string; verified: boolean; file: string }
 
-const programs = [
-  { program: "cmd.exe", publisher: "Microsoft Corporation" },
-  { program: "notepad.exe", publisher: "Microsoft Corporation" },
-  { program: "explorer.exe", publisher: "Microsoft Corporation" },
-  { program: "setup.exe", publisher: "Unknown" },
-  { program: "installer.exe", publisher: "Unknown" },
-  { program: "update.exe", publisher: "Unknown" },
-  { program: "rundll32.exe", publisher: "Microsoft Corporation" },
-  { program: "msiexec.exe", publisher: "Microsoft Corporation" },
-  { program: "regedit.exe", publisher: "Microsoft Corporation" },
-  { program: "svchost.exe", publisher: "Microsoft Corporation" },
+const PROGRAMS = [
+  { program: "Windows Command Processor", publisher: "Microsoft Windows", verified: true, file: "C:\\Windows\\System32\\cmd.exe" },
+  { program: "Registry Editor", publisher: "Microsoft Windows", verified: true, file: "C:\\Windows\\regedit.exe" },
+  { program: "Host Process for Windows Services", publisher: "Microsoft Windows", verified: true, file: "C:\\Windows\\System32\\svchost.exe" },
+  { program: "Windows Installer", publisher: "Microsoft Windows", verified: true, file: "C:\\Windows\\System32\\msiexec.exe" },
+  { program: "setup.exe", publisher: "Unknown", verified: false, file: "C:\\Users\\Owner\\AppData\\Local\\Temp\\setup.exe" },
+  { program: "update_helper.exe", publisher: "Unknown", verified: false, file: "C:\\Users\\Owner\\AppData\\Local\\Temp\\update_helper.exe" },
+  { program: "Windows Defender", publisher: "Microsoft Windows", verified: true, file: "C:\\Program Files\\Windows Defender\\MSASCui.exe" },
 ]
+const MAX = 10
 
 export default function VistaUACScreen() {
-  const [dialogs, setDialogs] = useState<UACDialog[]>([])
-  const [idCounter, setIdCounter] = useState(0)
+  const [dialogs, setDialogs] = useState<UAC[]>([])
+  const nextId = useRef(1)
+
+  const spawn = useCallback((count = 1) => {
+    const made: UAC[] = []
+    for (let i = 0; i < count; i++) {
+      made.push({ id: nextId.current++, ...PROGRAMS[Math.floor(Math.random() * PROGRAMS.length)] })
+    }
+    setDialogs((prev) => [...prev, ...made].slice(-MAX))
+  }, [])
 
   useEffect(() => {
-    const addDialog = () => {
-      const prog = programs[Math.floor(Math.random() * programs.length)]
-      setDialogs((prev) => [
-        ...prev,
-        { id: idCounter, ...prog },
-      ])
-      setIdCounter((prev) => prev + 1)
-    }
+    spawn(1)
+    const id = setInterval(() => spawn(1), 1800)
+    return () => clearInterval(id)
+  }, [spawn])
 
-    // Initial dialogs
-    for (let i = 0; i < 2; i++) {
-      setTimeout(addDialog, i * 300)
-    }
-
-    const interval = setInterval(addDialog, 1200)
-    return () => clearInterval(interval)
-  }, [idCounter])
-
-  const handleResponse = (id: number) => {
+  const answer = (id: number) => {
     setDialogs((prev) => prev.filter((d) => d.id !== id))
-    // Spawn more dialogs
-    setTimeout(() => {
-      for (let i = 0; i < 3; i++) {
-        const prog = programs[Math.floor(Math.random() * programs.length)]
-        setDialogs((prev) => [
-          ...prev,
-          { id: Date.now() + i, ...prog },
-        ])
-      }
-    }, 100)
+    setTimeout(() => spawn(2), 350)
   }
 
   return (
-    <FullscreenPrank className="cursor-default" exitMessage="PERMISSIONS GRANTED!">
-      {/* Dimmed desktop */}
-      <div className="h-full w-full bg-black/90">
-        {/* UAC Dialogs */}
-        {dialogs.map((dialog, index) => (
-          <div
-            key={dialog.id}
-            className="absolute left-1/2 top-1/2 w-[450px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-white/20 bg-[#1a1a1a] shadow-2xl"
-            style={{
-              transform: `translate(-50%, -50%) translate(${(index % 5) * 20 - 40}px, ${(index % 5) * 20 - 40}px)`,
-              zIndex: dialog.id,
-            }}
-          >
-            {/* Aero glass effect header */}
-            <div className="bg-gradient-to-b from-white/10 to-transparent p-4">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-2xl shadow-lg">
-                  🛡️
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-white">
-                    User Account Control
-                  </h2>
-                  <p className="mt-1 text-sm text-gray-300">
-                    Do you want to allow the following program to make changes to this computer?
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Program details */}
-            <div className="border-t border-white/10 bg-[#0a0a0a] p-4">
-              <div className="mb-4 rounded bg-[#1e1e1e] p-3">
-                <p className="text-sm text-gray-400">Program name:</p>
-                <p className="font-mono text-white">{dialog.program}</p>
-                <p className="mt-2 text-sm text-gray-400">Verified publisher:</p>
-                <p className={dialog.publisher === "Unknown" ? "text-red-400" : "text-green-400"}>
-                  {dialog.publisher}
-                </p>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => handleResponse(dialog.id)}
-                  className="rounded border border-white/20 bg-gradient-to-b from-[#3d3d3d] to-[#2a2a2a] px-6 py-2 text-sm text-white transition-colors hover:from-[#4a4a4a] hover:to-[#3a3a3a]"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => handleResponse(dialog.id)}
-                  className="rounded border border-white/20 bg-gradient-to-b from-[#3d3d3d] to-[#2a2a2a] px-6 py-2 text-sm text-white transition-colors hover:from-[#4a4a4a] hover:to-[#3a3a3a]"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-
-            {/* Show details link */}
-            <div className="border-t border-white/10 bg-[#0a0a0a] px-4 py-2">
-              <button className="text-xs text-blue-400 hover:underline">
-                Show details
-              </button>
+    <FullscreenPrank exitMessage="PERMISSION GRANTED - IT WAS A PRANK!" className="cursor-default font-segoe">
+      {/* Secure desktop: the dimmed desktop behind the dialog, as on Vista/7 */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,#2d7aa0,#0f3d5c_60%,#06202f)]" />
+      <div className="absolute inset-0 bg-black/60" />
+      {dialogs.map((d, i) => (
+        <div
+          key={d.id}
+          className="absolute left-1/2 top-1/2 w-[min(460px,94vw)] border border-[#1a3b5a] bg-[#f0f0f0] shadow-[0_8px_40px_rgba(0,0,0,.7)]"
+          style={{ transform: `translate(calc(-50% + ${(i % 5) * 22 - 44}px), calc(-50% + ${(i % 5) * 22 - 44}px))`, zIndex: d.id }}
+        >
+          <div className={`flex items-center gap-3 px-4 py-3 text-white ${d.verified ? "bg-gradient-to-r from-[#1c5d99] to-[#3a8bc8]" : "bg-gradient-to-r from-[#b8860b] to-[#e0a800]"}`}>
+            <span className="grid h-9 w-9 place-items-center rounded-sm bg-white/90 text-[20px]">🛡️</span>
+            <div className="text-[15px] font-semibold leading-tight">
+              {d.verified ? "Windows needs your permission to continue" : "An unidentified program wants access to your computer"}
             </div>
           </div>
-        ))}
-      </div>
+          <div className="p-4 text-[13px] text-black">
+            <p className="mb-3">
+              {d.verified
+                ? "A program needs your permission before it can start."
+                : "Don't run the program unless you know where it's from or you've used it before."}
+            </p>
+            <div className="mb-3 border border-[#b5b5b5] bg-white p-3">
+              <div className="font-semibold">{d.program}</div>
+              <div className="text-[12px] text-[#444]">{d.verified ? "Verified publisher" : "Publisher"}: {d.publisher}</div>
+              <div className="break-all text-[12px] text-[#444]">File origin: Hard drive on this computer</div>
+              <div className="break-all text-[12px] text-[#444]">{d.file}</div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => answer(d.id)} className="min-w-[90px] rounded-sm border border-[#707070] bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] px-4 py-1">Allow</button>
+              <button onClick={() => answer(d.id)} className="min-w-[90px] rounded-sm border border-[#707070] bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] px-4 py-1">Cancel</button>
+            </div>
+          </div>
+        </div>
+      ))}
     </FullscreenPrank>
   )
 }

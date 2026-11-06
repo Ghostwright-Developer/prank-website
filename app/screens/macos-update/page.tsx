@@ -1,22 +1,19 @@
-'use client'
-import { FullscreenPrank } from '@/components/fullscreen-prank'
-export default function MacOSUpdateScreen() {
+"use client"
+
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { AppleLogo, useBelievableProgress } from "@/components/prank-kit"
+
+export default function MacosUpdateScreen() {
+  const pct = useBelievableProgress({ from: 14, max: 97, perSecond: 0.25, stalls: [33, 68, 91] })
+  const mins = Math.max(2, Math.round(((100 - pct) / 100) * 38))
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-gray-200 flex flex-col items-center justify-center font-sans">
-        <div className="space-y-8">
-          <div className="text-center">
-            <div className="text-8xl mb-4">🍎</div>
-            <h1 className="text-2xl font-bold">Software Update</h1>
-            <p className="text-gray-600">macOS Big Sur 11.7.3</p>
-          </div>
-          <div className="w-96 space-y-3">
-            <div className="h-2 bg-gray-300 rounded-full overflow-hidden">
-              <div className="h-full w-1/2 bg-blue-500 rounded-full animate-pulse"></div>
-            </div>
-            <p className="text-center text-sm text-gray-600">Installing... (about 5 minutes remaining)</p>
-          </div>
+    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-black font-sf text-white">
+      <div className="flex h-full flex-col items-center justify-center">
+        <AppleLogo size={84} color="#fff" />
+        <div className="mt-16 h-[5px] w-[220px] overflow-hidden rounded-full bg-white/25">
+          <div className="h-full rounded-full bg-white" style={{ width: `${pct}%` }} />
         </div>
+        <div className="mt-5 text-[13px] text-white/60">About {mins} minute{mins === 1 ? "" : "s"} remaining...</div>
       </div>
     </FullscreenPrank>
   )

@@ -1,48 +1,45 @@
-'use client'
+"use client"
 
-import { FullscreenPrank } from '@/components/fullscreen-prank'
+import { useMemo } from "react"
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { useBlink, useRevealedLines } from "@/components/prank-kit"
 
+// Award BIOS style POST that ends in a checksum failure and halts.
 export default function BiosScreen() {
-  const messages = [
-    'Award BIOS Setup Utility v6.00PG',
-    'Copyright (c) Award Software, Inc.',
-    '',
-    'Press DEL to enter Setup',
-    '',
-    'Main Processor  : Intel Core i7-9700K @ 3.6 GHz',
-    'Memory Size     : 16384 MB',
-    'Video Memory    : 512 MB',
-    'Hard Disk Drive : 465 GB',
-    '',
-    'IDE 1 Master   : ST3500418AS',
-    'IDE 1 Slave    : QEMU HARDDISK',
-    '',
-    'Floppy Drive   : Not Detected',
-    'Onboard Audio  : Enabled',
-    '',
-    '',
-    'Press ESC to quit',
-    '',
-    'Boot from: Hard Drive'
-  ]
-
+  const lines = useMemo(
+    () => [
+      "Award Modular BIOS v6.00PG, An Energy Star Ally",
+      "Copyright (C) 1984-2008, Award Software, Inc.",
+      "",
+      "ASUS P5K-E ACPI BIOS Revision 1002",
+      "",
+      "Main Processor : Intel(R) Core(TM)2 Quad CPU Q6600 @ 2.40GHz",
+      "Memory Testing :  4194304K OK",
+      "",
+      "Award Plug and Play BIOS Extension v1.0A",
+      "Copyright (C) 2008, Award Software, Inc.",
+      "   Detecting IDE Primary Master   ... ST3500418AS",
+      "   Detecting IDE Primary Slave    ... None",
+      "   Detecting IDE Secondary Master ... HL-DT-ST DVDRAM",
+      "   Detecting IDE Secondary Slave  ... None",
+      "",
+      "BIOS ROM checksum error",
+      "CMOS checksum error - Defaults loaded",
+      "Primary Master Hard Disk S.M.A.R.T. status BAD, Backup and Replace",
+      "",
+      "System halted.",
+    ],
+    [],
+  )
+  const { visible, done } = useRevealedLines(lines, (i) => (i < 8 ? 180 : 420))
+  const on = useBlink()
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-black p-8 font-mono text-amber-600 text-sm leading-relaxed overflow-hidden">
-        <div className="space-y-1">
-          {messages.map((line, i) => (
-            <div key={i} className="text-sm">{line}</div>
-          ))}
-        </div>
-        
-        <div className="fixed bottom-8 left-8 space-y-2 text-base font-bold">
-          <div className="text-red-500 animate-pulse">CRITICAL ERROR</div>
-          <div className="text-amber-600 text-sm">BIOS Checksum Failed</div>
-          <div className="text-amber-600 text-sm">CPU: Overheating</div>
-          <div className="text-amber-600 text-sm">HDD: Corrupted</div>
-          <div className="text-red-500 mt-4">SYSTEM HALTED</div>
-          <div className="text-amber-600 text-sm mt-4">_<span className="animate-pulse">|</span></div>
-        </div>
+    <FullscreenPrank exitMessage="BIOS RESTORED - IT WAS A PRANK!" className="cursor-none bg-black font-dos text-[#c8c8c8]">
+      <div className="h-full p-6 text-[clamp(15px,2vw,22px)] leading-[1.2]">
+        {visible.map((l, i) => (
+          <div key={i} className={`whitespace-pre ${l.includes("error") || l.includes("BAD") ? "text-white" : ""}`}>{l || " "}</div>
+        ))}
+        {done ? <span className={on ? "bg-[#c8c8c8]" : ""}>&nbsp;</span> : null}
       </div>
     </FullscreenPrank>
   )

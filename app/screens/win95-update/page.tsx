@@ -1,32 +1,26 @@
-'use client'
+"use client"
 
-import { FullscreenPrank } from '@/components/fullscreen-prank'
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { useBelievableProgress } from "@/components/prank-kit"
 
 export default function Win95UpdateScreen() {
+  const pct = useBelievableProgress({ from: 3, max: 95, perSecond: 0.2, stalls: [18, 46, 77] })
+  const mins = Math.max(5, Math.round(((100 - pct) / 100) * 43))
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-[#008080] p-4 font-[MS Sans Serif] flex flex-col">
-        <div className="bg-gradient-to-r from-[#000080] to-[#1084d7] text-white px-2 py-1 font-bold text-sm flex items-center gap-2">
-          <div className="w-5 h-5 bg-white opacity-20"></div>
-          Windows Update
+    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-default bg-[#008080] font-win9x">
+      <div className="absolute left-1/2 top-1/2 w-[min(480px,92vw)] -translate-x-1/2 -translate-y-1/2 border-2 border-white border-b-black border-r-black bg-[#c0c0c0] p-[3px] shadow-[1px_1px_0_#000]">
+        <div className="flex items-center justify-between bg-[#000080] px-1 py-[3px] text-[12px] font-bold text-white">
+          <span>Windows 95 Setup</span><span className="border border-white border-b-black border-r-black bg-[#c0c0c0] px-[5px] leading-none text-black">x</span>
         </div>
-        
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="w-96">
-            <p className="text-black text-sm mb-6">Searching for Windows 95 Update...</p>
-            
-            <div className="border-2 border-[#c0c0c0] bg-[#dfdfdf] p-3 mb-4">
-              <div className="text-xs text-black mb-2">Progress:</div>
-              <div className="w-full h-6 bg-[#c0c0c0] border border-[#808080] border-r-white border-b-white">
-                <div className="h-full w-1/3 bg-gradient-to-r from-[#0a246a] to-[#1084d7] relative">
-                  <div className="absolute top-1 left-1 right-1 h-1 bg-white opacity-30"></div>
-                </div>
-              </div>
-            </div>
-
-            <button onClick={() => alert('Just a prank! Windows 95 is perfectly fine!')} className="w-full py-2 px-4 bg-[#dfdfdf] border-2 border-[#dfdfdf] border-r-[#808080] border-b-[#808080] text-black cursor-pointer hover:bg-[#c0c0c0] text-sm font-bold">
-              OK
-            </button>
+        <div className="p-4 text-[12px] text-black">
+          <p className="mb-4">Setup is now updating your system files. This may take several minutes. Please do not turn off your computer.</p>
+          <p className="mb-1">Copying files...</p>
+          <div className="h-5 border border-[#808080] border-b-white border-r-white bg-white p-[2px]">
+            <div className="h-full bg-[repeating-linear-gradient(90deg,#000080_0_9px,transparent_9px_11px)]" style={{ width: `${pct}%` }} />
+          </div>
+          <p className="mt-3">Time remaining: about {mins} minutes</p>
+          <div className="mt-4 flex justify-end">
+            <button className="border-2 border-white border-b-black border-r-black bg-[#c0c0c0] px-6 py-[3px] text-[12px] text-[#808080]">Cancel</button>
           </div>
         </div>
       </div>

@@ -1,12 +1,15 @@
 import type { Metadata } from "next"
+import { JsonLd } from "@/components/json-ld"
+import { screenJsonLd } from "@/lib/jsonld"
+import { screenMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Fake Hard Drive Format C: Prank",
-  description:
-    "Fake 'Formatting C: drive' stuck at 99% prank screen. The most terrifying thing you can show a Windows user. 100% harmless browser prank.",
-  keywords: ["fake format c drive", "format hard drive prank", "fake disk format", "format c prank", "hard drive erasing prank"],
-}
+export const metadata: Metadata = screenMetadata("format")
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <JsonLd data={screenJsonLd("format")} />
+      {children}
+    </>
+  )
 }

@@ -3,16 +3,21 @@
 import { FullscreenPrank } from '@/components/fullscreen-prank'
 import { useState, useEffect } from 'react'
 
-// Real cat image URLs from placekitten/cataas
+// Self-contained cat faces (inline SVG data URIs), so nothing depends on an external image host.
+const catFace = (fur: string, eye: string) =>
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' fill='#222'/><path d='M35 85 30 20 85 55zM165 85 170 20 115 55z' fill='${fur}'/><ellipse cx='100' cy='108' rx='72' ry='64' fill='${fur}'/><ellipse cx='72' cy='98' rx='13' ry='17' fill='${eye}'/><ellipse cx='128' cy='98' rx='13' ry='17' fill='${eye}'/><ellipse cx='72' cy='98' rx='4' ry='15' fill='#000'/><ellipse cx='128' cy='98' rx='4' ry='15' fill='#000'/><path d='M92 124h16l-8 9z' fill='#e88'/><path d='M100 133v8M100 141q-10 8-20 3M100 141q10 8 20 3' stroke='#000' stroke-width='2.5' fill='none'/><path d='M20 118l45 6M20 134l45-4M180 118l-45 6M180 134l-45-4' stroke='#eee' stroke-width='2'/></svg>`,
+  )
 const catImages = [
-  'https://placekitten.com/200/200',
-  'https://placekitten.com/201/201',
-  'https://placekitten.com/202/202',
-  'https://placekitten.com/203/203',
-  'https://placekitten.com/204/204',
-  'https://placekitten.com/205/205',
-  'https://placekitten.com/206/206',
-  'https://placekitten.com/207/207',
+  catFace("#f0a04b", "#9be15d"),
+  catFace("#8a8a8a", "#ffd23f"),
+  catFace("#f4f1ea", "#4ec3ff"),
+  catFace("#2b2b2b", "#ffd23f"),
+  catFace("#c27a3a", "#9be15d"),
+  catFace("#b8b8b8", "#6fd36f"),
+  catFace("#e8c9a0", "#4ec3ff"),
+  catFace("#5a4636", "#ffd23f"),
 ]
 
 const demandMessages = [

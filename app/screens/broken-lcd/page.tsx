@@ -20,7 +20,7 @@ export default function BrokenLCD() {
   
   useEffect(() => {
     // Generate random vertical stripes (dead/stuck pixels columns)
-    const newStripes = []
+    const newStripes: Array<{ left: number; width: number; color: string; flicker: boolean; type: 'dead' | 'stuck' | 'color' }> = []
     
     // Main dead column cluster
     const mainCluster = 30 + Math.random() * 40

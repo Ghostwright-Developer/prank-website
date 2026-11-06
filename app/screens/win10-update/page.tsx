@@ -1,17 +1,20 @@
-'use client'
-import { FullscreenPrank } from '@/components/fullscreen-prank'
+"use client"
+
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { WinSpinner, useBelievableProgress } from "@/components/prank-kit"
+
 export default function Win10UpdateScreen() {
+  const pct = useBelievableProgress({ from: 21, max: 97, perSecond: 0.35, stalls: [38, 64, 89] })
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-[#0078d4] flex flex-col items-center justify-center font-sans">
-        <div className="text-white text-center space-y-6">
-          <div className="text-5xl animate-spin">↻</div>
-          <h1 className="text-4xl font-bold">Getting Windows Ready</h1>
-          <p className="text-xl">Don't turn off your PC. This will take a few minutes.</p>
-          <div className="w-80 h-2 bg-white/20 rounded">
-            <div className="h-full w-3/4 bg-white rounded animate-pulse"></div>
-          </div>
-          <p className="text-lg">73%</p>
+    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-[#0063b1] font-segoe text-white">
+      <div className="flex h-full flex-col items-center justify-center gap-7 text-center">
+        <WinSpinner size={44} dot={5} />
+        <div className="text-[28px] font-light">Working on updates</div>
+        <div className="text-[28px] font-light">{Math.floor(pct)}% complete</div>
+        <div className="text-[20px] font-light leading-snug">
+          Don&apos;t turn off your PC. This will take a while.
+          <br />
+          Your PC will restart several times.
         </div>
       </div>
     </FullscreenPrank>

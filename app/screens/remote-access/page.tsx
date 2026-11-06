@@ -55,7 +55,7 @@ export default function RemoteAccessScreen() {
 
     const addLine = () => {
       if (index < commands.length) {
-        setLines(prev => [...prev, commands[index].text])
+        { const __next = commands[index].text; setLines(prev => [...prev, __next]) }
         const delay = commands[index].delay
         index++
         timeout = setTimeout(addLine, delay + Math.random() * 100)

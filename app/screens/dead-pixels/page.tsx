@@ -1,6 +1,7 @@
 'use client'
 
 import { FullscreenPrank } from '@/components/fullscreen-prank'
+import { Clock } from '@/components/clock'
 import { useEffect, useState } from 'react'
 
 interface Pixel {
@@ -108,7 +109,7 @@ export default function DeadPixels() {
             <div className="w-10 h-10 bg-white/10 rounded" />
           </div>
           <div className="ml-auto text-white text-sm">
-            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            <Clock />
           </div>
         </div>
         

@@ -1,16 +1,17 @@
-'use client'
-import { FullscreenPrank } from '@/components/fullscreen-prank'
+"use client"
 
-export default function IOSUpdateScreen() {
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { AppleLogo, useBelievableProgress } from "@/components/prank-kit"
+
+export default function IosUpdateScreen() {
+  const pct = useBelievableProgress({ from: 18, max: 97, perSecond: 0.3, stalls: [41, 77] })
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-black flex flex-col items-center justify-center">
-        <div className="text-white text-6xl mb-8">&#63743;</div>
-        <div className="w-48 h-1 bg-gray-800 rounded-full overflow-hidden mb-4">
-          <div className="h-full bg-white rounded-full animate-pulse" style={{width: '78%'}} />
+    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-black font-sf text-white">
+      <div className="flex h-full flex-col items-center justify-center">
+        <AppleLogo size={72} color="#fff" />
+        <div className="mt-20 h-[4px] w-[190px] overflow-hidden rounded-full bg-white/25">
+          <div className="h-full rounded-full bg-white" style={{ width: `${pct}%` }} />
         </div>
-        <div className="text-gray-400 text-sm">iOS 17.3 Installing...</div>
-        <div className="text-gray-600 text-xs mt-2">About 45 minutes remaining</div>
       </div>
     </FullscreenPrank>
   )

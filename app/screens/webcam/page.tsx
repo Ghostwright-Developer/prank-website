@@ -7,11 +7,17 @@ export default function WebcamScreen() {
   const [recording, setRecording] = useState(0)
   const [showMessage, setShowMessage] = useState(false)
   const [blink, setBlink] = useState(true)
-  const [fakeLocation] = useState({
-    ip: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+  // Random IP is generated after mount so server and client HTML match.
+  const [ip, setIp] = useState("0.0.0.0")
+  useEffect(() => {
+    const octet = () => Math.floor(Math.random() * 223) + 1
+    setIp(`${octet()}.${octet()}.${octet()}.${octet()}`)
+  }, [])
+  const fakeLocation = {
+    ip,
     location: "The Moon Base, Crater 47",
     isp: "Definitely Not Real ISP",
-  })
+  }
 
   useEffect(() => {
     const recordingInterval = setInterval(() => {

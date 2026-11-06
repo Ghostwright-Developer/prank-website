@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { FullscreenPrank } from '@/components/fullscreen-prank'
+import { Clock } from '@/components/clock'
 import { useRouter } from 'next/navigation'
 
 const errorPopups = [
@@ -73,7 +74,7 @@ export default function PrinterError() {
           <div className="bg-[#008000] text-white text-xs font-bold px-3 py-1 rounded-sm border border-white border-r-gray-500 border-b-gray-500">Start</div>
           <div className="flex-1" />
           <div className="text-xs text-black border border-gray-500 px-2 py-0.5 bg-[#c0c0c0]">
-            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            <Clock />
           </div>
         </div>
 

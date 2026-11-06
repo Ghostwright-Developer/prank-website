@@ -1,126 +1,67 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
 
-interface ErrorDialog {
-  id: number
-  x: number
-  y: number
-  message: string
-}
+interface Err { id: number; x: number; y: number; title: string; body: string }
 
-const errorMessages = [
-  "A fatal exception 0E has occurred at 0028:C0011E36",
-  "KERNEL32.DLL caused a general protection fault",
-  "EXPLORER caused an invalid page fault in module SHELL32.DLL",
-  "An error has occurred in your program. Click OK to ignore.",
-  "Not enough memory to complete operation",
-  "Cannot find WIN.COM",
-  "Segment Load Failure",
-  "Stack Overflow",
-  "Divide by Zero Error",
-  "EMM386 has detected an error",
+const ERRORS = [
+  { title: "Application Error", body: "PROGMAN caused a General Protection Fault in module USER.EXE at 0003:1D4F." },
+  { title: "Application Error", body: "WINWORD caused a General Protection Fault in module KRNL386.EXE at 0001:2A84." },
+  { title: "Application Error", body: "Unrecoverable Application Error. Terminating current application." },
+  { title: "Insufficient Memory", body: "There is not enough memory to run this application. Quit one or more Windows applications and try again." },
+  { title: "Program Manager", body: "Cannot find the file WIN.INI. Check to ensure the path and filename are correct." },
+  { title: "System Error", body: "Cannot find a required device driver: VSHARE. Check SYSTEM.INI." },
+  { title: "Application Error", body: "FILEMAN caused a General Protection Fault in module FILEMAN.EXE at 0002:0B6E." },
+  { title: "Windows", body: "Insufficient system resources exist to complete the API." },
 ]
+const MAX = 14
 
 export default function Win31Screen() {
-  const [errors, setErrors] = useState<ErrorDialog[]>([])
-  const [dimensions, setDimensions] = useState({ width: 1024, height: 768 })
+  const [errors, setErrors] = useState<Err[]>([])
+  const id = useRef(0)
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setDimensions({ width: window.innerWidth, height: window.innerHeight })
-    }
+  const add = useCallback(() => {
+    const e = ERRORS[Math.floor(Math.random() * ERRORS.length)]
+    const w = typeof window === "undefined" ? 1024 : window.innerWidth
+    const h = typeof window === "undefined" ? 768 : window.innerHeight
+    const item: Err = { id: ++id.current, x: 10 + Math.random() * Math.max(10, w - 440), y: 10 + Math.random() * Math.max(10, h - 200), ...e }
+    setErrors((prev) => [...prev, item].slice(-MAX))
   }, [])
 
-  const createError = useCallback((id: number) => {
-    return {
-      id,
-      x: Math.random() * (dimensions.width - 350) + 20,
-      y: Math.random() * (dimensions.height - 150) + 20,
-      message: errorMessages[Math.floor(Math.random() * errorMessages.length)],
-    }
-  }, [dimensions])
-
   useEffect(() => {
-    let idCounter = 0
-    
-    const addError = () => {
-      idCounter++
-      setErrors((prev) => [...prev, createError(idCounter)])
-    }
-
-    // Add initial errors
-    for (let i = 0; i < 3; i++) {
-      setTimeout(addError, i * 200)
-    }
-
-    // Keep adding errors
-    const interval = setInterval(addError, 800)
-    return () => clearInterval(interval)
-  }, [createError])
-
-  const handleOkClick = (id: number) => {
-    setErrors((prev) => prev.filter((e) => e.id !== id))
-    // Add 2-3 more errors when clicking OK
-    setTimeout(() => {
-      const count = Math.floor(Math.random() * 2) + 2
-      const newErrors: ErrorDialog[] = []
-      for (let i = 0; i < count; i++) {
-        newErrors.push(createError(Date.now() + i))
-      }
-      setErrors((prev) => [...prev, ...newErrors])
-    }, 50)
-  }
+    add()
+    const t = setInterval(add, 1400)
+    return () => clearInterval(t)
+  }, [add])
 
   return (
-    <FullscreenPrank className="bg-[#008080]" exitMessage="SYSTEM RESTORED!">
-      {/* Desktop background - teal color like Win 3.1 */}
-      <div className="h-full w-full bg-[#008080]">
-        {/* Program Manager Window */}
-        <div className="absolute left-4 top-4 w-64 border-2 border-white bg-[#c0c0c0] shadow-[inset_-2px_-2px_0_#808080,inset_2px_2px_0_#ffffff]">
-          <div className="flex items-center justify-between bg-[#000080] px-2 py-1 text-white">
-            <span className="text-sm font-bold">Program Manager</span>
-            <div className="flex gap-1">
-              <button className="h-4 w-4 border border-white bg-[#c0c0c0] text-xs leading-none text-black">_</button>
-              <button className="h-4 w-4 border border-white bg-[#c0c0c0] text-xs leading-none text-black">^</button>
-            </div>
+    <FullscreenPrank exitMessage="WINDOWS 3.1 RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#008080] font-win9x">
+      {/* Program Manager window */}
+      <div className="absolute left-4 top-4 h-[min(420px,70vh)] w-[min(640px,90vw)] border-2 border-black bg-white">
+        <div className="flex items-center border-b-2 border-black bg-[#000080] px-1 text-[13px] font-bold text-white">
+          <span className="mr-2 border border-white px-1">-</span>Program Manager
+        </div>
+        <div className="border-b border-black px-2 text-[12px] text-black">File &nbsp; Options &nbsp; Window &nbsp; Help</div>
+        <div className="grid grid-cols-4 gap-4 p-4 text-center text-[11px] text-black">
+          {["Main", "Accessories", "Games", "StartUp", "Applications", "Windows Applications"].map((n) => (
+            <div key={n}><div className="mx-auto mb-1 h-8 w-10 border-2 border-black bg-[#ffff00]" />{n}</div>
+          ))}
+        </div>
+      </div>
+
+      {errors.map((e) => (
+        <div key={e.id} className="absolute w-[min(400px,92vw)] border-2 border-black bg-[#c0c0c0] shadow-[3px_3px_0_#000]" style={{ left: e.x, top: e.y, zIndex: e.id }}>
+          <div className="border-b-2 border-black bg-white px-2 text-center text-[13px] font-bold text-black">{e.title}</div>
+          <div className="flex gap-3 p-4 text-[13px] text-black">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-black bg-white text-[20px] font-bold">!</span>
+            <p>{e.body}</p>
           </div>
-          <div className="p-2 text-sm">
-            <p className="text-[#000080]">Main</p>
+          <div className="flex justify-center pb-3">
+            <button onClick={() => setErrors((p) => p.filter((x) => x.id !== e.id))} className="border-2 border-black bg-white px-8 py-[2px] text-[13px] font-bold text-black">OK</button>
           </div>
         </div>
-
-        {/* Error Dialogs */}
-        {errors.map((error) => (
-          <div
-            key={error.id}
-            className="absolute border-2 border-white bg-[#c0c0c0] shadow-[inset_-2px_-2px_0_#808080,inset_2px_2px_0_#ffffff]"
-            style={{ left: error.x, top: error.y, width: 340, zIndex: error.id }}
-          >
-            <div className="flex items-center justify-between bg-[#000080] px-2 py-1 text-white">
-              <span className="text-sm font-bold">Application Error</span>
-              <button className="h-4 w-4 border border-white bg-[#c0c0c0] text-xs leading-none text-black">x</button>
-            </div>
-            <div className="flex gap-4 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-3xl text-red-600">
-                X
-              </div>
-              <div className="flex-1">
-                <p className="mb-4 font-mono text-xs">{error.message}</p>
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => handleOkClick(error.id)}
-                    className="border-2 border-white bg-[#c0c0c0] px-6 py-1 text-sm shadow-[inset_-2px_-2px_0_#808080,inset_2px_2px_0_#ffffff] active:shadow-[inset_2px_2px_0_#808080,inset_-2px_-2px_0_#ffffff]"
-                  >
-                    OK
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      ))}
     </FullscreenPrank>
   )
 }

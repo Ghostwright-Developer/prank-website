@@ -1,6 +1,7 @@
 'use client'
 
 import { FullscreenPrank } from '@/components/fullscreen-prank'
+import { Clock } from '@/components/clock'
 import { useState, useEffect, useRef } from 'react'
 
 // Clippy messages that are increasingly unhinged
@@ -223,7 +224,7 @@ export default function WindowsXPTourScreen() {
           <div className="flex items-center gap-4 text-white text-xs">
             <span>📶</span>
             <span>🔊</span>
-            <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <Clock />
           </div>
         </div>
 
