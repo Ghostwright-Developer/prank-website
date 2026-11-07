@@ -66,7 +66,7 @@ export default function PetyaScreen() {
   const pct = Math.min(99, Math.floor((sector / TOTAL_SECTORS) * 100))
 
   return (
-    <FullscreenPrank exitMessage="DISK RESTORED - IT WAS A PRANK!" className="cursor-none bg-black font-dos text-[22px] leading-[1.15]">
+    <FullscreenPrank sound="pulse" exitMessage="DISK RESTORED - IT WAS A PRANK!" className="cursor-none bg-black font-dos text-[22px] leading-[1.15]">
       {phase === "chkdsk" && (
         <div className="h-full w-full bg-black p-8 text-[#c0c0c0]">
           <p>Repairing file system on C:</p>

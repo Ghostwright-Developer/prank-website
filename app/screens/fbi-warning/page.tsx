@@ -14,7 +14,7 @@ export default function FbiWarningScreen() {
   }, [])
 
   return (
-    <FullscreenPrank exitMessage="COMPUTER UNLOCKED - IT WAS A PRANK!" className="cursor-default bg-white font-segoe">
+    <FullscreenPrank sound="siren" exitMessage="COMPUTER UNLOCKED - IT WAS A PRANK!" className="cursor-default bg-white font-segoe">
       <div className="flex h-full w-full flex-col overflow-auto bg-[#eef1f6] text-[#111]">
         {/* Header */}
         <div className="flex items-center justify-center gap-5 bg-[#0d2347] px-6 py-4 text-white">

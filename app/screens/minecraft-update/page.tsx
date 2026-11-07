@@ -1,131 +1,105 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { FullscreenPrank } from '@/components/fullscreen-prank'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from "react"
+import { FullscreenPrank } from "@/components/fullscreen-prank"
 
-const updateSteps = [
-  { msg: "Downloading update: Mojang_Creeper_Therapy_v4.2.jar", duration: 2000 },
-  { msg: "Installing: Mandatory Pig Physics Engine...", duration: 1800 },
-  { msg: "Configuring: Enderman Eye Contact Protocols...", duration: 2200 },
-  { msg: "Updating: Steve's Emotional Support Diamond...", duration: 1500 },
-  { msg: "Patching: Creeper PTSD Module (ssssss)...", duration: 2000 },
-  { msg: "Installing: Herobrine (definitely not here)...", duration: 2500 },
-  { msg: "Removing Herobrine...", duration: 500 },
-  { msg: "Re-adding Herobrine by accident...", duration: 800 },
-  { msg: "Removing Herobrine again...", duration: 500 },
-  { msg: "Compiling: 47,000 Dirt Block Variants...", duration: 2000 },
-  { msg: "Loading: 11,000 Slightly Different Oak Log Textures...", duration: 1800 },
-  { msg: "Optimizing: Notch's Cheese Wheel Collection...", duration: 1200 },
-  { msg: "ERROR: Could not find Java. Blaming Java.", duration: 2000 },
-  { msg: "Installing Java 8, Java 11, Java 17, and Java 47...", duration: 2500 },
-  { msg: "Uninstalling Java (all of them)...", duration: 1000 },
-  { msg: "Reinstalling Java (just one this time)...", duration: 1500 },
-  { msg: "Finished! Restarting launcher 6 more times for fun...", duration: 3000 },
+const NOTES = [
+  "Creepers now apologize before exploding. Damage is unchanged.",
+  "Villagers have formed a union. Trades are now subject to negotiation. Negotiation has not started.",
+  "Added 14 new kinds of dirt. All of them look like dirt.",
+  "Chickens no longer cross the road. They still have not said why they did.",
+  "Endermen are no longer offended by eye contact. They are just disappointed.",
+  "Fixed a bug where fixing a bug caused the original bug to be fixed by a different bug.",
+  "The tutorial has been removed. Players reported it was the most dangerous part of the game.",
+  "Cows now have opinions about your farm. They are not positive.",
+  "Steve's walk animation updated. It looks the same, but now he seems to be going somewhere.",
+  "Zombies now take a lunch break at noon. Burning is still permitted during lunch.",
+  "Reduced the chance of a skeleton hitting you from 100% to 100%.",
+  "The moon is now 4% rounder.",
+]
+const ERRORS = [
+  "Error: Could not create the Java Virtual Machine. Could not reserve enough space for 2097152KB object heap.",
+  "java.lang.OutOfMemoryError: Java heap space",
+  "Error: Failed to verify assets (3,811 of 3,812). Retrying with the one that is fine.",
+  "Update interrupted: the launcher was waiting for the launcher.",
 ]
 
 export default function MinecraftUpdate() {
-  const router = useRouter()
-  const [stepIndex, setStepIndex] = useState(0)
-  const [progress, setProgress] = useState(0)
-  const [logs, setLogs] = useState<string[]>([])
-  const [done, setDone] = useState(false)
-  const [blink, setBlink] = useState(true)
+  const [pct, setPct] = useState(0)
+  const [attempt, setAttempt] = useState(1)
+  const [error, setError] = useState<string | null>(null)
+  const [note, setNote] = useState(0)
 
   useEffect(() => {
-    const blinkInterval = setInterval(() => setBlink(b => !b), 500)
-    return () => clearInterval(blinkInterval)
+    const t = setInterval(() => {
+      setPct((p) => {
+        if (error) return p
+        const next = p + 0.4 + Math.random() * 1.4
+        return next >= 96 ? 96 : next
+      })
+    }, 300)
+    return () => clearInterval(t)
+  }, [error])
+
+  useEffect(() => {
+    if (error || pct < 96) return
+    const a = setTimeout(() => setError(ERRORS[attempt % ERRORS.length]), 1500)
+    return () => clearTimeout(a)
+  }, [pct, error, attempt])
+
+  useEffect(() => {
+    if (!error) return
+    const b = setTimeout(() => { setError(null); setPct(0); setAttempt((n) => n + 1) }, 4500)
+    return () => clearTimeout(b)
+  }, [error])
+
+  useEffect(() => {
+    const t = setInterval(() => setNote((n) => (n + 1) % NOTES.length), 6500)
+    return () => clearInterval(t)
   }, [])
 
-  useEffect(() => {
-    if (stepIndex >= updateSteps.length) {
-      setDone(true)
-      return
-    }
-    const step = updateSteps[stepIndex]
-    setLogs(prev => [...prev, step.msg])
-    const timeout = setTimeout(() => {
-      setStepIndex(i => i + 1)
-      setProgress(Math.round(((stepIndex + 1) / updateSteps.length) * 100))
-    }, step.duration)
-    return () => clearTimeout(timeout)
-  }, [stepIndex])
-
-  if (done) {
-    return (
-      <FullscreenPrank>
-        <div className="w-full h-full bg-[#1e1e1e] flex flex-col items-center justify-center text-center p-8 font-mono text-white">
-          <div className="text-6xl mb-4">TNT</div>
-          <h1 className="text-3xl font-bold text-green-400 mb-2">Update Complete!</h1>
-          <p className="text-zinc-400 mb-2">Minecraft has been updated to version 1.21.4-hotfix-patch-2b-FINAL-v3-REALLYFINAL</p>
-          <p className="text-zinc-500 mb-2">Herobrine has been removed. (14th attempt)</p>
-          <p className="text-yellow-400 text-lg mt-4 mb-8">This was a prank. Your Minecraft is totally fine. Probably.</p>
-          <button onClick={() => router.push('/')} className="bg-green-600 text-white px-8 py-3 rounded text-lg hover:bg-green-500 cursor-pointer">
-            Go dig some dirt
-          </button>
-        </div>
-      </FullscreenPrank>
-    )
-  }
+  const stage = pct < 25 ? "Downloading Minecraft 1.21.5" : pct < 70 ? "Verifying game assets" : "Applying patch notes"
 
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-[#1e1e1e] flex flex-col items-center justify-center p-8 font-mono text-white">
-        <div className="w-full max-w-2xl">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-block bg-green-700 text-white text-xs font-bold px-4 py-1 mb-4 rounded">
-              MINECRAFT LAUNCHER 3.0
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-1">Updating Minecraft</h1>
-            <p className="text-zinc-400 text-sm">Please do not turn off your computer or your creepers will be sad</p>
+    <FullscreenPrank secondary="#1e1e1e" exitMessage="MINECRAFT IS FINE - IT WAS A PRANK!" className="cursor-default bg-[#1e1e1e] font-sans text-white">
+      <div className="flex h-full flex-col">
+        <div className="flex items-center justify-between bg-[#121212] px-4 py-2 text-[12px] text-white/70">
+          <span>Minecraft Launcher</span><span>— &nbsp;▢ &nbsp;✕</span>
+        </div>
+        <div className="flex flex-1">
+          <div className="hidden w-[210px] shrink-0 flex-col gap-1 bg-[#161616] p-3 text-[14px] md:flex">
+            <div className="mb-4 text-[18px] font-bold tracking-wider text-[#4caf50]">MINECRAFT</div>
+            {["Minecraft: Java Edition", "Minecraft Dungeons", "Minecraft Legends", "Settings"].map((n, i) => (
+              <div key={n} className={`rounded px-3 py-2 ${i === 0 ? "bg-[#2b2b2b] text-white" : "text-white/55"}`}>{n}</div>
+            ))}
           </div>
-
-          {/* Progress bar - pixelated style */}
-          <div className="mb-6">
-            <div className="flex justify-between text-sm text-zinc-400 mb-2">
-              <span>{updateSteps[Math.min(stepIndex, updateSteps.length - 1)]?.msg.slice(0, 40)}...</span>
-              <span className="text-green-400 font-bold">{progress}%</span>
-            </div>
-            <div className="w-full bg-zinc-800 h-6 border-2 border-zinc-600">
-              <div
-                className="bg-green-600 h-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
+          <div className="relative flex flex-1 flex-col justify-end overflow-hidden bg-gradient-to-b from-[#2d5a2b] via-[#3a7a35] to-[#1f4a1c] p-6">
+            <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[repeating-linear-gradient(90deg,#6b4a2b_0_48px,#5a3d23_48px_96px)] opacity-80" />
+            <div className="absolute inset-x-0 bottom-[42%] h-6 bg-[repeating-linear-gradient(90deg,#5aa844_0_48px,#4a9638_48px_96px)]" />
+            <div className="relative max-w-[560px] rounded bg-black/70 p-5 backdrop-blur">
+              <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-[#8bc34a]">Patch notes · 1.21.5</div>
+              <p key={note} className="min-h-[3.4em] animate-[mcfade_.7s_ease] text-[16px] leading-snug">• {NOTES[note]}</p>
             </div>
           </div>
+        </div>
 
-          {/* Log window */}
-          <div className="bg-black border border-zinc-700 rounded p-4 h-48 overflow-hidden text-left">
-            <div className="text-green-400 text-xs font-bold mb-2">[LAUNCHER LOG]</div>
-            <div className="space-y-1">
-              {logs.slice(-8).map((log, i) => (
-                <div key={i} className="text-xs text-zinc-300 flex gap-2">
-                  <span className="text-zinc-600 shrink-0">[{String(i + Math.max(0, logs.length - 8)).padStart(2, '0')}]</span>
-                  <span className={i === Math.min(logs.slice(-8).length - 1, 7) ? 'text-yellow-300' : ''}>{log}</span>
-                </div>
-              ))}
-              {blink && <div className="text-green-400 text-xs">_</div>}
+        <div className="border-t border-black bg-[#1a1a1a] px-6 py-4">
+          <div className="mx-auto flex max-w-[900px] items-center gap-6">
+            <div className="min-w-0 flex-1">
+              {error ? (
+                <p className="text-[13px] text-[#ff6b6b]">{error}</p>
+              ) : (
+                <p className="text-[13px] text-white/80">{stage}... &nbsp;<span className="text-white/45">Update {attempt} of 1,204</span></p>
+              )}
+              <div className="mt-2 h-[10px] overflow-hidden rounded-sm bg-[#333]">
+                <div className={`h-full ${error ? "bg-[#c0392b]" : "bg-[#4caf50]"}`} style={{ width: `${Math.min(100, pct)}%`, transition: "width .3s linear" }} />
+              </div>
             </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-6 text-center text-xs text-zinc-400">
-            <div className="bg-zinc-900 border border-zinc-700 p-3 rounded">
-              <div className="text-white font-bold text-lg">{stepIndex}/17</div>
-              <div>Steps</div>
-            </div>
-            <div className="bg-zinc-900 border border-zinc-700 p-3 rounded">
-              <div className="text-red-400 font-bold text-lg">14</div>
-              <div>Herobrines Removed</div>
-            </div>
-            <div className="bg-zinc-900 border border-zinc-700 p-3 rounded">
-              <div className="text-green-400 font-bold text-lg">{stepIndex + 1}</div>
-              <div>Javas Installed</div>
-            </div>
+            <button disabled className="min-w-[160px] cursor-not-allowed rounded bg-[#2e7d32]/50 px-8 py-3 text-[18px] font-bold tracking-wider text-white/50">PLAY</button>
           </div>
         </div>
       </div>
+      <style>{`@keyframes mcfade { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }`}</style>
     </FullscreenPrank>
   )
 }

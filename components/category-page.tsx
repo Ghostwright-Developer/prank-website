@@ -1,13 +1,13 @@
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
+import { ScreenCard } from "@/components/screen-card"
 import { JsonLd } from "@/components/json-ld"
 import { categoryJsonLd } from "@/lib/jsonld"
 import {
   CATEGORIES,
   categoryPath,
   getCategory,
-  screenPath,
   screensInCategory,
   type CategorySlug,
 } from "@/lib/screens"
@@ -50,23 +50,9 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
           <p className="max-w-3xl text-zinc-400 leading-relaxed">{category.intro}</p>
         </header>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {screens.map((screen) => (
-            <Link
-              key={screen.slug}
-              href={screenPath(screen.slug)}
-              className="group relative overflow-hidden rounded-xl border border-zinc-800/50 bg-zinc-900/50 backdrop-blur-sm p-6 transition-all duration-300 hover:border-cyan-500/50 hover:bg-zinc-800/50 hover:shadow-[0_0_30px_rgba(0,255,255,0.1)]"
-            >
-              <h2 className="font-semibold text-lg text-zinc-100 group-hover:text-white mb-2">
-                {screen.name}
-              </h2>
-              <p className="text-sm text-zinc-500 group-hover:text-zinc-400">{screen.blurb}</p>
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </div>
-            </Link>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {screens.map((screen, i) => (
+            <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
           ))}
         </div>
 

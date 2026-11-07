@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   Laptop,
   Laugh,
+  Lock,
   Monitor,
   MonitorOff,
   Skull,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react"
 import type { Category } from "@/lib/screens"
 
-const ICONS = { Monitor, Laptop, Skull, Terminal, AlertTriangle, Zap, MonitorOff, Laugh }
+const ICONS = { Lock, Monitor, Laptop, Skull, Terminal, AlertTriangle, Zap, MonitorOff, Laugh }
 
 export function CategoryIcon({
   name,

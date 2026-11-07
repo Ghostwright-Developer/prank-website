@@ -10,13 +10,15 @@ import { useEffect, useState } from "react"
 export function Clock({
   className,
   options = { hour: "numeric", minute: "2-digit" },
+  kind = "time",
 }: {
   className?: string
   options?: Intl.DateTimeFormatOptions
+  kind?: "time" | "date"
 }) {
   const [time, setTime] = useState("")
   useEffect(() => {
-    const update = () => setTime(new Date().toLocaleTimeString([], options))
+    const update = () => setTime(kind === "date" ? new Date().toLocaleDateString([], options) : new Date().toLocaleTimeString([], options))
     update()
     const id = setInterval(update, 15000)
     return () => clearInterval(id)

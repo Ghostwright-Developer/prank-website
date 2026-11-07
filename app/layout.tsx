@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Orbitron, Share_Tech_Mono, VT323 } from "next/font/google"
+import { Analytics } from "@/components/analytics"
 import { EarlyFullscreen } from "@/components/early-fullscreen"
 import { ExitNotice } from "@/components/exit-notice"
 import { JsonLd } from "@/components/json-ld"
@@ -129,6 +130,7 @@ export default function RootLayout({
         <JsonLd data={siteJsonLd()} />
         {children}
         <ExitNotice />
+        <Analytics />
       </body>
     </html>
   )

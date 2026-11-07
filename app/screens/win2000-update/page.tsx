@@ -8,7 +8,7 @@ export default function Win2000UpdateScreen() {
   const pct = useBelievableProgress({ from: 9, max: 97, perSecond: 0.22, stalls: [27, 55, 83] })
   const mins = Math.max(3, Math.round(((100 - pct) / 100) * 52))
   return (
-    <FullscreenPrank exitMessage="SERVICE PACK CANCELLED - IT WAS A PRANK!" className="cursor-none bg-[#0000aa] font-dos text-[#c0c0c0]">
+    <FullscreenPrank secondary="#0000aa" exitMessage="SERVICE PACK CANCELLED - IT WAS A PRANK!" className="cursor-none bg-[#0000aa] font-dos text-[#c0c0c0]">
       <div className="h-full p-6 text-[22px] leading-tight">
         <div className="bg-[#c0c0c0] px-2 text-[#0000aa]">Windows 2000 Professional Service Pack 4 Setup</div>
         <div className="mt-1 border-b-2 border-[#c0c0c0]" />

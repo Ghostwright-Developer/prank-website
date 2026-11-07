@@ -7,7 +7,7 @@ export default function WinMeUpdateScreen() {
   const pct = useBelievableProgress({ from: 6, max: 96, perSecond: 0.2, stalls: [22, 51, 79] })
   const mins = Math.max(4, Math.round(((100 - pct) / 100) * 39))
   return (
-    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-default bg-[#3a6ea5] font-win9x">
+    <FullscreenPrank secondary="#10346b" exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-default bg-[#3a6ea5] font-win9x">
       <div className="absolute inset-0 bg-gradient-to-br from-[#79a9d8] via-[#3a6ea5] to-[#10346b]" />
       <div className="absolute inset-x-0 top-0 bg-[#10346b] px-4 py-2 text-[16px] font-bold italic text-white">
         Windows <span className="text-[#ffd75a]">Millennium Edition</span> Setup

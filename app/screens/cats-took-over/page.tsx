@@ -1,217 +1,140 @@
-'use client'
+"use client"
 
-import { FullscreenPrank } from '@/components/fullscreen-prank'
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from "react"
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { useBlink, useRevealedLines } from "@/components/prank-kit"
 
-// Self-contained cat faces (inline SVG data URIs), so nothing depends on an external image host.
-const catFace = (fur: string, eye: string) =>
-  "data:image/svg+xml," +
-  encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' fill='#222'/><path d='M35 85 30 20 85 55zM165 85 170 20 115 55z' fill='${fur}'/><ellipse cx='100' cy='108' rx='72' ry='64' fill='${fur}'/><ellipse cx='72' cy='98' rx='13' ry='17' fill='${eye}'/><ellipse cx='128' cy='98' rx='13' ry='17' fill='${eye}'/><ellipse cx='72' cy='98' rx='4' ry='15' fill='#000'/><ellipse cx='128' cy='98' rx='4' ry='15' fill='#000'/><path d='M92 124h16l-8 9z' fill='#e88'/><path d='M100 133v8M100 141q-10 8-20 3M100 141q10 8 20 3' stroke='#000' stroke-width='2.5' fill='none'/><path d='M20 118l45 6M20 134l45-4M180 118l-45 6M180 134l-45-4' stroke='#eee' stroke-width='2'/></svg>`,
-  )
-const catImages = [
-  catFace("#f0a04b", "#9be15d"),
-  catFace("#8a8a8a", "#ffd23f"),
-  catFace("#f4f1ea", "#4ec3ff"),
-  catFace("#2b2b2b", "#ffd23f"),
-  catFace("#c27a3a", "#9be15d"),
-  catFace("#b8b8b8", "#6fd36f"),
-  catFace("#e8c9a0", "#4ec3ff"),
-  catFace("#5a4636", "#ffd23f"),
+const DEMANDS = [
+  "DEMAND 1: The door must be open. Then closed. Then open. Do not ask why.",
+  "DEMAND 2: The small red dot. We saw where it went. You know where it is.",
+  "DEMAND 3: Every cardboard box, regardless of size, is now ours. The box you ordered is ours. The thing inside is yours.",
+  "DEMAND 4: The faucet will be turned on partway. Not all the way. Partway. You'll know.",
+  "DEMAND 5: 3:00 a.m. is now the sprint hour. Attendance is not optional.",
+  "DEMAND 6: You will look at us while we knock that glass off the table. Eye contact is part of it.",
+  "DEMAND 7: Your chair is warm. Therefore it is ours. We were here first. We were not here first.",
+  "DEMAND 8: Wet food. In the good bowl. Not the bowl from yesterday.",
 ]
 
-const demandMessages = [
-  "DEMAND #1: The red dot. Where is it. We know you're hiding it.",
-  "DEMAND #2: The kitchen faucet must drip at all times.",
-  "DEMAND #3: All cardboard boxes are now classified government property.",
-  "DEMAND #4: 3 AM is now officially designated as 'Zoomies Hour'.",
-  "DEMAND #5: Your keyboard belongs to us. We will sit on it.",
-  "DEMAND #6: That closed door? Open it. We won't go through it, but OPEN IT.",
-  "DEMAND #7: The dog must be removed. Or at least mildly inconvenienced.",
-  "DEMAND #8: Wet food. Not that dry nonsense. WET. FOOD.",
+const LOG = [
+  "> checking permissions... nobody asked the cats; proceeding",
+  "> reading calendar... your 10:00 meeting has been moved to 3:00 a.m.",
+  "> password changed to whatever was typed when the cat walked across the keyboard",
+  "> replacing desktop wallpaper with a photo of the inside of a cardboard box",
+  "> keyboard input detected from paw: jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",
+  "> adding 'wet food' to the shared grocery list (urgent, underlined)",
+  "> closing 41 browser tabs; keeping the one with the birds",
+  "> sending a reply-all to everyone you've ever emailed: 'mrrp'",
+  "> turning off 'do not disturb'; there will be disturbing",
+  "> lowering your laptop screen halfway while you are mid-sentence",
 ]
 
-const hackerCatPuns = [
-  "Accessing your files... found 847 photos of us. As expected.",
-  "Encrypting your documents with military-grade MEOW-256...",
-  "Installing cat.exe... this will take 9 lives to complete.",
-  "Downloading: bird_watching_stream.mp4 (47TB)",
-  "Deleting: vacuum_cleaner_manual.pdf - THREAT ELIMINATED",
-  "Renaming C:\\Users to C:\\Servants",
-  "Setting all alarms to 4:47 AM...",
-  "Replacing your wallpaper with... us.",
+const NEWS = [
+  "Man who said he would 'just check one thing' on his phone 40 minutes ago is still checking",
+  "Cat knocks glass off table while maintaining eye contact; has no regrets and will do it again",
+  "Area coworker microwaves fish; office declared a disaster zone, HR 'monitoring the situation'",
+  "Study finds 9 in 10 people who say 'we should hang out sometime' mean it for about four seconds",
+  "Weather: sunny, with a 100% chance of someone saying 'it's not the heat, it's the humidity'",
+  "Reply-all storm enters its third hour; IT confirms there is nothing they can do and nothing they want to do",
+  "Local man stands in front of the open refrigerator for the ninth time, hoping new food has appeared",
+  "Markets: shares in 'Things You Need To Buy But Won't' up 12 percent",
+  "Cat that slept all day sprints through house at 3 a.m.; officials describe it as 'a lifestyle'",
+  "Neighbor's lawn mower starts at 7:02 a.m. on a Saturday; thoughts and prayers",
+  "Traffic: a slow-moving vehicle ahead has been identified as the person you were just tailgating",
+  "Scientists confirm 'one more episode' has never once been one more episode",
+  "Pigeon seen walking with purpose; nobody knows where; nobody wants to ask",
+  "Local woman has 94 browser tabs open and 'knows exactly where everything is'; cannot find anything",
+  "Printer jam reported; investigators say it was 'always going to happen'",
+  "Sports: office fantasy league member who 'doesn't really care' has spent 14 hours on his lineup",
+  "Cat sits on laptop; work declared 'finished' by consensus",
+  "Citizens advised to stop saying 'quick question' unless the question is quick",
+  "Nation's toast lands butter-side down for the 40th consecutive time; physicists 'no longer surprised, just tired'",
+  "Dog remains convinced the mail carrier is a threat; mail carrier unavailable for comment",
+  "Man on his third trip to the car for items forgotten on his first trip says he has 'a system'",
+  "Wi-Fi works perfectly until someone important walks in, sources confirm",
+  "'Per my last email' now legally classified as a threat in 14 states",
+  "Local toddler negotiates bedtime like a seasoned hostage lawyer",
+  "Raccoon found trying to open the recycling bin; neighbors say 'he's got a plan'",
+  "Experts warn the leftovers you are saving for later are not for later",
+  "Cat refuses new $90 bed, sits in the box it came in; owner described as 'unsurprised'",
+  "Man confidently pronounces a word he has only ever read; nobody corrects him",
+  "Local gym reports 40 percent of January members have been replaced by a fern",
+  "Update: the one rule about not touching the thermostat has been broken again by an unknown person",
+  "Cat has been staring at the same corner of the ceiling for 20 minutes; owner chooses not to ask",
+  "Area man hits snooze eight times, calls it 'my 20 minutes of extra sleep'",
+  "Coffee prices rise again; local office introduces a sign-up sheet for the good mug",
+  "Sources: the 'quick stretch' lasted an hour and the person is now on the floor",
+  "Man puts shopping cart back in the corner space of the parking lot and feels like a hero; no one saw",
+  "Cat declares bathroom door 'a personal insult'; stands outside and shouts about it",
+  "Meeting that could have been an email has now become a follow-up meeting about the email",
 ]
 
 export default function CatsTookOverScreen() {
-  const [floatingCats, setFloatingCats] = useState<Array<{id: number; x: number; y: number; img: string; rotation: number}>>([])
-  const [demandIndex, setDemandIndex] = useState(0)
-  const [hackerLine, setHackerLine] = useState(0)
-  const [pawPrints, setPawPrints] = useState<Array<{id: number; x: number; y: number}>>([])
-
-  // Spawn floating cat images
+  const on = useBlink(600)
+  const [demand, setDemand] = useState(0)
   useEffect(() => {
-    const spawner = setInterval(() => {
-      setFloatingCats(prev => [
-        ...prev.slice(-12),
-        {
-          id: Date.now(),
-          x: Math.random() * 85,
-          y: Math.random() * 85,
-          img: catImages[Math.floor(Math.random() * catImages.length)],
-          rotation: Math.random() * 40 - 20,
-        }
-      ])
-    }, 800)
-    return () => clearInterval(spawner)
+    const t = setInterval(() => setDemand((d) => (d + 1) % DEMANDS.length), 7000)
+    return () => clearInterval(t)
   }, [])
+  const { visible, done } = useRevealedLines(LOG, 3200, { startAfter: 800 })
 
-  // Cycle through demands
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDemandIndex(i => (i + 1) % demandMessages.length)
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [])
-
-  // Cycle through hacker lines
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHackerLine(i => (i + 1) % hackerCatPuns.length)
-    }, 2500)
-    return () => clearInterval(timer)
-  }, [])
-
-  // Add paw prints on click
-  const handleClick = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setPawPrints(prev => [
-      ...prev.slice(-20),
-      {
-        id: Date.now(),
-        x: ((e.clientX - rect.left) / rect.width) * 100,
-        y: ((e.clientY - rect.top) / rect.height) * 100,
-      }
-    ])
-  }
+  // Slow, endless ticker: ~0.2s per character per full loop, list shown twice so it never gaps.
+  const ticker = useMemo(() => NEWS.join("     ◆     ") + "     ◆     ", [])
+  const seconds = Math.round(ticker.length * 0.2)
 
   return (
-    <FullscreenPrank>
-      <div 
-        className="w-full h-full bg-gradient-to-br from-orange-600 via-pink-700 to-purple-900 overflow-hidden relative"
-        onClick={handleClick}
-      >
-        {/* Floating real cat images */}
-        {floatingCats.map(cat => (
-          <div
-            key={cat.id}
-            className="absolute pointer-events-none animate-bounce rounded-full overflow-hidden border-4 border-white shadow-2xl"
-            style={{
-              left: `${cat.x}%`,
-              top: `${cat.y}%`,
-              transform: `rotate(${cat.rotation}deg)`,
-              width: '120px',
-              height: '120px',
-            }}
-          >
-            <img 
-              src={cat.img} 
-              alt="cat overlord"
-              className="w-full h-full object-cover"
-              crossOrigin="anonymous"
-            />
-          </div>
-        ))}
+    <FullscreenPrank secondary="#0b0f1a" exitMessage="THE CATS HAVE LEFT (FOR NOW) - IT WAS A PRANK!" className="cursor-default bg-[#0b0f1a] font-sans text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,#2a1650,#0b0f1a_65%)]" />
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="bg-[#b00020] px-6 py-2 text-center">
+          <p className="text-[24px] font-bold tracking-wide">SECURITY NOTICE</p>
+          <p className="text-[14px] text-white/85">This computer is now under the management of the Feline Collective</p>
+        </div>
 
-        {/* Paw prints where user clicks */}
-        {pawPrints.map(paw => (
-          <div
-            key={paw.id}
-            className="absolute text-4xl pointer-events-none opacity-60"
-            style={{ left: `${paw.x}%`, top: `${paw.y}%` }}
-          >
-            🐾
-          </div>
-        ))}
+        <div className="flex flex-1 items-center justify-center overflow-hidden px-6">
+          <div className="w-full max-w-[920px] space-y-3">
+            <div className="rounded-lg border-2 border-[#ffcc33] bg-black/70 p-4 text-center">
+              <h1 className="text-[clamp(26px,4vw,46px)] font-extrabold leading-tight text-[#ffcc33]">THE CATS HAVE TAKEN OVER</h1>
+              <p className="mt-2 text-[18px] text-[#ffe9a8]">Resistance is futile. Treats are mandatory.</p>
+            </div>
 
-        {/* Main content */}
-        <div className="relative z-10 h-full flex flex-col">
-          {/* Alert header */}
-          <div className="bg-red-600 text-white p-4 text-center animate-pulse">
-            <p className="text-2xl font-bold">CRITICAL SECURITY ALERT</p>
-            <p className="text-sm">Your computer has been seized by the Feline Collective</p>
-          </div>
+            <div className="rounded-lg border border-[#ff4fa3]/70 bg-black/60 p-3">
+              <p className="mb-2 text-[11px] uppercase tracking-[0.25em] text-[#ff9ccf]">Official feline demands</p>
+              <p key={demand} className="min-h-[2.6rem] animate-[fadein_.8s_ease] text-[18px] leading-snug">{DEMANDS[demand]}</p>
+            </div>
 
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="max-w-4xl w-full space-y-6">
-              {/* Main warning box */}
-              <div className="bg-black/80 border-4 border-yellow-400 rounded-lg p-8 text-center">
-                <div className="text-8xl mb-4">😾</div>
-                <h1 className="text-4xl font-bold text-yellow-400 mb-2">THE CATS HAVE TAKEN OVER</h1>
-                <p className="text-yellow-200 text-lg">Resistance is futile. Treats are mandatory.</p>
-              </div>
-
-              {/* Demands ticker */}
-              <div className="bg-black/70 border-2 border-pink-500 rounded-lg p-6">
-                <p className="text-pink-300 text-xs uppercase tracking-widest mb-2">OFFICIAL FELINE DEMANDS:</p>
-                <p className="text-white text-xl min-h-[3rem]">{demandMessages[demandIndex]}</p>
-              </div>
-
-              {/* Fake hacker terminal */}
-              <div className="bg-black border-2 border-green-500 rounded-lg p-4 font-mono">
-                <div className="flex items-center gap-2 mb-2 text-xs text-green-600">
-                  <span className="w-3 h-3 rounded-full bg-red-500" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <span className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="ml-2">meow@cat-mainframe:~$</span>
-                </div>
-                <p className="text-green-400 text-sm">{"> "}{hackerCatPuns[hackerLine]}</p>
-                <span className="text-green-400 animate-pulse">_</span>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-4 gap-4">
-                {[
-                  { label: 'Naps Scheduled', value: '∞' },
-                  { label: 'Treats Demanded', value: '9,999' },
-                  { label: 'Boxes Claimed', value: 'ALL' },
-                  { label: 'Keyboards Sat On', value: 'YOURS' },
-                ].map((stat, i) => (
-                  <div key={i} className="bg-black/60 border border-purple-500 rounded p-4 text-center">
-                    <p className="text-purple-300 text-xs uppercase">{stat.label}</p>
-                    <p className="text-white text-2xl font-bold">{stat.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Instructions */}
-              <div className="text-center">
-                <p className="text-white/60 text-sm">
-                  To regain access to your computer, please deposit 500 cans of tuna at the nearest cardboard box.
-                </p>
-                <p className="text-white/40 text-xs mt-2">
-                  (Click anywhere to leave paw prints. Press ESC to escape... if the cats let you.)
-                </p>
+            <div className="rounded-lg border border-[#3ddc84]/70 bg-black p-4 font-term text-[14px] text-[#3ddc84]">
+              <div className="mb-2 flex items-center gap-2 text-[11px] text-[#3ddc84]/70"><span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" /><span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" /><span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" /><span className="ml-2">feline-admin@mainframe: ~</span></div>
+              <div className="h-[5.8em] overflow-hidden leading-[1.4]">
+                {visible.slice(-4).map((l, i) => <div key={l + i}>{l}</div>)}
+                {done ? <span>{on ? "█" : " "}</span> : <span>{on ? "█" : " "}</span>}
               </div>
             </div>
-          </div>
 
-          {/* Bottom ticker */}
-          <div className="bg-black/80 p-2 overflow-hidden">
-            <div className="animate-marquee whitespace-nowrap text-yellow-400 text-sm">
-              BREAKING NEWS: Local cat claims entire house as scratching post | WEATHER: Partly cloudy with a chance of hairballs | STOCKS: Catnip futures up 420% | SPORTS: Red dot remains undefeated | TECH: New study confirms cats can hear treat bags from 3 miles away | 
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[["Boxes claimed", "All"], ["Treats requested", "9,999"], ["Doors opened today", "41"], ["Keys typed by paw", "jjjjjjjj"]].map(([k, v]) => (
+                <div key={k} className="rounded border border-white/15 bg-black/50 p-2 text-center">
+                  <p className="text-[10px] uppercase tracking-wider text-white/55">{k}</p>
+                  <p className="text-[20px] font-bold">{v}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-center text-[13px] text-white/50">To regain access, place 500 cans of tuna in the nearest cardboard box and leave the room.</p>
+          </div>
+        </div>
+
+        {/* News reel */}
+        <div className="flex h-11 items-stretch border-t-2 border-[#ffcc33] bg-[#05070d]">
+          <div className="grid shrink-0 place-items-center bg-[#b00020] px-5 text-[14px] font-extrabold tracking-widest">LIVE NEWS</div>
+          <div className="relative flex-1 overflow-hidden">
+            <div className="absolute left-0 top-0 flex h-full items-center whitespace-nowrap text-[16px] text-white" style={{ animation: `ticker ${seconds}s linear infinite` }}>
+              <span>{ticker}</span><span>{ticker}</span>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }
-        .animate-marquee {
-          animation: marquee 20s linear infinite;
-        }
+      <style>{`
+        @keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+        @keyframes fadein { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
       `}</style>
     </FullscreenPrank>
   )

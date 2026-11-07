@@ -7,6 +7,7 @@
 export type CategorySlug =
   | "windows"
   | "other-os"
+  | "os-screens"
   | "ransomware"
   | "hacker"
   | "phishing"
@@ -35,7 +36,7 @@ export interface Category {
   /** Label used in breadcrumbs and tight spaces. */
   shortName: string
   /** Lucide icon key, resolved in the UI layer. */
-  icon: "Monitor" | "Laptop" | "Skull" | "Terminal" | "AlertTriangle" | "Zap" | "MonitorOff" | "Laugh"
+  icon: "Monitor" | "Laptop" | "Lock" | "Skull" | "Terminal" | "AlertTriangle" | "Zap" | "MonitorOff" | "Laugh"
   color: string
   gridColor: string
   /** Card blurb (without the count; the count is computed). */
@@ -139,6 +140,49 @@ export const SCREENS: Screen[] = [
     "A fake macOS kernel panic with the full wall of panic log text. Send this free fatal system error prank to any Mac user. Harmless, fullscreen.",
     ["fake kernel panic", "macos kernel panic prank", "mac crash screen", "fake system error", "kernel panic screen"]),
 
+
+  // ───────────────────── OS Lock & Home Screens ─────────────────────
+  s("win11-lock", "os-screens", "Windows 11 Lock Screen", "Bloom wallpaper, big clock, PIN sign-in that never works",
+    "Fake Windows 11 Lock Screen Prank (PIN Sign-in)",
+    "A convincing Windows 11 lock screen with the Bloom wallpaper and a PIN prompt that never accepts anything. Perfect for a Mac or Linux friend. Free fullscreen link.",
+    ["fake windows 11 lock screen", "windows 11 lock screen prank", "fake login screen prank", "fake lock screen", "prank mac user windows"], true),
+  s("win10-lock", "os-screens", "Windows 10 Lock Screen", "Hero wallpaper, bottom-left clock, password prompt",
+    "Fake Windows 10 Lock Screen Prank (Sign-in Screen)",
+    "A realistic Windows 10 lock and sign-in screen with the Hero wallpaper and a password box that always says it is incorrect. Free link prank for any computer.",
+    ["fake windows 10 lock screen", "windows 10 login prank", "fake sign in screen", "fake lock screen prank"]),
+  s("win7-login", "os-screens", "Windows 7 Welcome Screen", "The Aero welcome screen with a password that never works",
+    "Fake Windows 7 Login Screen Prank (Welcome Screen)",
+    "The Windows 7 Aero welcome screen with a user tile and a password box. Every attempt fails with the real error message. Free fullscreen nostalgia prank.",
+    ["fake windows 7 login", "windows 7 welcome screen prank", "retro windows login prank", "fake login screen"]),
+  s("winxp-welcome", "os-screens", "Windows XP Welcome Screen", "Click your user name... then try your password",
+    "Fake Windows XP Welcome Screen Prank (Log On)",
+    "The classic blue Windows XP welcome screen: \"To begin, click your user name.\" The password never works. Free retro login screen prank.",
+    ["fake windows xp login", "windows xp welcome screen prank", "retro windows login", "xp logon screen"]),
+  s("macos-lock", "os-screens", "macOS Lock Screen", "Sonoma-style lock screen with Touch ID and password",
+    "Fake macOS Lock Screen Prank (Mac Login Screen)",
+    "A fake macOS lock screen with a big clock, user avatar and password field that shakes on every attempt. Prank your Windows friend as a Mac. Free link.",
+    ["fake macos lock screen", "mac login screen prank", "fake mac lock screen", "macos prank screen"], true),
+  s("ios-lock", "os-screens", "iPhone Lock Screen", "Swipe up, enter passcode, iPhone Unavailable",
+    "Fake iPhone Lock Screen Prank (Passcode Screen)",
+    "A fake iOS lock screen with a swipe-up gesture, passcode keypad and the dreaded \"iPhone Unavailable\" lockout. Works on phones and desktops. Free prank link.",
+    ["fake iphone lock screen", "ios lock screen prank", "fake passcode screen", "iphone unavailable prank"]),
+  s("android-lock", "os-screens", "Android Lock Screen", "Swipe up, enter PIN, too many attempts",
+    "Fake Android Lock Screen Prank (PIN Screen)",
+    "A fake Android lock screen with a PIN keypad that always says wrong PIN, then locks you out. Works on phones and desktops. Free prank link.",
+    ["fake android lock screen", "android lock screen prank", "fake pin screen", "fake phone lock screen"]),
+  s("ubuntu-login", "os-screens", "Ubuntu Login Screen", "GNOME login with an authentication failure every time",
+    "Fake Ubuntu Login Screen Prank (GNOME Sign-in)",
+    "A fake Ubuntu GNOME login screen. Passwords return \"Sorry, that didn't work\" until it locks you out. A great prank for Linux users. Free link.",
+    ["fake ubuntu login screen", "linux login prank", "fake gnome login", "ubuntu prank screen"]),
+  s("win11-desktop", "os-screens", "Windows 11 Desktop", "A working-looking Windows 11 desktop and Start menu",
+    "Fake Windows 11 Desktop Prank (Start Menu)",
+    "A realistic Windows 11 desktop with taskbar and Start menu. Make a Mac or Linux user think they have been switched to Windows. Free fullscreen link.",
+    ["fake windows 11 desktop", "windows 11 prank", "fake start menu", "switch to windows prank"]),
+  s("macos-desktop", "os-screens", "macOS Desktop", "Sonoma-style desktop with menu bar and a dock that crashes apps",
+    "Fake macOS Desktop Prank (Dock and Menu Bar)",
+    "A realistic macOS desktop with a menu bar and dock. Every app you open \"quits unexpectedly.\" Prank a Windows user into thinking they are on a Mac. Free link.",
+    ["fake macos desktop", "mac desktop prank", "fake mac dock", "switch to mac prank"]),
+
   // ───────────────────────── Ransomware ─────────────────────────
   s("cryptolocker", "ransomware", "CryptoLocker", "Your files have been encrypted!",
     "Fake CryptoLocker Ransomware Prank Screen",
@@ -232,23 +276,23 @@ export const SCREENS: Screen[] = [
     ["fake bios corruption", "bios error prank", "fake firmware failure", "fake bios screen"]),
 
   // ───────────────────────── Screen Damage ─────────────────────────
-  s("cracked-screen", "screen-damage", "Cracked Screen", "Realistic shattered glass with LCD bleed",
+  s("cracked-screen", "screen-damage", "Cracked Screen", "Spiderweb glass cracks with LCD ink bleed, spreading over time",
     "Cracked Screen Prank (Fake Broken Glass)",
     "A realistic shattered glass effect with LCD bleed that makes it look like their monitor just cracked. Free fullscreen prank link for any display.",
     ["cracked screen prank", "fake broken screen", "broken screen prank", "shattered screen effect", "fake cracked monitor"], true),
-  s("broken-lcd", "screen-damage", "Broken LCD", "Vertical dead columns and stuck pixel stripes",
+  s("broken-lcd", "screen-damage", "Broken LCD", "Failed panel: stuck colored columns, dead stripes and a flickering corrupted band",
     "Broken LCD Screen Prank (Vertical Line Damage)",
     "A broken LCD effect with vertical dead pixel columns and coloured stripes. Free fullscreen prank that fools people into thinking the display failed.",
     ["broken lcd prank", "fake broken lcd screen", "vertical lines screen prank", "fake dead pixel lines"]),
-  s("dead-pixels", "screen-damage", "Dead Pixels", "Clusters of stuck and dead pixels scattered across your display",
+  s("dead-pixels", "screen-damage", "Dead Pixels", "Tiny stuck and dead pixels you have to hunt for",
     "Dead Pixels Prank (Fake Stuck Pixel Screen)",
-    "Clusters of fake stuck and dead pixels scattered across the screen. A free prank link that makes everyone check their monitor.",
+    "Tiny fake stuck and dead pixels, drawn at real pixel size so people lean in and rub the screen. A free prank link that makes everyone check their monitor.",
     ["dead pixels prank", "fake stuck pixels", "fake dead pixel screen", "monitor prank"]),
 
   // ───────────────────────── Comedy ─────────────────────────
-  s("cats-took-over", "comedy", "The Cats Have Taken Over", "Cats seize the computer and issue demands",
+  s("cats-took-over", "comedy", "The Cats Have Taken Over", "Cats seize the computer, plus an endless news ticker",
     "\"The Cats Have Taken Over\" Funny Computer Prank",
-    "Cats hijack the computer with floating kittens, paw prints, ridiculous demands and hacker puns. A funny, harmless prank for cat people.",
+    "The Feline Collective takes over the screen with a list of increasingly specific demands and a slow, endless news ticker of deadpan headlines. A funny, harmless prank.",
     ["cat prank", "funny computer prank", "cats took over prank", "funny hacker cat screen", "cat lover prank"]),
   s("windows-xp-tour", "comedy", "Clippy's Revenge", "A very annoying paperclip assistant",
     "Windows XP Clippy's Revenge Prank",
@@ -282,6 +326,15 @@ export const CATEGORIES: Category[] = [
     description: "Fake system update and crash screens for macOS, iPhone, iPad, Android, Ubuntu Linux and Chromebooks, plus a kernel panic. Free link pranks for any device.",
     intro: "Not everyone runs Windows. These fake update screens cover Apple, Android, Linux and ChromeOS devices, plus a macOS kernel panic, so you can prank whoever sits at whatever machine.",
     keywords: ["fake macos update", "fake ios update", "fake android update", "fake ubuntu update", "chromebook prank", "kernel panic prank"],
+  },
+  {
+    slug: "os-screens", name: "Fake OS Lock & Home Screens", shortName: "Lock Screens",
+    icon: "Lock", color: "from-sky-500 to-indigo-600", gridColor: "rgba(56,189,248,0.05)",
+    cardBlurb: "Windows 11 lock screen on a Mac, macOS on a PC, iPhone and Android locks",
+    title: "Fake Lock Screen & Login Screen Pranks (Windows, Mac, iPhone)",
+    description: "Fake lock screens and desktops for Windows 11, 10, 7, XP, macOS, iPhone, Android and Ubuntu. Show a Mac user a Windows lock screen. Free fullscreen prank links.",
+    intro: "Imagine a hardcore Mac fan suddenly seeing the Windows 11 lock screen, or a Windows loyalist staring at a macOS login that will not accept a password. These realistic lock, login and desktop screens work on any device, and the passwords never work.",
+    keywords: ["fake lock screen", "fake login screen prank", "windows lock screen prank", "mac lock screen prank", "fake os prank", "prank friend computer"],
   },
   {
     slug: "ransomware", name: "Fake Ransomware", shortName: "Ransomware",
@@ -331,7 +384,7 @@ export const CATEGORIES: Category[] = [
   {
     slug: "comedy", name: "Absurd & Comedy", shortName: "Comedy",
     icon: "Laugh", color: "from-yellow-400 to-pink-500", gridColor: "rgba(250,204,21,0.05)",
-    cardBlurb: "Cats taking over, Clippy's revenge, Minecraft gone wrong, printer rage",
+    cardBlurb: "Cats taking over, a nosy paperclip, Minecraft stuck updating, printer errors",
     title: "Funny Computer Pranks: Cats, Clippy & Printer Rage",
     description: "Absurd, funny computer pranks: cats taking over, Clippy's revenge, a Minecraft update gone wrong and printer rage. Free and harmless.",
     intro: "Not every prank has to be scary. These are silly, absurd and designed to get a laugh rather than a panic.",

@@ -1,176 +1,69 @@
-'use client'
+"use client"
 
-import { FullscreenPrank } from '@/components/fullscreen-prank'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from "react"
+import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { DesktopBase, mulberry32 } from "@/components/damage-kit"
 
-export default function BrokenLCD() {
-  const [stripes, setStripes] = useState<Array<{
-    left: number
-    width: number
-    color: string
-    flicker: boolean
-    type: 'dead' | 'stuck' | 'color'
-  }>>([])
-  
-  const [glitchLines, setGlitchLines] = useState<Array<{
-    top: number
-    height: number
-    offset: number
-  }>>([])
-  
-  useEffect(() => {
-    // Generate random vertical stripes (dead/stuck pixels columns)
-    const newStripes: Array<{ left: number; width: number; color: string; flicker: boolean; type: 'dead' | 'stuck' | 'color' }> = []
-    
-    // Main dead column cluster
-    const mainCluster = 30 + Math.random() * 40
-    for (let i = 0; i < 5 + Math.floor(Math.random() * 8); i++) {
-      newStripes.push({
-        left: mainCluster + i * (2 + Math.random() * 3),
-        width: 1 + Math.random() * 3,
-        color: Math.random() > 0.5 ? 'black' : (Math.random() > 0.5 ? '#00ff00' : '#ff00ff'),
-        flicker: Math.random() > 0.7,
-        type: Math.random() > 0.6 ? 'dead' : (Math.random() > 0.5 ? 'stuck' : 'color') as 'dead' | 'stuck' | 'color'
-      })
-    }
-    
-    // Secondary cluster
-    const secondCluster = 60 + Math.random() * 20
-    for (let i = 0; i < 3 + Math.floor(Math.random() * 4); i++) {
-      newStripes.push({
-        left: secondCluster + i * (1 + Math.random() * 2),
-        width: 1 + Math.random() * 2,
-        color: ['black', '#ff0000', '#00ff00', '#0000ff', '#ffffff'][Math.floor(Math.random() * 5)],
-        flicker: Math.random() > 0.5,
-        type: 'stuck'
-      })
-    }
-    
-    // Random scattered stripes
-    for (let i = 0; i < 8 + Math.floor(Math.random() * 12); i++) {
-      newStripes.push({
-        left: Math.random() * 100,
-        width: 1 + Math.random() * 2,
-        color: ['black', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#00ffff', '#ffffff'][Math.floor(Math.random() * 7)],
-        flicker: Math.random() > 0.4,
-        type: ['dead', 'stuck', 'color'][Math.floor(Math.random() * 3)] as 'dead' | 'stuck' | 'color'
-      })
-    }
-    
-    setStripes(newStripes)
-    
-    // Generate horizontal glitch lines
-    const lines = []
-    for (let i = 0; i < 4 + Math.floor(Math.random() * 6); i++) {
-      lines.push({
-        top: Math.random() * 100,
-        height: 1 + Math.random() * 4,
-        offset: (Math.random() - 0.5) * 20
-      })
-    }
-    setGlitchLines(lines)
+const LINE_COLORS = ["#ff00d4", "#00e5ff", "#00ff5a", "#ffffff", "#ff2a2a", "#2a4dff", "#fff200"]
+
+/** A failed panel: stuck colored columns, dead black columns, a corrupted band and a bleeding corner. */
+export default function BrokenLcdScreen() {
+  const [flicker, setFlicker] = useState(false)
+  const lines = useMemo(() => {
+    const r = mulberry32(11)
+    const out: { x: number; w: number; c: string; o: number }[] = []
+    // a main cluster of colored columns that spread from one failed driver chip
+    const base = 63 + r() * 3
+    for (let i = 0; i < 9; i++) out.push({ x: base + i * (0.22 + r() * 0.28), w: 1 + Math.floor(r() * 3), c: LINE_COLORS[Math.floor(r() * LINE_COLORS.length)], o: 0.75 + r() * 0.25 })
+    // scattered single stuck columns
+    for (let i = 0; i < 7; i++) out.push({ x: 4 + r() * 56, w: 1 + Math.floor(r() * 2), c: LINE_COLORS[Math.floor(r() * LINE_COLORS.length)], o: 0.7 + r() * 0.3 })
+    return out
   }, [])
-  
-  // Flicker effect
-  const [flickerState, setFlickerState] = useState(0)
+  const dead = useMemo(() => [[18.4, 3], [18.9, 1], [41.2, 2], [77.5, 6], [78.6, 3]] as const, [])
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFlickerState(s => s + 1)
-    }, 100 + Math.random() * 200)
-    return () => clearInterval(interval)
+    // the panel flickers every now and then, like a failing connection
+    const t = setInterval(() => {
+      if (Math.random() < 0.35) {
+        setFlicker(true)
+        setTimeout(() => setFlicker(false), 90 + Math.random() * 140)
+      }
+    }, 2600)
+    return () => clearInterval(t)
   }, [])
-  
+
   return (
-    <FullscreenPrank>
-      <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden">
-        {/* Fake desktop - barely visible through damage */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-slate-900/30">
-          <div className="absolute top-8 left-8 flex flex-col gap-4 opacity-50">
-            {['My Computer', 'Trash', 'Firefox'].map((name, i) => (
-              <div key={i} className="flex flex-col items-center w-16">
-                <div className="w-10 h-10 bg-white/20 rounded mb-1" />
-                <span className="text-white text-[10px] text-center">{name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Vertical dead/stuck pixel columns */}
-        {stripes.map((stripe, i) => (
-          <div
-            key={i}
-            className="absolute top-0 h-full"
-            style={{
-              left: `${stripe.left}%`,
-              width: `${stripe.width}px`,
-              backgroundColor: stripe.flicker && flickerState % 3 === 0 
-                ? (stripe.color === 'black' ? '#111' : 'black')
-                : stripe.color,
-              opacity: stripe.type === 'dead' ? 1 : 0.9,
-              mixBlendMode: stripe.type === 'color' ? 'screen' : 'normal'
-            }}
-          />
-        ))}
-        
-        {/* Horizontal glitch/offset lines */}
-        {glitchLines.map((line, i) => (
-          <div
-            key={`line-${i}`}
-            className="absolute left-0 right-0 overflow-hidden"
-            style={{
-              top: `${line.top}%`,
-              height: `${line.height}px`,
-              transform: `translateX(${line.offset + (flickerState % 5) * (Math.random() - 0.5) * 2}px)`,
-              backgroundColor: flickerState % 7 === 0 ? 'rgba(255,0,255,0.3)' : 'transparent'
-            }}
-          >
-            <div 
-              className="w-full h-full"
-              style={{
-                background: `linear-gradient(90deg, transparent, rgba(0,255,255,${0.1 + Math.random() * 0.2}), transparent)`
-              }}
-            />
-          </div>
-        ))}
-        
-        {/* LCD bleed/pressure damage */}
-        <div 
-          className="absolute rounded-full blur-xl"
-          style={{
-            left: '35%',
-            top: '40%',
-            width: '200px',
-            height: '150px',
-            background: 'radial-gradient(ellipse, rgba(100,0,100,0.4) 0%, transparent 70%)'
-          }}
-        />
-        <div 
-          className="absolute rounded-full blur-lg"
-          style={{
-            left: '55%',
-            top: '25%',
-            width: '120px',
-            height: '100px',
-            background: 'radial-gradient(ellipse, rgba(0,50,100,0.5) 0%, transparent 60%)'
-          }}
-        />
-        
-        {/* Static noise overlay */}
-        <div 
-          className="absolute inset-0 opacity-10 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
-        
-        {/* Scanlines */}
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-30"
-          style={{
-            background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)'
-          }}
-        />
+    <FullscreenPrank exitMessage="DISPLAY RESTORED - IT WAS A PRANK!" className="cursor-none bg-black">
+      <DesktopBase />
+
+      {/* corrupted band: the same image shifted and color-shifted */}
+      <div className="absolute inset-0" style={{ clipPath: "inset(0 31% 0 56%)", transform: "translateX(-7px)", filter: "hue-rotate(75deg) saturate(2.2) contrast(1.15)" }}>
+        <DesktopBase />
       </div>
+      <div className="absolute inset-0" style={{ clipPath: "inset(36% 0 51% 0)", transform: "translateX(14px)", filter: "contrast(1.25) saturate(1.6)" }}>
+        <DesktopBase />
+      </div>
+
+      {/* dead panel region on the right: stripes of stuck sub-pixels */}
+      <div className="absolute inset-y-0 right-0 w-[17%]" style={{ background: "repeating-linear-gradient(90deg,#ff00e1 0 2px,#00ff66 2px 4px,#0a14ff 4px 6px,#000 6px 9px,#00f0ff 9px 10px,#fff 10px 11px,#000 11px 14px)", opacity: flicker ? 0.35 : 0.97 }} />
+      <div className="absolute inset-y-0 right-[17%] w-[6px] bg-gradient-to-r from-transparent to-black/70" />
+
+      {/* stuck columns */}
+      {lines.map((l, i) => (
+        <div key={i} className="absolute inset-y-0" style={{ left: `${l.x}%`, width: `${l.w}px`, background: l.c, opacity: flicker ? l.o * 0.4 : l.o, boxShadow: `0 0 3px ${l.c}` }} />
+      ))}
+      {dead.map(([x, w], i) => <div key={i} className="absolute inset-y-0 bg-black" style={{ left: `${x}%`, width: `${w}px` }} />)}
+
+      {/* pressure damage: ink bleed in the top-left corner with a colored fringe */}
+      <div className="pointer-events-none absolute left-0 top-0 h-[46%] w-[26%]" style={{
+        background: "radial-gradient(ellipse 80% 90% at 0% 0%, #000 0, rgba(6,0,20,.96) 28%, rgba(50,0,110,.7) 52%, rgba(0,160,255,.28) 66%, rgba(255,0,150,.18) 74%, rgba(0,0,0,0) 86%)",
+        filter: "blur(3px)", clipPath: "polygon(0 0,100% 0,92% 24%,100% 38%,84% 58%,90% 76%,60% 100%,0 100%)",
+      }} />
+      {/* a horizontal tear of dark pixels near the bottom */}
+      <div className="pointer-events-none absolute inset-x-0 top-[78%] h-[3px] bg-black/80" />
+      <div className="pointer-events-none absolute inset-x-0 top-[78.4%] h-px bg-[#00e5ff]/60" />
+
+      {flicker && <div className="pointer-events-none absolute inset-0 bg-black/55" />}
     </FullscreenPrank>
   )
 }

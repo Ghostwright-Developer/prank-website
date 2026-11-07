@@ -25,7 +25,7 @@ export default function WannaCryScreen() {
   }, [])
 
   return (
-    <FullscreenPrank exitMessage="FILES RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#1a0505] font-win9x">
+    <FullscreenPrank sound="alarm" exitMessage="FILES RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#1a0505] font-win9x">
       {/* Desktop wallpaper (@WanaDecryptor@.bmp) */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#2a0808] via-[#160303] to-black">
         <div className="absolute left-6 top-6 max-w-[520px] text-[15px] leading-snug text-[#ff4d4d]">

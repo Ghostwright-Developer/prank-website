@@ -16,7 +16,7 @@ const LINES = [
 
 export default function KernelPanicScreen() {
   return (
-    <FullscreenPrank exitMessage="KERNEL RESTORED - IT WAS A PRANK!" className="cursor-none bg-[#1b1b1b] font-sf text-[#e8e8e8]">
+    <FullscreenPrank secondary="#1b1b1b" exitMessage="KERNEL RESTORED - IT WAS A PRANK!" className="cursor-none bg-[#1b1b1b] font-sf text-[#e8e8e8]">
       <div className="flex h-full items-center justify-center px-6">
         <div className="max-w-[760px] space-y-[1.1em] text-center text-[clamp(13px,1.5vw,17px)] leading-snug">
           {LINES.map((l, i) => <p key={i}>{l}</p>)}

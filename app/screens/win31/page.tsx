@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { sfx } from "@/lib/sfx"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
 
 interface Err { id: number; x: number; y: number; title: string; body: string }
@@ -26,6 +27,7 @@ export default function Win31Screen() {
     const w = typeof window === "undefined" ? 1024 : window.innerWidth
     const h = typeof window === "undefined" ? 768 : window.innerHeight
     const item: Err = { id: ++id.current, x: 10 + Math.random() * Math.max(10, w - 440), y: 10 + Math.random() * Math.max(10, h - 200), ...e }
+    sfx.ding()
     setErrors((prev) => [...prev, item].slice(-MAX))
   }, [])
 
@@ -36,7 +38,7 @@ export default function Win31Screen() {
   }, [add])
 
   return (
-    <FullscreenPrank exitMessage="WINDOWS 3.1 RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#008080] font-win9x">
+    <FullscreenPrank secondary="#008080" exitMessage="WINDOWS 3.1 RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#008080] font-win9x">
       {/* Program Manager window */}
       <div className="absolute left-4 top-4 h-[min(420px,70vh)] w-[min(640px,90vw)] border-2 border-black bg-white">
         <div className="flex items-center border-b-2 border-black bg-[#000080] px-1 text-[13px] font-bold text-white">

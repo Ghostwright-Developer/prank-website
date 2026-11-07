@@ -36,7 +36,7 @@ export default function UbuntuUpdateScreen() {
   const end = useRef<HTMLDivElement>(null)
   useEffect(() => { end.current?.scrollIntoView() }, [visible.length])
   return (
-    <FullscreenPrank exitMessage="UPGRADE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-[#300a24] font-term text-[#eeeeec]">
+    <FullscreenPrank secondary="#300a24" exitMessage="UPGRADE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-[#300a24] font-term text-[#eeeeec]">
       <div className="h-full overflow-hidden px-4 py-3 text-[15px] leading-[1.35]">
         {visible.map((l, i) => <div key={i} className="whitespace-pre-wrap break-all">{l}</div>)}
         <span className={on ? "bg-[#eeeeec]" : ""}>&nbsp;</span>

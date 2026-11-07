@@ -4,18 +4,24 @@ import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import { EXIT_MESSAGE_KEY } from "@/components/fullscreen-prank"
 
-const VISIBLE_MS = 3500
+const VISIBLE_MS = 2200
+const FADE_MS = 700
 
 /**
- * Shows the `exitMessage` of the prank the viewer just left (e.g. "FILES
- * DECRYPTED!") as a short banner on the page they land on.
+ * Shows the `exitMessage` of the prank the viewer just left as a short banner
+ * on the page they land on. It fades out on its own, and disappears at once
+ * if they open another prank screen.
  */
 export function ExitNotice() {
   const pathname = usePathname()
   const [message, setMessage] = useState<string | null>(null)
+  const [fading, setFading] = useState(false)
 
   useEffect(() => {
-    if (pathname.startsWith("/screens")) return
+    if (pathname.startsWith("/screens/")) {
+      setMessage(null)
+      return
+    }
     let stored: string | null = null
     try {
       stored = sessionStorage.getItem(EXIT_MESSAGE_KEY)
@@ -24,9 +30,14 @@ export function ExitNotice() {
       return
     }
     if (!stored) return
+    setFading(false)
     setMessage(stored)
-    const timer = setTimeout(() => setMessage(null), VISIBLE_MS)
-    return () => clearTimeout(timer)
+    const fade = setTimeout(() => setFading(true), VISIBLE_MS)
+    const gone = setTimeout(() => setMessage(null), VISIBLE_MS + FADE_MS)
+    return () => {
+      clearTimeout(fade)
+      clearTimeout(gone)
+    }
   }, [pathname])
 
   if (!message) return null
@@ -36,6 +47,7 @@ export function ExitNotice() {
       role="status"
       aria-live="polite"
       className="pointer-events-none fixed inset-x-0 top-6 z-[100] flex justify-center px-4"
+      style={{ opacity: fading ? 0 : 1, transform: fading ? "translateY(-8px)" : "none", transition: `opacity ${FADE_MS}ms ease, transform ${FADE_MS}ms ease` }}
     >
       <div className="rounded-lg border border-green-500/40 bg-green-950/90 px-6 py-3 font-mono text-sm tracking-wider text-green-300 shadow-[0_0_30px_rgba(34,197,94,0.25)] backdrop-blur">
         <span className="mr-2 text-green-400">&#10003;</span>

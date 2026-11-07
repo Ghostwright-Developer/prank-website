@@ -6,7 +6,7 @@ import { useBelievableProgress } from "@/components/prank-kit"
 export default function ChromeosUpdateScreen() {
   const pct = useBelievableProgress({ from: 11, max: 97, perSecond: 0.3, stalls: [37, 70] })
   return (
-    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-white font-sans text-[#202124]">
+    <FullscreenPrank secondary="#ffffff" exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-none bg-white font-sans text-[#202124]">
       <div className="flex h-full flex-col items-center justify-center">
         <svg width="76" height="76" viewBox="0 0 48 48" aria-hidden="true">
           <circle cx="24" cy="24" r="22" fill="#db4437" />

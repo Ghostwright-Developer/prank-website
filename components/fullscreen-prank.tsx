@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { startLoop, unlockAudio, type LoopName } from "@/lib/sfx"
+import { createMonitorController, type MonitorController } from "@/lib/monitors"
 
 /** sessionStorage key read by <ExitNotice /> on the page we return to. */
 export const EXIT_MESSAGE_KEY = "pranksims:exit-message"
@@ -12,6 +14,10 @@ interface FullscreenPrankProps {
   className?: string
   /** Shown briefly on the home page after the viewer exits (Esc, Q or leaving fullscreen). */
   exitMessage?: string
+  /** Background of the "other monitors" pages, e.g. "#0000aa" for a blue screen. Default black. */
+  secondary?: string
+  /** Optional ambient sound loop (synthesized, starts after the first click/tap/key). */
+  sound?: LoopName
 }
 
 // Safari < 16.4 only ships the webkit-prefixed Fullscreen API.
@@ -45,12 +51,15 @@ export function FullscreenPrank({
   children,
   className = "",
   exitMessage,
+  secondary = "#000",
+  sound,
 }: FullscreenPrankProps) {
   const router = useRouter()
   const exitingRef = useRef(false)
   const mountedRef = useRef(false)
   const exitMessageRef = useRef(exitMessage)
   exitMessageRef.current = exitMessage
+  const monitorsRef = useRef<MonitorController | null>(null)
 
   /**
    * Single exit path, used by Esc, Q and "viewer left fullscreen". Guarded so
@@ -68,6 +77,7 @@ export function FullscreenPrank({
     } catch {
       /* storage unavailable: the exit still works, only the toast is skipped */
     }
+    monitorsRef.current?.close()
     leaveFullscreen()
     router.push("/")
   }, [router])
@@ -94,9 +104,14 @@ export function FullscreenPrank({
     // Browsers only allow fullscreen after a user gesture, so we try on load
     // (works when the viewer arrived by clicking a link) and again on the first
     // real gesture. mousemove / scroll / wheel never count as a gesture.
+    const monitors = createMonitorController({ color: secondary, onRemoteExit: () => exitPrank() })
+    monitorsRef.current = monitors
+
     const onGesture = (e: Event) => {
       if (e.type === "keydown" && isExitKey(e as KeyboardEvent)) return
       requestFullscreen()
+      monitors.arm()
+      unlockAudio()
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -110,7 +125,7 @@ export function FullscreenPrank({
     const onFullscreenChange = () => {
       if (getFullscreenElement()) {
         wasFullscreen = true
-        removeGestureListeners()
+        // keep click/key listeners for monitor popups; only fullscreen part is done
       } else if (wasFullscreen) {
         exitPrank()
       }
@@ -122,14 +137,37 @@ export function FullscreenPrank({
 
     gestureEvents.forEach((t) => document.addEventListener(t, onGesture, true))
     window.addEventListener("keydown", onKeyDown, true)
+    const onPageHide = () => monitors.close()
+    window.addEventListener("pagehide", onPageHide)
     document.addEventListener("fullscreenchange", onFullscreenChange)
     document.addEventListener("webkitfullscreenchange", onFullscreenChange)
 
     requestFullscreen()
 
+    // ?d=SECONDS keeps the page black and silent for that long (set up a prank, walk away).
+    let waitTimer: ReturnType<typeof setTimeout> | undefined
+    let stopSound = () => {}
+    const startSound = () => { if (sound) stopSound = startLoop(sound) }
+    const waitSeconds = parseInt(new URLSearchParams(location.search).get("d") ?? "0", 10)
+    if (waitSeconds > 0) {
+      document.documentElement.classList.add("pk-wait")
+      waitTimer = setTimeout(() => {
+        document.documentElement.classList.remove("pk-wait")
+        startSound()
+      }, waitSeconds * 1000)
+    } else {
+      startSound()
+    }
+
     return () => {
+      if (waitTimer) clearTimeout(waitTimer)
+      document.documentElement.classList.remove("pk-wait")
+      stopSound()
       mountedRef.current = false
       removeGestureListeners()
+      window.removeEventListener("pagehide", onPageHide)
+      monitors.dispose()
+      monitorsRef.current = null
       window.removeEventListener("keydown", onKeyDown, true)
       document.removeEventListener("fullscreenchange", onFullscreenChange)
       document.removeEventListener("webkitfullscreenchange", onFullscreenChange)
@@ -140,7 +178,7 @@ export function FullscreenPrank({
         if (!mountedRef.current) leaveFullscreen()
       }, 0)
     }
-  }, [exitPrank])
+  }, [exitPrank, secondary, sound])
 
   return (
     <div

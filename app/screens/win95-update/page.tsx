@@ -7,7 +7,7 @@ export default function Win95UpdateScreen() {
   const pct = useBelievableProgress({ from: 3, max: 95, perSecond: 0.2, stalls: [18, 46, 77] })
   const mins = Math.max(5, Math.round(((100 - pct) / 100) * 43))
   return (
-    <FullscreenPrank exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-default bg-[#008080] font-win9x">
+    <FullscreenPrank secondary="#008080" exitMessage="UPDATE CANCELLED - IT WAS A PRANK!" className="cursor-default bg-[#008080] font-win9x">
       <div className="absolute left-1/2 top-1/2 w-[min(480px,92vw)] -translate-x-1/2 -translate-y-1/2 border-2 border-white border-b-black border-r-black bg-[#c0c0c0] p-[3px] shadow-[1px_1px_0_#000]">
         <div className="flex items-center justify-between bg-[#000080] px-1 py-[3px] text-[12px] font-bold text-white">
           <span>Windows 95 Setup</span><span className="border border-white border-b-black border-r-black bg-[#c0c0c0] px-[5px] leading-none text-black">x</span>

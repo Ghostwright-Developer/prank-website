@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { sfx } from "@/lib/sfx"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
 import { formatDuration, useBlink, useCountdown } from "@/components/prank-kit"
 
@@ -23,6 +24,7 @@ export default function TechSupportScamScreen() {
   useEffect(() => {
     const add = () => {
       const item = { id: ++id.current, x: 4 + Math.random() * 55, y: 8 + Math.random() * 55, msg: POPS[Math.floor(Math.random() * POPS.length)] }
+      sfx.error()
       setPops((p) => [...p, item].slice(-MAX))
     }
     add()
@@ -31,7 +33,7 @@ export default function TechSupportScamScreen() {
   }, [])
 
   return (
-    <FullscreenPrank exitMessage="NOTHING WAS WRONG - IT WAS A PRANK!" className="cursor-default bg-[#0078d7] font-segoe text-white">
+    <FullscreenPrank sound="siren" exitMessage="NOTHING WAS WRONG - IT WAS A PRANK!" className="cursor-default bg-[#0078d7] font-segoe text-white">
       <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
         <div className="text-[120px] font-light leading-none">:(</div>
         <h1 className="mt-6 max-w-[900px] text-center text-[28px] font-light">Your PC ran into a problem and needs to restart. We&apos;re just collecting some error info.</h1>

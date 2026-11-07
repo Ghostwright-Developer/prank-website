@@ -10,6 +10,8 @@ import Script from "next/script"
 const code = `(function(){
   try{
     if(location.pathname.indexOf('/screens/')!==0)return;
+    var d=parseInt(new URLSearchParams(location.search).get('d')||'0',10);
+    if(d>0)document.documentElement.classList.add('pk-wait');
     var ev=['pointerdown','mousedown','click','touchend','keydown'];
     function off(){ev.forEach(function(t){document.removeEventListener(t,go,true)})}
     function go(e){

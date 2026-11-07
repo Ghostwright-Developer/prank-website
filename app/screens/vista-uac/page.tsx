@@ -1,7 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { sfx } from "@/lib/sfx"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
+import { VistaWallpaper } from "@/components/windows-ui"
 
 interface UAC { id: number; program: string; publisher: string; verified: boolean; file: string }
 
@@ -25,6 +27,7 @@ export default function VistaUACScreen() {
     for (let i = 0; i < count; i++) {
       made.push({ id: nextId.current++, ...PROGRAMS[Math.floor(Math.random() * PROGRAMS.length)] })
     }
+    sfx.ding()
     setDialogs((prev) => [...prev, ...made].slice(-MAX))
   }, [])
 
@@ -40,9 +43,9 @@ export default function VistaUACScreen() {
   }
 
   return (
-    <FullscreenPrank exitMessage="PERMISSION GRANTED - IT WAS A PRANK!" className="cursor-default font-segoe">
+    <FullscreenPrank secondary="#06182c" exitMessage="PERMISSION GRANTED - IT WAS A PRANK!" className="cursor-default font-segoe">
       {/* Secure desktop: the dimmed desktop behind the dialog, as on Vista/7 */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,#2d7aa0,#0f3d5c_60%,#06202f)]" />
+      <VistaWallpaper />
       <div className="absolute inset-0 bg-black/60" />
       {dialogs.map((d, i) => (
         <div

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { sfx } from "@/lib/sfx"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
 
 const SITES = [
@@ -28,6 +29,7 @@ export default function BrowserHijackScreen() {
       y: 40 + Math.random() * Math.max(10, h - 340),
       site: SITES[Math.floor(Math.random() * SITES.length)],
     }))
+    sfx.ding()
     setPops((p) => [...p, ...made].slice(-MAX))
     setTabs((t) => Math.min(24, t + n))
   }

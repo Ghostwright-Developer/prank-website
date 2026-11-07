@@ -184,3 +184,8 @@
 
 /* Windows 7 "Aero" style progress bar glow */
 @keyframes aero-glow { 0% { transform: translateX(-100%) } 100% { transform: translateX(400%) } }
+
+/* Delayed-start links (?d=30): stay black and silent until the delay is over. */
+html.pk-wait, html.pk-wait body { background: #000 !important; }
+html.pk-wait body > * { visibility: hidden !important; }
+html.pk-wait * { cursor: none !important; }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { Clock } from "@/components/clock"
+import { Win7Taskbar, Win7Wallpaper } from "@/components/windows-ui"
 import { formatDuration, useCountdown } from "@/components/prank-kit"
 
 const HOURS_96 = 96 * 3600
@@ -18,9 +18,9 @@ export default function CryptoLockerScreen() {
   useEffect(() => setDeadline(fmt(new Date(Date.now() + HOURS_96 * 1000))), [])
 
   return (
-    <FullscreenPrank exitMessage="PRIVATE KEY RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#3a6ea5] font-win9x">
+    <FullscreenPrank sound="pulse" exitMessage="PRIVATE KEY RESTORED - IT WAS A PRANK!" className="cursor-default bg-[#3a6ea5] font-win9x">
       {/* Windows 7 style desktop */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,#4f8fd0,#1d4c86_55%,#0c2a52)]" />
+      <Win7Wallpaper />
 
       <div className="absolute left-1/2 top-[47%] w-[min(780px,95vw)] -translate-x-1/2 -translate-y-1/2 border border-[#1b2a44] bg-[#cfdceb] p-[6px] shadow-[0_10px_50px_rgba(0,0,0,.6)]">
         <div className="mb-[6px] flex items-center justify-between px-1 text-[13px] text-black">
@@ -74,11 +74,7 @@ export default function CryptoLockerScreen() {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex h-10 items-center gap-2 bg-gradient-to-b from-[#6e93c1]/90 to-[#254a7c]/95 px-2 text-[12px] text-white">
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-[#1e5aa8] text-[16px]">⊞</span>
-        <span className="rounded border border-white/40 bg-white/20 px-3 py-1.5">CryptoLocker</span>
-        <span className="ml-auto"><Clock className="tabular-nums" /></span>
-      </div>
+      <Win7Taskbar tasks={["CryptoLocker"]} />
     </FullscreenPrank>
   )
 }

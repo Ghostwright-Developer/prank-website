@@ -34,7 +34,7 @@ export default function BiosScreen() {
   const { visible, done } = useRevealedLines(lines, (i) => (i < 8 ? 180 : 420))
   const on = useBlink()
   return (
-    <FullscreenPrank exitMessage="BIOS RESTORED - IT WAS A PRANK!" className="cursor-none bg-black font-dos text-[#c8c8c8]">
+    <FullscreenPrank sound="beeps" exitMessage="BIOS RESTORED - IT WAS A PRANK!" className="cursor-none bg-black font-dos text-[#c8c8c8]">
       <div className="h-full p-6 text-[clamp(15px,2vw,22px)] leading-[1.2]">
         {visible.map((l, i) => (
           <div key={i} className={`whitespace-pre ${l.includes("error") || l.includes("BAD") ? "text-white" : ""}`}>{l || " "}</div>

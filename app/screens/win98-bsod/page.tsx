@@ -7,7 +7,7 @@ import { useBlink } from "@/components/prank-kit"
 export default function Win98BSODScreen() {
   const on = useBlink(500)
   return (
-    <FullscreenPrank exitMessage="BLUE SCREEN AVOIDED - IT WAS A PRANK!" className="cursor-none bg-[#0000aa] font-dos text-[#aaaaaa]">
+    <FullscreenPrank secondary="#0000aa" exitMessage="BLUE SCREEN AVOIDED - IT WAS A PRANK!" className="cursor-none bg-[#0000aa] font-dos text-[#aaaaaa]">
       <div className="flex h-full flex-col items-center justify-center px-6">
         <div className="w-full max-w-[860px] text-[clamp(16px,2.6vw,26px)] leading-[1.25]">
           <div className="mb-[1.6em] text-center">

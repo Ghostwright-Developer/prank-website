@@ -2,12 +2,15 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Zap } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
+import { ScreenCard } from "@/components/screen-card"
+import { SurpriseButton } from "@/components/surprise-button"
 import { JsonLd } from "@/components/json-ld"
 import { homeJsonLd } from "@/lib/jsonld"
 import {
   CATEGORIES,
   TOTAL_SCREENS,
   categoryPath,
+  SCREENS,
   popularScreens,
   screenPath,
   screensInCategory,
@@ -75,7 +78,12 @@ export default function Home() {
             ransomware jokes, and hacker terminals. Send a link and watch the chaos unfold.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-500">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/screens" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3 font-semibold text-white transition-all hover:from-cyan-400 hover:to-blue-500">Browse all {TOTAL_SCREENS} screens</Link>
+            <SurpriseButton slugs={SCREENS.map((s) => s.slug)} />
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-400">
             <span className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               Instant fullscreen
@@ -161,17 +169,13 @@ export default function Home() {
           >
             Most Popular <span className="text-pink-400">Pranks</span>
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {popular.map((screen) => (
-              <Link
-                key={screen.slug}
-                href={screenPath(screen.slug)}
-                className="group rounded-xl border border-zinc-800/50 bg-zinc-900/50 backdrop-blur-sm p-5 transition-all duration-300 hover:border-pink-500/50 hover:bg-zinc-800/50 hover:shadow-[0_0_30px_rgba(236,72,153,0.1)]"
-              >
-                <h3 className="font-semibold text-zinc-100 group-hover:text-white mb-1">{screen.name}</h3>
-                <p className="text-sm text-zinc-500 group-hover:text-zinc-400">{screen.blurb}</p>
-              </Link>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {popular.map((screen, i) => (
+              <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/screens" className="text-cyan-300 underline-offset-4 hover:underline">See all {TOTAL_SCREENS} screens →</Link>
           </div>
         </section>
 
@@ -187,15 +191,15 @@ export default function Home() {
                 1
               </div>
               <h3 className="font-semibold mb-2">Choose a Prank</h3>
-              <p className="text-sm text-zinc-500">Pick from {TOTAL_SCREENS} authentic-looking fake screens</p>
+              <p className="text-sm text-zinc-400">Pick from {TOTAL_SCREENS} authentic-looking fake screens. Tap Launch to try one right here.</p>
             </div>
 
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-red-600 text-xl font-bold">
                 2
               </div>
-              <h3 className="font-semibold mb-2">Share the Link</h3>
-              <p className="text-sm text-zinc-500">Send the URL to your unsuspecting victim</p>
+              <h3 className="font-semibold mb-2">Set it up or send it</h3>
+              <p className="text-sm text-zinc-400">Use Set up to arm it on any computer with a delay, or Copy link and send it. The screen goes fullscreen on the first click.</p>
             </div>
 
             <div className="text-center">
@@ -203,7 +207,7 @@ export default function Home() {
                 3
               </div>
               <h3 className="font-semibold mb-2">Watch the Panic</h3>
-              <p className="text-sm text-zinc-500">Enjoy as they frantically try to fix their computer</p>
+              <p className="text-sm text-zinc-400">Press Esc or Q to bring everything back to normal at any time.</p>
             </div>
           </div>
         </section>
@@ -270,7 +274,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="mt-16 border-t border-zinc-800/50 pt-8 text-sm text-zinc-600">
+        <footer className="mt-16 border-t border-zinc-800/50 pt-8 text-sm text-zinc-400">
           <nav aria-label="All prank screens" className="mb-10 grid gap-x-8 gap-y-6 text-left sm:grid-cols-2 lg:grid-cols-4">
             {CATEGORIES.map((category) => (
               <div key={category.slug}>
@@ -282,7 +286,7 @@ export default function Home() {
                 <ul className="space-y-1">
                   {screensInCategory(category.slug).map((screen) => (
                     <li key={screen.slug}>
-                      <Link href={screenPath(screen.slug)} className="text-zinc-600 hover:text-cyan-400 transition-colors">
+                      <Link href={screenPath(screen.slug)} className="text-zinc-400 hover:text-cyan-400 transition-colors">
                         {screen.name}
                       </Link>
                     </li>
@@ -293,11 +297,11 @@ export default function Home() {
           </nav>
           <div className="text-center">
             <p className="mb-2">All screens are harmless pranks. No actual system damage occurs.</p>
-            <p className="text-zinc-700">
+            <p className="text-zinc-500">
               Press <kbd className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400 font-mono">ESC</kbd> or{" "}
               <kbd className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400 font-mono">Q</kbd> to exit any prank.
             </p>
-            <p className="mt-4 text-zinc-700">
+            <p className="mt-4 text-zinc-500">
               <Link href="/contact" className="hover:text-cyan-400 transition-colors">Contact</Link>
               {" · "}&copy; {new Date().getFullYear()} {SITE_NAME}
             </p>

@@ -104,7 +104,7 @@ export default function FakeAntivirusScreen() {
 
   if (phase === "joke") {
     return (
-      <FullscreenPrank className="bg-black">
+      <FullscreenPrank sound="alarm" className="bg-black">
         <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-green-900 via-black to-green-900 p-8 text-center">
           <div className="text-8xl mb-8">&#128170;</div>
           <h1 className="text-5xl font-bold text-green-400 mb-4">YOUR PC IS CLEAN!</h1>
@@ -118,7 +118,7 @@ export default function FakeAntivirusScreen() {
   }
 
   return (
-    <FullscreenPrank className="bg-[#1e1e2e]">
+    <FullscreenPrank sound="alarm" className="bg-[#1e1e2e]">
       <div className="h-full w-full bg-gradient-to-br from-[#1e1e2e] to-[#0f0f1a] flex flex-col">
         <div className="bg-gradient-to-r from-red-800 to-red-900 px-6 py-4 flex items-center justify-between border-b-2 border-red-600">
           <div className="flex items-center gap-4">
