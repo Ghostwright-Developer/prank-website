@@ -10,7 +10,7 @@ export const SITE_DESCRIPTION =
   "Free fullscreen prank screens you can send as a link: fake Windows updates, blue screens of death, ransomware warnings, hacker terminals and more. 100% safe, no downloads, no sign-up."
 export const TWITTER_HANDLE = "@pranksims"
 /** ISO date the content last meaningfully changed; used by the sitemap. */
-export const LAST_UPDATED = "2026-11-06"
+export const LAST_UPDATED = "2026-11-09"
 
 export const OG_IMAGE = {
   url: "/og-image.png",

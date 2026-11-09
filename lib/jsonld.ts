@@ -12,10 +12,13 @@ import {
   categoryPath,
   getCategory,
   getScreen,
-  screenPath,
+  guidePath,
   screensInCategory,
   type CategorySlug,
 } from "@/lib/screens"
+
+import { CATEGORY_GUIDES } from "@/lib/guides"
+import { guideFaq } from "@/lib/seo"
 
 const WEBSITE_ID = `${SITE_URL}/#website`
 const ORG_ID = `${SITE_URL}/#organization`
@@ -83,7 +86,7 @@ export const homeJsonLd = () => ({
         "@type": "ListItem",
         position: i + 1,
         name: s.name,
-        url: absoluteUrl(screenPath(s.slug)),
+        url: absoluteUrl(guidePath(s.slug)),
       })),
     },
     {
@@ -125,34 +128,56 @@ export const categoryJsonLd = (slug: CategorySlug) => {
           "@type": "ListItem",
           position: i + 1,
           name: s.name,
-          url: absoluteUrl(screenPath(s.slug)),
+          url: absoluteUrl(guidePath(s.slug)),
         })),
       },
     ],
   }
 }
 
-export const screenJsonLd = (slug: string) => {
+export const guideJsonLd = (slug: string) => {
   const screen = getScreen(slug)
   const category = getCategory(screen.category)
-  const url = absoluteUrl(screenPath(slug))
+  const url = absoluteUrl(guidePath(slug))
   return {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": `${url}#webpage`,
-    url,
-    name: screen.title,
-    description: screen.description,
-    inLanguage: "en-US",
-    isPartOf: { "@id": WEBSITE_ID },
-    primaryImageOfPage: absoluteUrl("/og-image.png"),
-    breadcrumb: breadcrumbList([
-      { name: "Home", path: "/" },
-      { name: category.shortName, path: categoryPath(category.slug) },
-      { name: screen.name, path: screenPath(slug) },
-    ]),
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: screen.title,
+        description: screen.description,
+        inLanguage: "en-US",
+        isPartOf: { "@id": WEBSITE_ID },
+        primaryImageOfPage: absoluteUrl(`/thumbs/${slug}.jpg`),
+        breadcrumb: breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: category.shortName, path: categoryPath(category.slug) },
+          { name: screen.name, path: guidePath(slug) },
+        ]),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: guideFaq(slug).map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      },
+    ],
   }
 }
+
+export const categoryFaqJsonLd = (slug: CategorySlug) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: CATEGORY_GUIDES[slug].faq.map((f) => ({
+    "@type": "Question",
+    name: f.question,
+    acceptedAnswer: { "@type": "Answer", text: f.answer },
+  })),
+})
 
 export const contactJsonLd = () => ({
   "@context": "https://schema.org",

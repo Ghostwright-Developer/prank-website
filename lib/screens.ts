@@ -412,6 +412,7 @@ export const screensInCategory = (slug: CategorySlug): Screen[] =>
   SCREENS.filter((x) => x.category === slug)
 
 export const screenPath = (slug: string) => `/screens/${slug}`
+export const guidePath = (slug: string) => `/guide/${slug}`
 export const categoryPath = (slug: CategorySlug) => `/category/${slug}`
 
 export const popularScreens = (): Screen[] => SCREENS.filter((x) => x.popular)

@@ -49,6 +49,7 @@ export function ScreenCard({ screen, priority = false }: { screen: CardScreen; p
       <div className="flex flex-1 flex-col p-4">
         <h3 className="text-base font-semibold leading-snug text-white">{screen.name}</h3>
         <p className="mt-1 flex-1 text-sm leading-snug text-zinc-300">{screen.blurb}</p>
+        <Link href={`/guide/${screen.slug}`} className="mt-2 text-xs font-medium text-cyan-300 hover:underline">About this prank &rarr;</Link>
         <div className="mt-4 grid grid-cols-[1fr_auto_auto] gap-2">
           <Link href={href} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition-colors hover:bg-cyan-300"><Play className="h-4 w-4 fill-zinc-950" /> Launch</Link>
           <button onClick={() => setSetup(true)} title="Set up on this device: delay, monitors, sound" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><SlidersHorizontal className="h-4 w-4" /><span className="hidden sm:inline">Set up</span></button>

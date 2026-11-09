@@ -12,7 +12,7 @@ import {
   categoryPath,
   SCREENS,
   popularScreens,
-  screenPath,
+  guidePath,
   screensInCategory,
 } from "@/lib/screens"
 import { FAQ, OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, TWITTER_HANDLE, absoluteUrl } from "@/lib/site"
@@ -286,7 +286,7 @@ export default function Home() {
                 <ul className="space-y-1">
                   {screensInCategory(category.slug).map((screen) => (
                     <li key={screen.slug}>
-                      <Link href={screenPath(screen.slug)} className="text-zinc-400 hover:text-cyan-400 transition-colors">
+                      <Link href={guidePath(screen.slug)} className="text-zinc-400 hover:text-cyan-400 transition-colors">
                         {screen.name}
                       </Link>
                     </li>

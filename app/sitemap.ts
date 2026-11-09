@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 import { LAST_UPDATED, absoluteUrl } from "@/lib/site"
-import { CATEGORIES, SCREENS, categoryPath, screenPath } from "@/lib/screens"
+import { CATEGORIES, SCREENS, categoryPath, guidePath } from "@/lib/screens"
 
 // Built from lib/screens.ts, so a new screen or category is picked up
 // automatically and nothing can be left out of the sitemap by mistake.
@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     })),
     ...SCREENS.map((s) => ({
-      url: absoluteUrl(screenPath(s.slug)),
+      url: absoluteUrl(guidePath(s.slug)),
       lastModified,
       changeFrequency: "monthly" as const,
       priority: s.popular ? 0.9 : 0.8,

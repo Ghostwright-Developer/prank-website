@@ -3,7 +3,8 @@ import { ArrowLeft } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
 import { ScreenCard } from "@/components/screen-card"
 import { JsonLd } from "@/components/json-ld"
-import { categoryJsonLd } from "@/lib/jsonld"
+import { categoryFaqJsonLd, categoryJsonLd } from "@/lib/jsonld"
+import { CATEGORY_GUIDES } from "@/lib/guides"
 import {
   CATEGORIES,
   categoryPath,
@@ -15,11 +16,13 @@ import {
 export function CategoryPage({ slug }: { slug: CategorySlug }) {
   const category = getCategory(slug)
   const screens = screensInCategory(slug)
+  const guide = CATEGORY_GUIDES[slug]
   const others = CATEGORIES.filter((c) => c.slug !== slug)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
       <JsonLd data={categoryJsonLd(slug)} />
+      <JsonLd data={categoryFaqJsonLd(slug)} />
       <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-12">
@@ -55,6 +58,32 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
             <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
           ))}
         </div>
+
+        <section className="mt-16 max-w-3xl space-y-10 text-zinc-300">
+          <div>
+            <h2 className="mb-3 text-xl font-semibold text-white">About {category.name.toLowerCase()} pranks</h2>
+            <div className="space-y-4 leading-relaxed">
+              {guide.about.map((p) => <p key={p}>{p}</p>)}
+            </div>
+          </div>
+          <div>
+            <h2 className="mb-3 text-xl font-semibold text-white">Tips for a better prank</h2>
+            <ul className="list-disc space-y-2 pl-6 leading-relaxed">
+              {guide.tips.map((t) => <li key={t}>{t}</li>)}
+            </ul>
+          </div>
+          <div>
+            <h2 className="mb-3 text-xl font-semibold text-white">Frequently asked questions</h2>
+            <div className="space-y-5">
+              {guide.faq.map((f) => (
+                <div key={f.question}>
+                  <h3 className="font-semibold text-zinc-100">{f.question}</h3>
+                  <p className="mt-1 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <nav aria-label="More categories" className="mt-16 border-t border-zinc-800/50 pt-8">
           <h2 className="mb-4 text-sm font-semibold text-zinc-300">More prank categories</h2>
