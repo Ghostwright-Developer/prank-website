@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Copy, Play, SlidersHorizontal } from "lucide-react"
-import { LinkCopier } from "@/components/link-copier"
+import { Send, Play, SlidersHorizontal } from "lucide-react"
+import { ShareSheet } from "@/components/share-sheet"
 import { SetupDialog } from "@/components/setup-dialog"
 
 type Fs = HTMLElement & { webkitRequestFullscreen?: () => void }
@@ -41,10 +41,10 @@ export function GuideActions({ slug, name, blurb }: { slug: string; name: string
           <SlidersHorizontal className="h-5 w-5" /> Set up with a delay
         </button>
         <button onClick={copy} className="inline-flex items-center gap-2 rounded-xl border border-zinc-500 bg-zinc-800 px-5 py-3 text-base font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700">
-          <Copy className="h-5 w-5" /> Copy prank link
+          <Send className="h-5 w-5" /> Send to a friend
         </button>
       </div>
-      {linkBar && <LinkCopier getUrl={() => `${location.origin}/screens/${slug}`} onClose={() => setLinkBar(false)} />}
+      {linkBar && <ShareSheet slug={slug} name={name} onClose={() => setLinkBar(false)} />}
       {setup && <SetupDialog slug={slug} name={name} blurb={blurb} onClose={() => setSetup(false)} />}
     </>
   )

@@ -37,7 +37,7 @@ export const GUIDES: Record<string, Guide> = {
     "A Windows 95-style dialog with a progress bar that keeps searching for an update that never arrives, in the grey system font of the era.",
     "Windows 95 had no real automatic updates, which is exactly why a 'searching for updates' box feels both familiar and slightly wrong, a gentle nostalgic prank.",
     "Friends who enjoy retro computing and people you want to confuse rather than scare.",
-    "Run it on a second monitor setup so only the main screen shows the dialog and the rest go black.",
+    "If the computer has a second monitor, unplug it first so nothing gives the prank away.",
   ),
   "winme-update": g(
     "A Windows Millennium Edition update screen with the period-correct graphics and a restart that never quite finishes.",

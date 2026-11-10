@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { startLoop, unlockAudio, type LoopName } from "@/lib/sfx"
-import { createMonitorController, type MonitorController } from "@/lib/monitors"
 
 /** sessionStorage key read by <ExitNotice /> on the page we return to. */
 export const EXIT_MESSAGE_KEY = "pranksims:exit-message"
+/** Slug of the prank just left, so the page we return to can offer to send it. */
+export const LAST_SCREEN_KEY = "pranksims:last-screen"
 const DEFAULT_EXIT_MESSAGE = "PRANK OVER - IT WAS ONLY A JOKE!"
 
 interface FullscreenPrankProps {
@@ -14,7 +15,7 @@ interface FullscreenPrankProps {
   className?: string
   /** Shown briefly on the home page after the viewer exits (Esc, Q or leaving fullscreen). */
   exitMessage?: string
-  /** Background of the "other monitors" pages, e.g. "#0000aa" for a blue screen. Default black. */
+  /** Unused (kept so existing screens compile). */
   secondary?: string
   /** Optional ambient sound loop (synthesized, starts after the first click/tap/key). */
   sound?: LoopName
@@ -51,7 +52,6 @@ export function FullscreenPrank({
   children,
   className = "",
   exitMessage,
-  secondary = "#000",
   sound,
 }: FullscreenPrankProps) {
   const router = useRouter()
@@ -59,7 +59,6 @@ export function FullscreenPrank({
   const mountedRef = useRef(false)
   const exitMessageRef = useRef(exitMessage)
   exitMessageRef.current = exitMessage
-  const monitorsRef = useRef<MonitorController | null>(null)
 
   /**
    * Single exit path, used by Esc, Q and "viewer left fullscreen". Guarded so
@@ -74,10 +73,11 @@ export function FullscreenPrank({
         EXIT_MESSAGE_KEY,
         exitMessageRef.current ?? DEFAULT_EXIT_MESSAGE,
       )
+      const slug = location.pathname.split("/")[2]
+      if (slug) sessionStorage.setItem(LAST_SCREEN_KEY, slug)
     } catch {
       /* storage unavailable: the exit still works, only the toast is skipped */
     }
-    monitorsRef.current?.close()
     leaveFullscreen()
     router.push("/")
   }, [router])
@@ -104,13 +104,9 @@ export function FullscreenPrank({
     // Browsers only allow fullscreen after a user gesture, so we try on load
     // (works when the viewer arrived by clicking a link) and again on the first
     // real gesture. mousemove / scroll / wheel never count as a gesture.
-    const monitors = createMonitorController({ color: secondary, onRemoteExit: () => exitPrank() })
-    monitorsRef.current = monitors
-
     const onGesture = (e: Event) => {
       if (e.type === "keydown" && isExitKey(e as KeyboardEvent)) return
       requestFullscreen()
-      monitors.arm()
       unlockAudio()
     }
 
@@ -125,7 +121,6 @@ export function FullscreenPrank({
     const onFullscreenChange = () => {
       if (getFullscreenElement()) {
         wasFullscreen = true
-        // keep click/key listeners for monitor popups; only fullscreen part is done
       } else if (wasFullscreen) {
         exitPrank()
       }
@@ -137,8 +132,6 @@ export function FullscreenPrank({
 
     gestureEvents.forEach((t) => document.addEventListener(t, onGesture, true))
     window.addEventListener("keydown", onKeyDown, true)
-    const onPageHide = () => monitors.close()
-    window.addEventListener("pagehide", onPageHide)
     document.addEventListener("fullscreenchange", onFullscreenChange)
     document.addEventListener("webkitfullscreenchange", onFullscreenChange)
 
@@ -165,9 +158,6 @@ export function FullscreenPrank({
       stopSound()
       mountedRef.current = false
       removeGestureListeners()
-      window.removeEventListener("pagehide", onPageHide)
-      monitors.dispose()
-      monitorsRef.current = null
       window.removeEventListener("keydown", onKeyDown, true)
       document.removeEventListener("fullscreenchange", onFullscreenChange)
       document.removeEventListener("webkitfullscreenchange", onFullscreenChange)
@@ -178,7 +168,7 @@ export function FullscreenPrank({
         if (!mountedRef.current) leaveFullscreen()
       }, 0)
     }
-  }, [exitPrank, secondary, sound])
+  }, [exitPrank, sound])
 
   return (
     <div

@@ -57,8 +57,16 @@ export function pageMetadata({ title, description, path, keywords }: PageMetaInp
  * guide and people who search land on a page with a Launch button.
  */
 export function screenMetadata(slug: string): Metadata {
-  const m = guideMetadata(slug)
-  return { ...m, alternates: { canonical: absoluteUrl(guidePath(slug)) } }
+  void slug
+  // The prank page is what victims open, so its tab title and link preview must
+  // not give the prank away. Search engines get the guide page (/guide/x) instead.
+  return {
+    title: { absolute: "Please wait" },
+    description: "Please wait",
+    robots: { index: false, follow: true },
+    openGraph: { type: "website", title: "Check this out", description: "Tap to open", siteName: "" },
+    twitter: { card: "summary", title: "Check this out", description: "Tap to open" },
+  }
 }
 
 export function guideMetadata(slug: string): Metadata {

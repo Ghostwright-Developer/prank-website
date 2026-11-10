@@ -74,7 +74,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             <ol className="list-decimal space-y-2 pl-6 leading-relaxed">
               <li>Open this page on the computer you want to prank, or press <b>Copy prank link</b> and send the link to someone else.</li>
               <li>Press <b>Launch</b>. The screen fills the whole display straight away. Use <b>Set up with a delay</b> to start it after 10 seconds up to 10 minutes, so you can leave the room first.</li>
-              <li>If the computer has more than one monitor, the other screens can be blacked out so only the main one shows the prank (Chrome and Edge, with permission).</li>
+              <li>For the most believable prank, unplug any extra monitors first. A second screen showing the normal desktop gives it away.</li>
               <li>When you are ready to reveal it, press Esc or Q. You return to PrankSims and a short note explains it was a prank.</li>
             </ol>
             <p className="mt-3 leading-relaxed"><b>Tip:</b> {guide.tip}</p>

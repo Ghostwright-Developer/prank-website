@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Zap } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
 import { ScreenCard } from "@/components/screen-card"
+import { SiteShareButton } from "@/components/share-sheet"
 import { SurpriseButton } from "@/components/surprise-button"
 import { JsonLd } from "@/components/json-ld"
 import { homeJsonLd } from "@/lib/jsonld"
@@ -84,6 +85,7 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link href="/screens" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3 font-semibold text-white transition-all hover:from-cyan-400 hover:to-blue-500">Browse all {TOTAL_SCREENS} screens</Link>
             <SurpriseButton slugs={SCREENS.map((s) => s.slug)} />
+            <SiteShareButton />
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-400">

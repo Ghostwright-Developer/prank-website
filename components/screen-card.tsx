@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Copy, Play, SlidersHorizontal } from "lucide-react"
-import { LinkCopier } from "@/components/link-copier"
+import { Send, Play, SlidersHorizontal } from "lucide-react"
+import { ShareSheet } from "@/components/share-sheet"
 import { SetupDialog } from "@/components/setup-dialog"
 
 export interface CardScreen {
@@ -39,11 +39,11 @@ export function ScreenCard({ screen, priority = false }: { screen: CardScreen; p
         <Link href={`/guide/${screen.slug}`} className="mt-2 text-xs font-medium text-cyan-300 hover:underline">About this prank &rarr;</Link>
         <div className="mt-4 grid grid-cols-[1fr_auto_auto] gap-2">
           <Link href={href} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition-colors hover:bg-cyan-300"><Play className="h-4 w-4 fill-zinc-950" /> Launch</Link>
-          <button onClick={() => setSetup(true)} title="Set up on this device: delay, monitors, sound" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><SlidersHorizontal className="h-4 w-4" /><span className="hidden sm:inline">Set up</span></button>
-          <button onClick={copy} title="Copy a link to send" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><Copy className="h-4 w-4" /><span className="hidden sm:inline">Link</span></button>
+          <button onClick={() => setSetup(true)} title="Set up on this device: delay and sound" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><SlidersHorizontal className="h-4 w-4" /><span className="hidden sm:inline">Set up</span></button>
+          <button onClick={copy} title="Send this prank to someone" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><Send className="h-4 w-4" /><span className="hidden sm:inline">Send</span></button>
         </div>
       </div>
-      {linkBar && <LinkCopier getUrl={() => `${location.origin}${href}`} onClose={() => setLinkBar(false)} />}
+      {linkBar && <ShareSheet slug={screen.slug} name={screen.name} onClose={() => setLinkBar(false)} />}
       {setup && <SetupDialog slug={screen.slug} name={screen.name} blurb={screen.blurb} onClose={() => setSetup(false)} />}
     </article>
   )

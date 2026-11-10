@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import { EXIT_MESSAGE_KEY } from "@/components/fullscreen-prank"
+import { Send, Shuffle, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { EXIT_MESSAGE_KEY, LAST_SCREEN_KEY } from "@/components/fullscreen-prank"
+import { ShareSheet } from "@/components/share-sheet"
+import { SCREENS } from "@/lib/screens"
 
 const VISIBLE_MS = 2200
 const FADE_MS = 700
@@ -14,14 +18,22 @@ const FADE_MS = 700
  */
 export function ExitNotice() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [last, setLast] = useState<string | null>(null)
+  const [sharing, setSharing] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [fading, setFading] = useState(false)
 
   useEffect(() => {
     if (pathname.startsWith("/screens/")) {
       setMessage(null)
+      setLast(null)
       return
     }
+    try {
+      const l = sessionStorage.getItem(LAST_SCREEN_KEY)
+      if (l) { sessionStorage.removeItem(LAST_SCREEN_KEY); if (SCREENS.some((x) => x.slug === l)) setLast(l) }
+    } catch { /* ignore */ }
     let stored: string | null = null
     try {
       stored = sessionStorage.getItem(EXIT_MESSAGE_KEY)
@@ -40,9 +52,32 @@ export function ExitNotice() {
     }
   }, [pathname])
 
-  if (!message) return null
+  const lastScreen = SCREENS.find((x) => x.slug === last)
+  const another = () => {
+    const pool = SCREENS.filter((x) => x.slug !== last)
+    router.push(`/screens/${pool[Math.floor(Math.random() * pool.length)].slug}`)
+  }
+  const card = lastScreen && (
+    <div className="fixed inset-x-0 bottom-5 z-[90] flex justify-center px-4" style={{ animation: "pk-up .5s ease both" }}>
+      <style>{`@keyframes pk-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}`}</style>
+      <div className="relative w-full max-w-xl rounded-2xl border border-cyan-400/50 bg-zinc-900/95 p-5 shadow-[0_0_40px_rgba(34,211,238,.2)] backdrop-blur">
+        <button onClick={() => setLast(null)} aria-label="Dismiss" className="absolute right-3 top-3 rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"><X className="h-4 w-4" /></button>
+        <p className="text-lg font-bold text-white">That was fun. Now send it to someone.</p>
+        <p className="mt-1 text-sm text-zinc-300">One tap sends “{lastScreen.name}” by text, WhatsApp, email or a copied link. The message does not give it away.</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button onClick={() => setSharing(true)} className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-2.5 font-bold text-zinc-950 hover:bg-cyan-300"><Send className="h-4 w-4" /> Send this prank</button>
+          <button onClick={another} className="inline-flex items-center gap-2 rounded-xl border border-zinc-500 bg-zinc-800 px-5 py-2.5 font-medium text-white hover:border-zinc-300"><Shuffle className="h-4 w-4" /> Try another</button>
+        </div>
+      </div>
+      {sharing && <ShareSheet slug={lastScreen.slug} name={lastScreen.name} onClose={() => setSharing(false)} />}
+    </div>
+  )
+
+  if (!message) return card || null
 
   return (
+    <>
+    {card}
     <div
       role="status"
       aria-live="polite"
@@ -54,5 +89,6 @@ export function ExitNotice() {
         {message}
       </div>
     </div>
+    </>
   )
 }

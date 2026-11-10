@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { LinkCopier } from "@/components/link-copier"
-import { createMonitorController } from "@/lib/monitors"
 import { unlockAudio } from "@/lib/sfx"
 import { Copy, Play, Share2, X } from "lucide-react"
 
@@ -26,7 +25,6 @@ type Fs = HTMLElement & { webkitRequestFullscreen?: () => void }
 export function SetupDialog({ slug, name, blurb, onClose }: Props) {
   const router = useRouter()
   const [delay, setDelay] = useState(30)
-  const [monitors, setMonitors] = useState(true)
   const [sound, setSound] = useState(true)
   const [linkBar, setLinkBar] = useState(false)
   const [armed, setArmed] = useState<number | null>(null)
@@ -35,7 +33,6 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
 
   const path = () => {
     const q = new URLSearchParams()
-    if (monitors === false) q.set("m", "0")
     if (!sound) q.set("s", "0")
     const qs = q.toString()
     return `/screens/${slug}${qs ? `?${qs}` : ""}`
@@ -43,7 +40,6 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
   const link = (withDelay: boolean) => {
     const q = new URLSearchParams()
     if (withDelay && delay > 0) q.set("d", String(delay))
-    if (!monitors) q.set("m", "0")
     if (!sound) q.set("s", "0")
     const qs = q.toString()
     return `${location.origin}/screens/${slug}${qs ? `?${qs}` : ""}`
@@ -67,12 +63,6 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
       const r = el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen?.()
       if (r && typeof (r as Promise<void>).catch === "function") (r as Promise<void>).catch(() => {})
     } catch { /* unsupported */ }
-    // Open the black pages on the other monitors NOW, while we still have the
-    // click that browsers require for popups and the screen-permission prompt.
-    // (The prank page itself may load with no click at all, e.g. after a delay.)
-    if (monitors) {
-      try { createMonitorController({ color: "#000", onRemoteExit: () => {} }).arm() } catch { /* unsupported */ }
-    }
     if (sound) unlockAudio()
     if (delay === 0) {
       router.push(path())
@@ -125,10 +115,7 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
         </p>
 
         <div className="mb-6 space-y-3">
-          <label className="flex cursor-pointer items-start gap-3 text-sm text-zinc-200">
-            <input type="checkbox" checked={monitors} onChange={(e) => setMonitors(e.target.checked)} className="mt-1 h-4 w-4 accent-cyan-400" />
-            <span>Black out other monitors<span className="block text-xs text-zinc-400">Chrome, Edge and Brave only. The browser asks permission once, and popups must be allowed.</span></span>
-          </label>
+          <p className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">Tip: unplug any extra monitors first. A second screen still showing the normal desktop gives the prank away.</p>
           <label className="flex cursor-pointer items-start gap-3 text-sm text-zinc-200">
             <input type="checkbox" checked={sound} onChange={(e) => setSound(e.target.checked)} className="mt-1 h-4 w-4 accent-cyan-400" />
             <span>Play sound effects<span className="block text-xs text-zinc-400">Beeps, alarms and error dings that match the screen.</span></span>
