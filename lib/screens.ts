@@ -478,7 +478,28 @@ export const guidePath = (slug: string) => `/guide/${slug}`
 export const categoryPath = (slug: CategorySlug) => `/category/${slug}`
 
 /** Most launched screens in the first week of Vercel Analytics (Nov 2026), plus new comedy. Shown right under the home hero. */
-export const TRENDING_SLUGS = ["webcam", "minecraft-update", "crypto-miner", "cats-took-over", "fake-antivirus", "corner-watch"]
+export const TRENDING_SLUGS = ["webcam", "mouse-sports-network", "crypto-miner", "cats-took-over", "fake-antivirus", "corner-watch"]
 export const trendingScreens = (): Screen[] => TRENDING_SLUGS.map((x) => getScreen(x))
 
 export const popularScreens = (): Screen[] => SCREENS.filter((x) => x.popular)
+
+/** Groups of categories, so the home page can show four clear sections instead of ten look-alike cards. */
+export interface Family { id: string; title: string; blurb: string; accent: string; categories: CategorySlug[] }
+export const FAMILIES: Family[] = [
+  { id: "funny", title: "Funny & Absurd", blurb: "Silly, harmless and built for laughs: sports announcers, cats in charge, flooding desktops.", accent: "#facc15", categories: ["comedy"] },
+  { id: "updates", title: "Fake Updates & Lock Screens", blurb: "The classic: updates that never finish, and lock screens that look exactly like the real thing.", accent: "#38bdf8", categories: ["windows", "windows-12", "other-os", "os-screens"] },
+  { id: "scary", title: "Hackers, Ransomware & Scams", blurb: "Dramatic, scary-looking and totally fake. Great for the tech-savvy friend.", accent: "#f87171", categories: ["ransomware", "hacker", "phishing"] },
+  { id: "damage", title: "Crashes & Screen Damage", blurb: "Formatted drives, corrupted BIOS, cracked glass and dead pixels.", accent: "#a78bfa", categories: ["chaos", "screen-damage"] },
+]
+
+/** Sub-categories inside Comedy. The archive keeps older gags reachable without crowding the front. */
+export interface SubCategory { id: string; name: string; blurb: string; slugs: string[]; archive?: boolean }
+export const COMEDY_SUBS: SubCategory[] = [
+  { id: "live", name: "Live broadcasts", blurb: "Sports announcers who commentate on you and your computer.", slugs: ["mouse-sports-network", "corner-watch"] },
+  { id: "pets", name: "Pets & creatures", blurb: "Animals that have taken over your screen.", slugs: ["cats-took-over", "the-fly", "ant-parade"] },
+  { id: "disasters", name: "Desktop disasters", blurb: "Your desktop, but things go wrong.", slugs: ["flooded-desktop", "gravity-update"] },
+  { id: "places", name: "Travel & waiting", blurb: "Airports and phone queues.", slugs: ["departures-board", "on-hold"] },
+  { id: "archive", name: "Comedy archive", blurb: "Older gags. Still fully working, just tucked away.", slugs: ["windows-xp-tour", "minecraft-update", "printer-error"], archive: true },
+]
+export const COMEDY_ARCHIVE_SLUGS = new Set(COMEDY_SUBS.filter((s) => s.archive).flatMap((s) => s.slugs))
+export const subScreens = (sub: SubCategory): Screen[] => sub.slugs.map((x) => getScreen(x))

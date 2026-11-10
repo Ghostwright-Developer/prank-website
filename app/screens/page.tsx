@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { BrowseGrid } from "@/components/browse-grid"
+import { SiteHeader } from "@/components/site-header"
 import { SurpriseButton } from "@/components/surprise-button"
 import { CATEGORIES, SCREENS, TOTAL_SCREENS, getCategory } from "@/lib/screens"
 import { pageMetadata } from "@/lib/seo"
@@ -19,6 +20,7 @@ export default function AllScreensPage() {
   }))
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
+      <SiteHeader />
       <div className="mx-auto max-w-6xl px-5 py-10">
         <Link href="/" className="mb-8 inline-flex items-center gap-2 text-zinc-300 hover:text-cyan-300"><ArrowLeft className="h-4 w-4" /> Back to Home</Link>
         <header className="mb-8">

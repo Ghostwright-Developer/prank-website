@@ -76,7 +76,7 @@ export function LinkCopier({ getUrl, onClose, onCopied }: { getUrl: () => string
   const md = async () => finish("md", await writeClipboard(null, `[${label()}](${getUrl()})`))
 
   const bar = (
-    <div className="fixed inset-x-0 bottom-6 z-[400] flex justify-center px-4" role="dialog" aria-label="Copy link as a hyperlink">
+    <div className="fixed inset-x-0 bottom-6 z-[400] flex justify-center px-4" role="dialog" aria-label="Copy link as a hyperlink" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
       <div className="w-full max-w-xl rounded-2xl border border-zinc-500 bg-zinc-900 p-4 shadow-2xl shadow-black/60">
         <div className="mb-2 flex items-center justify-between">
           <p className="flex items-center gap-2 text-sm font-semibold text-white"><Link2 className="h-4 w-4 text-cyan-300" /> What should the link say?</p>

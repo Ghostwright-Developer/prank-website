@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
 import { ScreenCard } from "@/components/screen-card"
 import { JsonLd } from "@/components/json-ld"
+import { SiteHeader } from "@/components/site-header"
 import { categoryFaqJsonLd, categoryJsonLd } from "@/lib/jsonld"
 import { CATEGORY_GUIDES } from "@/lib/guides"
 import {
@@ -10,6 +11,8 @@ import {
   categoryPath,
   getCategory,
   screensInCategory,
+  COMEDY_SUBS,
+  subScreens,
   type CategorySlug,
 } from "@/lib/screens"
 
@@ -21,6 +24,7 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
+      <SiteHeader />
       <JsonLd data={categoryJsonLd(slug)} />
       <JsonLd data={categoryFaqJsonLd(slug)} />
       <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
@@ -53,11 +57,45 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
           <p className="max-w-3xl text-zinc-400 leading-relaxed">{category.intro}</p>
         </header>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {screens.map((screen, i) => (
-            <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
-          ))}
-        </div>
+        {slug === "comedy" ? (
+          <div className="space-y-12">
+            <nav aria-label="Comedy sub-categories" className="flex flex-wrap gap-2">
+              {COMEDY_SUBS.map((sub) => (
+                <a key={sub.id} href={`#${sub.id}`} className={`rounded-full border px-4 py-1.5 text-sm hover:bg-zinc-800 ${sub.archive ? "border-zinc-700 text-zinc-400" : "border-yellow-400/50 text-yellow-100"}`}>{sub.name}</a>
+              ))}
+            </nav>
+            {COMEDY_SUBS.map((sub) => {
+              const grid = (
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {subScreens(sub).map((screen, i) => (
+                    <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={!sub.archive && i < 3} />
+                  ))}
+                </div>
+              )
+              return sub.archive ? (
+                <details key={sub.id} id={sub.id} className="scroll-mt-24 rounded-2xl border border-zinc-700 bg-zinc-900/40 p-5 open:bg-zinc-900/60">
+                  <summary className="cursor-pointer list-none">
+                    <span className="text-xl font-semibold text-zinc-100">{sub.name}</span>
+                    <span className="ml-3 text-sm text-zinc-400">{sub.slugs.length} screens · {sub.blurb}</span>
+                  </summary>
+                  <div className="mt-5">{grid}</div>
+                </details>
+              ) : (
+                <section key={sub.id} id={sub.id} className="scroll-mt-24">
+                  <h2 className="text-xl font-semibold text-white">{sub.name}</h2>
+                  <p className="mb-4 mt-1 text-sm text-zinc-300">{sub.blurb}</p>
+                  {grid}
+                </section>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {screens.map((screen, i) => (
+              <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
+            ))}
+          </div>
+        )}
 
         <section className="mt-16 max-w-3xl space-y-10 text-zinc-300">
           <div>

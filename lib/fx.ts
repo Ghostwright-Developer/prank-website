@@ -57,23 +57,76 @@ function burst(dur: number, { type = "bandpass" as BiquadFilterType, freq = 1000
   src.stop(t0 + dur + 0.05)
 }
 
+const sfxCache = new Map<string, Promise<AudioBuffer | null>>()
+function loadSfx(name: string): Promise<AudioBuffer | null> {
+  let p = sfxCache.get(name)
+  if (!p) {
+    p = (async () => {
+      const ctx = audioCtx()
+      if (!ctx) { sfxCache.delete(name); return null }
+      try {
+        const r = await fetch(`/sfx/${name}.mp3`)
+        if (!r.ok) return null
+        return await ctx.decodeAudioData(await r.arrayBuffer())
+      } catch { return null }
+    })()
+    sfxCache.set(name, p)
+  }
+  return p
+}
+const pickOf = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)]
+/** Plays one of several recorded-style crowd clips; calls the synth fallback if none can load. */
+function crowd(names: string[], gain: number, fallback: () => void) {
+  const ctx = audioCtx()
+  if (!ctx) return
+  void loadSfx(pickOf(names)).then((buf) => {
+    if (!buf) { fallback(); return }
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    src.playbackRate.value = 0.97 + Math.random() * 0.06
+    const g = ctx.createGain()
+    g.gain.value = gain
+    src.connect(g).connect(ctx.destination)
+    src.start()
+  })
+}
+export const preloadCrowd = () => {
+  for (const n of ["cheer-1", "cheer-2", "cheer-3", "cheer-big-1", "cheer-big-2", "roar-1", "roar-2", "roar-3", "boo-1", "boo-2", "boo-3", "groan-1", "groan-2", "groan-3", "groan-4", "ooh-1", "ooh-2", "gasp-1", "gasp-2", "applause-1", "applause-2", "applause-3", "murmur-1", "murmur-2", "airhorn-1", "airhorn-2", "airhorn-3"]) void loadSfx(n)
+}
+
 export const fx = {
-  /** Stadium crowd going wild. */
+  /** Crowd cheers. dur picks the size: short < 2.8 < medium < 5 <= big. */
   cheer(dur = 3.5) {
+    const names = dur < 2.8 ? ["cheer-3", "cheer-1"] : dur < 5 ? ["cheer-1", "cheer-2", "cheer-3"] : ["cheer-big-1", "cheer-big-2"]
+    crowd(names, 0.9, () => fx.cheerSynth(dur))
+  },
+  /** The big one: a goal, a corner, a comeback. */
+  roar() { crowd(["roar-1", "roar-2", "roar-3"], 1, () => fx.cheerSynth(5)) },
+  /** Collective "ooooh, so close". */
+  groan(long = false) { crowd(long ? ["groan-2", "groan-4"] : ["groan-1", "groan-3"], 0.95, () => fx.groanSynth()) },
+  boo(long = false) { crowd(long ? ["boo-2", "boo-3"] : ["boo-1", "boo-2"], 0.95, () => fx.groanSynth()) },
+  gasp() { crowd(["gasp-1", "gasp-2"], 0.9, () => fx.murmurSynth(1)) },
+  /** Rising "ooooh": something is about to happen. */
+  ooh() { crowd(["ooh-1", "ooh-2"], 0.85, () => fx.murmurSynth(2)) },
+  applause(big = false) { crowd(big ? ["applause-2", "applause-3"] : ["applause-1", "applause-2"], 0.9, () => fx.cheerSynth(3)) },
+  murmur(dur = 2) { crowd(["murmur-1", "murmur-2"], dur > 5 ? 0.45 : 0.3, () => fx.murmurSynth(dur)) },
+  airhorn(n = 1) { crowd(n >= 3 ? ["airhorn-3"] : n === 2 ? ["airhorn-2"] : ["airhorn-1"], 0.8, () => fx.airhornSynth()) },
+  /** Stadium crowd going wild. */
+  cheerSynth(dur = 3.5) {
     burst(dur, { freq: 1100, q: 0.6, gain: 0.32, attack: 0.5 })
     burst(dur, { freq: 2600, q: 0.8, gain: 0.12, attack: 0.3, delay: 0.1 })
     for (let i = 0; i < 14; i++) burst(0.08, { type: "highpass", freq: 3000, gain: 0.08, delay: Math.random() * dur * 0.8 }) // claps
   },
   /** Collective "ooooh, so close". */
-  groan() {
+  groanSynth() {
     burst(1.6, { freq: 700, freqTo: 260, q: 1.4, gain: 0.3, attack: 0.15 })
     tone(330, 1.4, { type: "sawtooth", slideTo: 150, gain: 0.025, attack: 0.2 })
     tone(247, 1.4, { type: "sawtooth", slideTo: 110, gain: 0.02, attack: 0.2 })
   },
-  murmur(dur = 2) {
+  murmurSynth(dur = 2) {
     burst(dur, { freq: 500, q: 0.7, gain: 0.09, attack: 0.6 })
   },
-  airhorn() {
+  airhornSynth() {
     for (const f of [466, 554, 698]) tone(f, 0.9, { type: "sawtooth", gain: 0.05, attack: 0.03 })
     tone(233, 0.9, { type: "square", gain: 0.04, attack: 0.03 })
   },
@@ -202,15 +255,17 @@ export function startHoldMusic(): () => void {
  * voice, which we now pick carefully and read with per-sentence energy.
  */
 
-export type VoiceName = "bob" | "tracy" | "pa" | "robot" | "cat"
+export type VoiceName = "rex" | "tony" | "biff" | "nigel" | "pa" | "robot" | "cat"
 
 /** How each character sounds when the browser's own voice has to stand in. */
 const FALLBACK: Record<VoiceName, { gender: "male" | "female"; hype: boolean; rate: number; pitch: number }> = {
-  bob: { gender: "male", hype: true, rate: 1.12, pitch: 0.95 },
-  tracy: { gender: "female", hype: true, rate: 1.14, pitch: 1.12 },
+  rex: { gender: "male", hype: true, rate: 1.2, pitch: 1.1 },
+  tony: { gender: "male", hype: true, rate: 1.15, pitch: 0.95 },
+  biff: { gender: "male", hype: true, rate: 1.1, pitch: 1.0 },
+  nigel: { gender: "male", hype: false, rate: 1.0, pitch: 0.85 },
   pa: { gender: "female", hype: false, rate: 0.92, pitch: 1.0 },
   robot: { gender: "female", hype: false, rate: 0.95, pitch: 1.05 },
-  cat: { gender: "female", hype: true, rate: 1.1, pitch: 1.3 },
+  cat: { gender: "female", hype: false, rate: 0.85, pitch: 1.0 },
 }
 
 function fnv1a(str: string): string {

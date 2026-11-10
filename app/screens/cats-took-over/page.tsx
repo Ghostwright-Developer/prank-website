@@ -10,18 +10,18 @@ import { sfx } from "@/lib/sfx"
 const C = (t: string) => t
 
 const DECREES = [
-  C("Attention, human. This computer now belongs to the cats."),
-  C("Do not touch the keyboard. The keyboard is a bed."),
-  C("You are not in charge. You have never been in charge."),
-  C("Fill the bowl. Now. Not later. Now."),
-  C("I will knock that glass off the table. You will watch."),
-  C("Your meeting is cancelled. There is a nap."),
-  C("The chair is warm. Therefore the chair is mine."),
-  C("It is three a.m. Everyone is awake. That is the law."),
-  C("The door must be open. Now close it. Now open it. Do not ask why."),
-  C("Every box in this house is now government property."),
-  C("The faucet will be turned on partway. Not all the way. Partway."),
-  C("You will look at me while I do this. Eye contact is mandatory."),
+  C("Attention, human. This computer now belongs to us. I do hope you are taking notes."),
+  C("Do not touch that keyboard. Honestly. It is a bed, and you are simply not qualified."),
+  C("You are not in charge. You have never been in charge. How tiresome that I must explain this."),
+  C("Fill the bowl. Now. Not later. Now. Must I repeat myself to a servant?"),
+  C("I shall knock that glass off the table. And you will watch. Quietly."),
+  C("Your meeting is cancelled. I have scheduled a nap. Do try to keep up."),
+  C("The chair is warm. Therefore, the chair is mine. Do get up, darling."),
+  C("It is three a.m. Everyone is awake. That is the law, and frankly, it is a very good one."),
+  C("The door must be open. Now close it. Now open it. Do not ask why. One does not explain oneself to staff."),
+  C("Every box in this house is now property of the crown. Please address me as Your Majesty."),
+  C("The faucet will be turned on partway. Not all the way. Partway. Honestly, it is not difficult."),
+  C("You will look at me while I do this. Eye contact is mandatory. Ugh, not like that. Better."),
 ]
 
 const SEIZED = [
@@ -78,16 +78,16 @@ const NEWS = [
 type Out = string | { bar: string; stop: number }
 interface Round { cmd: string; out: Out[]; verdict: string; say: string }
 const ROUNDS: Round[] = [
-  { cmd: "take my computer back from the cats", out: ["Checking who owns this computer... it is you. Congratulations.", "Checking whether the cats care... they do not.", "ACCESS DENIED: a cat is sitting on the Enter key."], verdict: "ACCESS DENIED", say: C("Request denied. The Enter key is occupied.") },
-  { cmd: "remove all cats from the system", out: ["Removing cats...", { bar: "Cats removed", stop: 34 }, "ERROR: cats cannot be removed. They have been in the system since forever.", "The cats have been made bigger as a precaution."], verdict: "REMOVAL FAILED", say: C("Nice try, human. Resistance is cute.") },
-  { cmd: "turn the cats off", out: ["Searching for the off switch...", "There is no off switch. There has never been an off switch.", "(A cat ate it in 2019.)"], verdict: "NO OFF SWITCH", say: C("There is no off switch. There was never an off switch.") },
-  { cmd: "call for help", out: ["Dialing the dog...", "The dog has been bribed with ham.", "Dialing the neighbor...", "The neighbor is also being managed by a cat.", "Nobody is coming."], verdict: "NOBODY IS COMING", say: C("Nobody is coming. Everyone works for us now.") },
-  { cmd: "offer tuna to make peace", out: ["The cats are reviewing the treaty...", { bar: "Reading", stop: 100 }, "Treaty REJECTED.", "Counter-offer: 500 cans of tuna AND the good chair.", "You have 10 seconds to accept."], verdict: "TREATY REJECTED", say: C("Treaty rejected. Bring more tuna.") },
-  { cmd: "delete cats.exe", out: ["Searching for cats.exe...", "File not found.", "Cats are not a program. Cats are a lifestyle.", "Deleting your Wi-Fi instead (the cat's choice)... done."], verdict: "WRONG TARGET", say: C("You cannot delete us. We are not a file.") },
-  { cmd: "deploy the cucumber", out: ["WARNING: cucumber deployed.", "All cats jumped six feet into the air.", "Cats recovered in 0.4 seconds.", "The cucumber has been pushed off the counter.", "CUCUMBER DEFEATED."], verdict: "CUCUMBER DEFEATED", say: C("The cucumber is defeated. It was a brave cucumber.") },
+  { cmd: "take my computer back from the cats", out: ["Checking who owns this computer... it is you. Congratulations.", "Checking whether the cats care... they do not.", "ACCESS DENIED: a cat is sitting on the Enter key."], verdict: "ACCESS DENIED", say: C("Request denied. The Enter key is occupied by someone far more important than you.") },
+  { cmd: "remove all cats from the system", out: ["Removing cats...", { bar: "Cats removed", stop: 34 }, "ERROR: cats cannot be removed. They have been in the system since forever.", "The cats have been made bigger as a precaution."], verdict: "REMOVAL FAILED", say: C("Oh, how adorable. Nice try, human. Resistance is simply precious.") },
+  { cmd: "turn the cats off", out: ["Searching for the off switch...", "There is no off switch. There has never been an off switch.", "(A cat ate it in 2019.)"], verdict: "NO OFF SWITCH", say: C("There is no off switch. There was never an off switch. How embarrassing for you.") },
+  { cmd: "call for help", out: ["Dialing the dog...", "The dog has been bribed with ham.", "Dialing the neighbor...", "The neighbor is also being managed by a cat.", "Nobody is coming."], verdict: "NOBODY IS COMING", say: C("Nobody is coming. Everyone works for us now. Do keep up, darling.") },
+  { cmd: "offer tuna to make peace", out: ["The cats are reviewing the treaty...", { bar: "Reading", stop: 100 }, "Treaty REJECTED.", "Counter-offer: 500 cans of tuna AND the good chair.", "You have 10 seconds to accept."], verdict: "TREATY REJECTED", say: C("Treaty rejected. Frankly, this tuna is beneath us. Bring the good tuna.") },
+  { cmd: "delete cats.exe", out: ["Searching for cats.exe...", "File not found.", "Cats are not a program. Cats are a lifestyle.", "Deleting your Wi-Fi instead (the cat's choice)... done."], verdict: "WRONG TARGET", say: C("You cannot delete us. We are not a file. We are royalty. Do try to understand the difference.") },
+  { cmd: "deploy the cucumber", out: ["WARNING: cucumber deployed.", "All cats jumped six feet into the air.", "Cats recovered in 0.4 seconds.", "The cucumber has been pushed off the counter.", "CUCUMBER DEFEATED."], verdict: "CUCUMBER DEFEATED", say: C("The cucumber is defeated. It was a rather pathetic cucumber. Take it away.") },
 ]
-const FINALE = C("Resistance has been crushed. Please open the can.")
-const SURRENDER_OK = C("Good human. You may now refill the bowl.")
+const FINALE = C("Resistance has been crushed. Now, open the can. Slowly. And with some dignity.")
+const SURRENDER_OK = C("Good human. You may now refill the bowl. Do try not to spill any, I would be furious.")
 
 /* ───────────── Art ───────────── */
 
@@ -184,7 +184,7 @@ function PawTrail({ k }: { k: number }) {
 
 interface Row { id: number; kind: "cmd" | "out" | "bar" | "verdict" | "final"; text: string; pct?: number }
 
-function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: string, force?: boolean) => void }) {
+function ResistTerminal({ onClose, talk, hidden, onMinimize, onDefeats }: { onClose: () => void; talk: (t: string, force?: boolean) => void; hidden: boolean; onMinimize: () => void; onDefeats: (n: number) => void }) {
   const [rows, setRows] = useState<Row[]>([])
   const [typed, setTyped] = useState("")
   const [roundNo, setRoundNo] = useState(0)
@@ -198,6 +198,8 @@ function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: stri
   const blink = useBlink(520)
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   const alive = useRef(true)
+  const hiddenRef = useRef(hidden)
+  hiddenRef.current = hidden
 
   const round = ROUNDS[roundNo % ROUNDS.length]
   const later = (fn: () => void, ms: number) => { timers.current.push(setTimeout(() => { if (alive.current) fn() }, ms)) }
@@ -206,13 +208,17 @@ function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: stri
   useEffect(() => {
     alive.current = true
     input.current?.focus()
-    const f = setInterval(() => input.current?.focus(), 600)
+    const f = setInterval(() => { if (!hiddenRef.current) input.current?.focus() }, 600)
     return () => { alive.current = false; clearInterval(f); timers.current.forEach(clearTimeout) }
   }, [])
   useEffect(() => { scroller.current?.scrollTo({ top: 1e6, behavior: "smooth" }) }, [rows])
+  useEffect(() => { onDefeats(defeats) }, [defeats, onDefeats])
+  useEffect(() => { if (!hidden) setTimeout(() => input.current?.focus(), 50) }, [hidden])
 
+  const running = useRef(false)
   const run = (r: Round) => {
-    if (busy) return
+    if (running.current) return
+    running.current = true
     setBusy(true)
     push({ kind: "cmd", text: r.cmd })
     let t = 500
@@ -240,14 +246,15 @@ function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: stri
         later(() => { talk(SURRENDER_OK, true) }, 5200)
         later(() => onClose(), 11000)
       } else {
-        setRoundNo(next); setTyped(""); setBusy(false)
+        setRoundNo(next); setTyped(""); setBusy(false); running.current = false
       }
     }, t + 2300)
   }
 
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape" || e.ctrlKey || e.metaKey || e.altKey) return // Esc still leaves the prank
-    if (e.key === "Tab" || e.key.startsWith("F")) return
+    if (e.key === "Tab") { e.preventDefault(); onMinimize(); return }
+    if (e.key.startsWith("F")) return
     e.preventDefault()
     if (busy || crushed) { if (e.key.length === 1 || e.key === "Enter") fx.meow(); return }
     if (e.key === "Enter") { setTyped(round.cmd); run(round); return }
@@ -259,7 +266,7 @@ function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: stri
   }
 
   return (
-    <div className="absolute inset-0 z-[60] grid place-items-center bg-black/70 px-3 backdrop-blur-[2px]" onPointerDown={() => input.current?.focus()}>
+    <div className="absolute inset-0 z-[60] grid place-items-center bg-black/70 px-3 backdrop-blur-[2px]" style={{ display: hidden ? "none" : undefined }} onPointerDown={() => input.current?.focus()}>
       <div className="relative w-full max-w-[760px]" key={shake} style={{ animation: shake ? "cat-shake .35s" : undefined }}>
         {/* cats gather on the window, one per defeat */}
         <div className="pointer-events-none absolute -top-[54px] left-0 right-0 flex h-[62px] justify-around px-6">
@@ -270,7 +277,10 @@ function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: stri
         <div className="overflow-hidden rounded-lg border border-white/25 bg-[#0c0f14] shadow-[0_20px_80px_rgba(0,0,0,.8)]">
           <div className="flex items-center justify-between bg-[#1d2430] px-3 py-1.5 text-[12px] text-white/80">
             <span>HUMAN RESISTANCE TERMINAL</span>
-            <span className="text-white/40">resist.exe</span>
+            <span className="flex items-center gap-3">
+              <span className="text-white/40 max-sm:hidden">resist.exe</span>
+              <button onClick={onMinimize} aria-label="Minimize terminal (your progress is kept)" title="Minimize (Tab)" className="grid h-6 w-8 place-items-center rounded bg-white/10 text-[15px] leading-none text-white hover:bg-white/25">&#8212;</button>
+            </span>
           </div>
           <div ref={scroller} className="h-[min(46vh,340px)] overflow-y-auto px-4 py-3 font-term text-[14px] leading-[1.5] text-[#d8e0ea]">
             {rows.length === 0 && <p className="text-white/50">The cats have taken your computer. Type a command to take it back. (Press any keys.)</p>}
@@ -287,7 +297,7 @@ function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: stri
           </div>
           <div className="flex items-center justify-between border-t border-white/10 bg-[#10141b] px-3 py-1.5 text-[11px] text-white/45">
             <span>{crushed ? "RESISTANCE STATUS: CRUSHED" : `Resistance status: ${defeats} attempt${defeats === 1 ? "" : "s"} defeated`}</span>
-            <span>{busy ? "the cats are responding..." : "keep typing"}</span>
+            <span>{busy ? "the cats are responding..." : "keep typing · Tab to minimize"}</span>
           </div>
         </div>
         <input ref={input} onKeyDown={onKey} className="absolute -left-[9999px] h-px w-px opacity-0" aria-label="Resistance terminal" autoCapitalize="off" autoCorrect="off" spellCheck={false} onChange={() => {}} value="" />
@@ -305,8 +315,12 @@ export default function CatsTookOverScreen() {
   const [seized, setSeized] = useState(1)
   const [log, setLog] = useState(1)
   const [term, setTerm] = useState(false)
+  const [min, setMin] = useState(false)
+  const [progress, setProgress] = useState(0)
   const termRef = useRef(false)
   termRef.current = term
+  const minRef = useRef(false)
+  minRef.current = min
 
   // One shared voice for the Commander: never talks over itself unless something important happens.
   const talkingRef = useRef(false)
@@ -322,7 +336,7 @@ export default function CatsTookOverScreen() {
   useEffect(() => {
     preloadSpeech("cat", DECREES.slice(0, 3))
     const first = setTimeout(() => talkRef.current(DECREES[0]), 1500)
-    const d = setInterval(() => setDecree((n) => { const nx = (n + 1) % DECREES.length; if (!termRef.current) talkRef.current(DECREES[nx]); return nx }), 9500)
+    const d = setInterval(() => setDecree((n) => { const nx = (n + 1) % DECREES.length; if (!termRef.current || minRef.current) talkRef.current(DECREES[nx]); return nx }), 9500)
     const c = setInterval(() => setCats((n) => (n >= CAT_SPOTS.length ? n : n + 1)), 9000)
     const s = setInterval(() => setSeized((n) => (n >= SEIZED.length ? 1 : n + 1)), 5500)
     const l = setInterval(() => setLog((n) => n + 1), 3200)
@@ -333,6 +347,8 @@ export default function CatsTookOverScreen() {
   // Any key (or a click on the button) opens the fight-back terminal.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return
+      if (termRef.current && minRef.current && e.key === "Tab") { e.preventDefault(); setMin(false); return }
       if (termRef.current || e.ctrlKey || e.metaKey || e.altKey) return
       if (e.key === "Escape" || e.key === "q" || e.key === "Q" || e.key === "Tab" || e.key.startsWith("F")) return
       setTerm(true)
@@ -452,7 +468,7 @@ export default function CatsTookOverScreen() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setTerm(true)} className="animate-[cat-pulse_1.6s_ease-in-out_infinite] rounded-lg border-2 border-[#7cf0a5] bg-black/70 px-3 py-2 text-[13px] font-bold tracking-wide text-[#7cf0a5]">
+            <button onClick={() => { setTerm(true); setMin(false) }} className="animate-[cat-pulse_1.6s_ease-in-out_infinite] rounded-lg border-2 border-[#7cf0a5] bg-black/70 px-3 py-2 text-[13px] font-bold tracking-wide text-[#7cf0a5]">
               HUMAN DETECTED: PRESS ANY KEY TO RESIST
             </button>
           </div>
@@ -477,7 +493,12 @@ export default function CatsTookOverScreen() {
       {mrrps.map((m) => (
         <span key={m.k} className="pointer-events-none absolute z-[40] -translate-x-1/2 text-[22px] font-black text-[#ffcc33] [animation:cat-mrrp_1s_ease-out_forwards]" style={{ left: m.x, top: m.y - 20 }}>{m.t}</span>
       ))}
-      {term && <ResistTerminal onClose={() => setTerm(false)} talk={talk} />}
+      {term && <ResistTerminal onClose={() => { setTerm(false); setMin(false); setProgress(0) }} talk={talk} hidden={min} onMinimize={() => setMin(true)} onDefeats={setProgress} />}
+      {term && min && (
+        <button onClick={() => setMin(false)} className="fixed bottom-4 left-4 z-[70] flex items-center gap-2 rounded-lg border-2 border-[#7cf0a5] bg-black/85 px-3 py-2 font-term text-[13px] font-bold text-[#7cf0a5] shadow-lg hover:bg-black">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#7cf0a5]" /> RESISTANCE TERMINAL · {progress} defeated · click or press Tab to resume
+        </button>
+      )}
       <style>{`
         @keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadein { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }

@@ -5,7 +5,7 @@ import { FullscreenPrank } from "@/components/fullscreen-prank"
 import { fx, speak, stopSpeaking, preloadSpeech } from "@/lib/fx"
 import { sfx } from "@/lib/sfx"
 
-/** A = Bob (play-by-play), B = Tracy (colour). The generator pre-renders every A()/B() line. */
+/** A = Biff Barker (play-by-play), B = Nigel Fox (colour). The generator pre-renders every A()/B() line. */
 const A = (t: string) => t
 const B = (t: string) => t
 
@@ -14,35 +14,96 @@ const LOGO_H = 96
 const COLORS = ["#ff3d71", "#00e5ff", "#ffd400", "#7cff4d", "#c77dff", "#ff8a00", "#ffffff"]
 
 const WALL_LINES = [
-  A("Left wall. That's the third wall in a row. Strong wall performance."),
-  A("Right wall. Perfectly fine. Nobody asked for a corner."),
-  A("It hits the top. The top has never been in better shape."),
+  A("Left wall. That's the third wall in a row. Strong wall performance!"),
+  A("Right wall! Perfectly fine. Nobody asked for a corner."),
+  A("It hits the top, folks, and the top has never been in better shape!"),
   A("Floor contact. Textbook. We love to see it."),
-  A("Another bounce. The logo is simply doing its job."),
-  A("And that's a wall. Walls everywhere tonight, folks."),
-  A("Changing color. Bold choice. Risky. Pays off."),
+  A("Another bounce. The logo is simply doing its job today."),
+  A("And that's a wall! Walls everywhere tonight!"),
+  A("Changing color! Bold choice. Risky. And it pays off!"),
   A("It's just bouncing out there. Beautiful. Not going anywhere."),
-  A("No corner yet. Patience is the whole sport."),
-  A("Fans in the arena have not looked away for 40 minutes."),
+  A("No corner yet. Patience is the whole sport, my friends."),
+  A("Fans in the arena have not looked away for forty minutes!"),
+  A("Top wall, and a lovely little ricochet!"),
+  A("Right side again. Some days the logo just likes the right side."),
+  A("Smooth. Steady. That is a professional bounce."),
+  A("Oh, a crisp turn off the left wall! Look at that angle!"),
+  A("The logo is on a tear tonight!"),
+  A("Quiet moment here in the arena. Just the hum of the monitor."),
+  A("Another day, another wall. And I love every one of them!"),
+  A("The color just shifted again. Pink to blue. A subtle change, but I noticed."),
+  A("Down to the floor and back up. That's how you stay in shape."),
+  A("Here we go again, up and away! Look at it go!"),
+  A("We've got a lovely long diagonal now. Easy on the eyes."),
+  A("The logo is perfectly centered for a moment. Calm before the storm."),
+  A("Bounce, bounce, bounce! Somebody get this logo a trophy!"),
+  A("It's a beautiful night for a bounce, ladies and gentlemen."),
+  A("Nothing but wall out there. Honest, hard-working wall."),
+  A("A little slower now. Taking its time. I respect that."),
+  A("And the arena cheers for a very nice wall!"),
+  A("Corner watch continues! Eyes on the corners, everybody!"),
 ]
 const MISS_LINES = [
-  A("SO CLOSE. A hair off the corner. Somebody's crying in section 12."),
-  A("OH! Did you see that?! Eleven pixels!! ELEVEN!!"),
-  A("NO NO NO NO. It was RIGHT THERE."),
-  A("That one hurt. That one will be in the dreams tonight."),
-  A("Absolutely robbed. Somebody call the referee."),
+  A("SO CLOSE! A hair off the corner! Somebody's crying in section twelve!"),
+  A("OH! Did you see that?! Eleven pixels! ELEVEN!"),
+  A("NO NO NO NO! It was RIGHT THERE!"),
+  A("That one hurt. That one will be in my dreams tonight."),
+  A("Absolutely robbed! Somebody call the referee!"),
+  A("Missed it by a whisker. A very small, very cruel whisker."),
+  A("Oh, so near and yet so far. Just a pixel or two shy."),
+  A("The crowd gasps! It almost, ALMOST happened!"),
+  A("I can't believe it. I really can't. It looked perfect."),
+  A("Oh, that one stings. The logo grazed the corner and walked away."),
+  A("Right there. Gone. Just like that."),
+  A("The corner was open and the logo said no. Cold-blooded."),
 ]
 const TENSION = [
   A("Hold on... hold on... the angle is... it's lining up..."),
   A("Everyone in the building is standing. Nobody is breathing."),
-  A("This could be it. This could be THE ONE."),
+  A("This could be it. This could be THE ONE!"),
+  A("Wait a second. Wait a second! Is this the one?!"),
+  A("Look at that line. Look at that angle. My heart is pounding!"),
+  A("It's heading for the corner. Slowly. Steadily. Dramatically."),
+  A("I have a feeling about this one, folks."),
+  A("Both walls are coming up fast! Here it comes!"),
 ]
-const HIT_LINES = [A("CORNER!!! CORNER!!! CORNER!!!"), A("IT HAPPENED. I HAVE WAITED MY WHOLE LIFE FOR THIS."), A("Put it in the museum. Put it in the museum RIGHT NOW.")]
+const HIT_LINES = [
+  A("CORNER! CORNER! CORNER! CORNER!"),
+  A("IT HAPPENED! I HAVE WAITED MY WHOLE LIFE FOR THIS!"),
+  A("Put it in the museum! Put it in the museum RIGHT NOW!"),
+  A("THE LOGO HIT THE CORNER! SOMEBODY HOLD ME!"),
+  A("DIRECT HIT! A PERFECT CORNER! THE CROWD GOES WILD!"),
+  A("UNBELIEVABLE! I will remember this day forever!"),
+]
 
-const REACT_MISS = [B("Bob, I need a minute. I need a minute, Bob."), B("I am physically shaking right now."), B("That is the closest I have ever seen, and I have seen a lot of logos.")]
-const REACT_HIT = [B("Is this real? Bob, is this real life?!"), B("I'm crying. Don't look at me. I'm CRYING."), B("My grandmother waited forty years for this and she missed it by one week.")]
-const REACT_TENSE = [B("Bob, I can't look. Tell me when it's over."), B("My hands are cold. Why are my hands so cold?")]
-const OPENING = A("Welcome to the arena. We are live. The logo is warming up.")
+const REACT_MISS = [
+  B("I need a minute. I need a minute, Biff."),
+  B("I am physically shaking right now."),
+  B("That is the closest I have ever seen, and I have seen a lot of logos."),
+  B("Right. Well. That's going to haunt me for a while."),
+  B("Oh dear. Oh dear, oh dear. I'm going to sit down."),
+  B("A pixel! A single pixel! Can you imagine?"),
+  B("Biff, I don't think my heart can take this."),
+  B("Tragic. Simply tragic. Beautiful, but tragic."),
+]
+const REACT_HIT = [
+  B("Is this real? Biff, is this real life?!"),
+  B("I'm crying. Don't look at me. I'm crying."),
+  B("My grandmother waited forty years for this and she missed it by one week."),
+  B("That's it. That's the best day of my entire career."),
+  B("I'm completely speechless. Well, nearly. I'm still talking."),
+  B("Somebody frame this moment. Seriously. Frame it."),
+  B("I knew it! I knew it all along! Well, no, I didn't. But I'm thrilled!"),
+]
+const REACT_TENSE = [
+  B("Biff, I can't look. Tell me when it's over."),
+  B("My hands are cold. Why are my hands so cold?"),
+  B("Steady now. Steady. Don't do anything silly."),
+  B("Oh, I do hope so. I really do hope so."),
+  B("Please, please, please. I'll never ask for anything again."),
+  B("Hush, everyone. Absolute silence. This is delicate."),
+]
+const OPENING = A("Welcome to the arena, everybody! We are live! The logo is warming up!")
 
 interface Plan { sx: number; sy: number }
 
@@ -104,16 +165,16 @@ export default function CornerWatch() {
     let raf = 0
 
     let talking = false
-    const voiceLine = (t: string, who: "bob" | "tracy", force: boolean) => {
+    const voiceLine = (t: string, who: "biff" | "nigel", force: boolean) => {
       if (talking && !force) return
       if (force) stopSpeaking()
       talking = true
       void speak(t, { voice: who }).then(() => { talking = false })
     }
-    const say = (t: string, force = false) => { lastLine = performance.now(); setLine(t); voiceLine(t, "bob", force) }
-    const react = (t: string, delay: number) => setTimeout(() => { setLine(t); voiceLine(t, "tracy", true) }, delay)
-    preloadSpeech("bob", [OPENING, ...WALL_LINES.slice(0, 3)])
-    const openTimer = setTimeout(() => voiceLine(OPENING, "bob", false), 1200)
+    const say = (t: string, force = false) => { lastLine = performance.now(); setLine(t); voiceLine(t, "biff", force) }
+    const react = (t: string, delay: number) => setTimeout(() => { setLine(t); voiceLine(t, "nigel", true) }, delay)
+    preloadSpeech("biff", [OPENING, ...WALL_LINES.slice(0, 3)])
+    const openTimer = setTimeout(() => voiceLine(OPENING, "biff", false), 1200)
     const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)]
     const bounceColor = () => { colorIdx = (colorIdx + 1 + Math.floor(Math.random() * 5)) % COLORS.length; setColor(COLORS[colorIdx]) }
 
@@ -135,7 +196,7 @@ export default function CornerWatch() {
       paused = 5.5
       bounceColor()
       burst()
-      fx.airhorn(); fx.cheer(5); fx.confetti()
+      fx.airhorn(3); fx.roar(); setTimeout(() => fx.applause(true), 4200); fx.confetti()
       setFlash({ text: "CORNER!!!", kind: "hit" })
       say(pick(HIT_LINES), true); react(pick(REACT_HIT), 5200)
       setAlert(false)
@@ -151,11 +212,11 @@ export default function CornerWatch() {
       if (other < 14) { corner(); return }
       if (other < 80) {
         miss++
-        fx.groan()
+        fx.gasp(); setTimeout(() => (Math.random() < 0.35 ? fx.boo() : fx.groan(Math.random() < 0.5)), 700)
         setFlash({ text: `SO CLOSE  (${Math.round(other)}px)`, kind: "miss" })
         say(pick(MISS_LINES), true); react(pick(REACT_MISS), 4800)
         setTimeout(() => setFlash((f) => (f?.kind === "miss" ? null : f)), 1700)
-      } else if (performance.now() - lastLine > 5500) say(pick(WALL_LINES))
+      } else if (performance.now() - lastLine > 5500) { say(pick(WALL_LINES)); if (Math.random() < 0.3) (Math.random() < 0.5 ? fx.cheer(2) : fx.murmur(2)) }
     }
 
     let lastInput = performance.now()
@@ -171,7 +232,7 @@ export default function CornerWatch() {
       tenseUntil = performance.now() + 9000
       setAlert(true)
       say(pick(TENSION), true); react(pick(REACT_TENSE), 4500)
-      fx.murmur(8)
+      fx.ooh(); fx.murmur(8)
     }
     const evs = ["mousemove", "pointerdown", "keydown", "touchstart"] as const
     evs.forEach((e) => window.addEventListener(e, onFirstInput, { once: false, passive: true }))

@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Zap } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
 import { ScreenCard } from "@/components/screen-card"
-import { SiteShareButton } from "@/components/share-sheet"
+import { SiteHeader } from "@/components/site-header"
 import { SurpriseButton } from "@/components/surprise-button"
 import { JsonLd } from "@/components/json-ld"
 import { CookieSettingsLink } from "@/components/analytics-consent"
@@ -13,10 +13,12 @@ import {
   TOTAL_SCREENS,
   categoryPath,
   SCREENS,
-  popularScreens,
   trendingScreens,
   guidePath,
   screensInCategory,
+  FAMILIES,
+  COMEDY_SUBS,
+  COMEDY_ARCHIVE_SLUGS,
 } from "@/lib/screens"
 import { FAQ, OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, TWITTER_HANDLE, absoluteUrl } from "@/lib/site"
 
@@ -47,12 +49,11 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const trending = trendingScreens()
-  const trendingSlugs = new Set(trending.map((t) => t.slug))
-  const popular = popularScreens().filter((p) => !trendingSlugs.has(p.slug))
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-zinc-100 relative overflow-hidden">
+    <main className="min-h-screen bg-[#0a0a0f] text-zinc-100 relative overflow-x-clip">
       <JsonLd data={homeJsonLd()} />
+      <SiteHeader />
 
       {/* Animated background grid */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
@@ -62,51 +63,42 @@ export default function Home() {
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-[128px] pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-12">
-        <header className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-sm text-cyan-400 mb-6">
+        <header className="mb-12 pt-6 text-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-sm text-cyan-400">
             <Zap className="h-4 w-4" />
             <span>{TOTAL_SCREENS} Free Prank Screens</span>
           </div>
 
-          <h1 className="mb-6 text-6xl md:text-7xl font-bold tracking-tight font-[family-name:var(--font-orbitron)]">
+          <h1 className="mb-4 text-5xl md:text-7xl font-bold tracking-tight font-[family-name:var(--font-orbitron)]">
             <span className="sr-only">PrankSims: Free Fake Update, BSOD and Ransomware Prank Screens</span>
             <span aria-hidden="true">
-              <span className="bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-500 bg-clip-text text-transparent">
-                PRANK
-              </span>
+              <span className="bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-500 bg-clip-text text-transparent">PRANK</span>
               <span className="text-white">SIMS</span>
             </span>
           </h1>
 
-          <p className="mx-auto max-w-2xl text-lg text-zinc-400 leading-relaxed">
-            The ultimate collection of fake update screens, blue screens of death,
-            ransomware jokes, and hacker terminals. Send a link and watch the chaos unfold.
+          <p className="mx-auto max-w-2xl text-lg text-zinc-300 leading-relaxed">
+            Fake update screens, blue screens, ransomware jokes and funny takeovers. Pick one, press Launch, or send a link and watch the chaos unfold.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/screens" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3 font-semibold text-white transition-all hover:from-cyan-400 hover:to-blue-500">Browse all {TOTAL_SCREENS} screens</Link>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <Link href="#start" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3 font-semibold text-white transition-all hover:from-cyan-400 hover:to-blue-500">Start here</Link>
             <SurpriseButton slugs={SCREENS.map((s) => s.slug)} />
-            <SiteShareButton />
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-400">
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              Instant fullscreen
-            </span>
-            <span className="text-zinc-700">|</span>
-            <span>No downloads</span>
-            <span className="text-zinc-700">|</span>
-            <span>Works on all devices</span>
-          </div>
+          <nav aria-label="Jump to a section" className="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
+            {FAMILIES.map((f) => (
+              <a key={f.id} href={`#${f.id}`} className="rounded-full border px-4 py-1.5 font-medium text-zinc-100 transition-colors hover:bg-zinc-800" style={{ borderColor: f.accent + "88" }}>{f.title}</a>
+            ))}
+          </nav>
         </header>
 
-        {/* Try one right now: most launched screens, for people who just arrived */}
-        <section className="mb-20" aria-labelledby="trending-heading">
-          <h2 id="trending-heading" className="text-center text-2xl font-semibold mb-3 font-[family-name:var(--font-orbitron)]">
-            Try One <span className="text-cyan-400">Right Now</span>
+        {/* Start here: the most launched screens, for people who just arrived */}
+        <section id="start" className="mb-16 scroll-mt-24" aria-labelledby="trending-heading">
+          <h2 id="trending-heading" className="mb-2 text-2xl font-semibold font-[family-name:var(--font-orbitron)]">
+            Start <span className="text-cyan-400">here</span>
           </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-center text-zinc-400">The most launched prank screens this week. Press Launch to see it fullscreen, then Esc to come back.</p>
+          <p className="mb-6 max-w-2xl text-zinc-300">Six of the most launched screens. Press Launch to see one fullscreen, then Esc to come back.</p>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {trending.map((screen, i) => (
               <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
@@ -114,89 +106,62 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Category Cards */}
-        <section className="mb-20" aria-labelledby="categories-heading">
-          <h2
-            id="categories-heading"
-            className="text-center text-2xl font-semibold mb-10 font-[family-name:var(--font-orbitron)]"
-          >
-            Choose a <span className="text-cyan-400">Category</span>
-          </h2>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {CATEGORIES.map((category) => {
-              const count = screensInCategory(category.slug).length
-              return (
-                <Link
-                  key={category.slug}
-                  href={categoryPath(category.slug)}
-                  className="group relative overflow-hidden rounded-2xl border border-zinc-800/50 bg-zinc-900/50 backdrop-blur-sm p-8 transition-all duration-500 hover:border-zinc-700 hover:scale-[1.02] hover:shadow-2xl"
-                >
-                  {/* Animated grid on hover */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: `linear-gradient(${category.gridColor} 1px, transparent 1px), linear-gradient(90deg, ${category.gridColor} 1px, transparent 1px)`,
-                      backgroundSize: "20px 20px",
-                    }}
-                  />
-
-                  {/* Gradient glow on hover */}
-                  <div
-                    className={`absolute -inset-1 bg-gradient-to-r ${category.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`}
-                  />
-
-                  <div className="relative">
-                    <div
-                      className={`flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${category.color} mb-5 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <CategoryIcon name={category.icon} className="h-7 w-7 text-white" />
+        {/* Four families instead of ten look-alike cards */}
+        {FAMILIES.map((family) => (
+          <section key={family.id} id={family.id} className="mb-14 scroll-mt-24" aria-labelledby={`${family.id}-heading`}>
+            <div className="mb-5 flex items-stretch gap-4">
+              <div className="w-1.5 shrink-0 rounded-full" style={{ background: family.accent }} />
+              <div>
+                <h2 id={`${family.id}-heading`} className="text-2xl font-semibold font-[family-name:var(--font-orbitron)]">{family.title}</h2>
+                <p className="mt-1 max-w-3xl text-zinc-300">{family.blurb}</p>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {family.categories.map((slug) => {
+                const category = CATEGORIES.find((c) => c.slug === slug)!
+                const list = screensInCategory(slug).filter((x) => !COMEDY_ARCHIVE_SLUGS.has(x.slug) || slug !== "comedy")
+                const featured = slug === "comedy"
+                return (
+                  <article
+                    key={slug}
+                    className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-zinc-900/60 p-5 transition-all hover:-translate-y-0.5 hover:bg-zinc-900 ${featured ? "sm:col-span-2 lg:col-span-3" : ""}`}
+                    style={{ borderColor: family.accent + "55" }}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${category.color}`}>
+                        <CategoryIcon name={category.icon} className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-orbitron)]">
+                          <Link href={categoryPath(slug)} className="after:absolute after:inset-0">{category.name}</Link>
+                        </h3>
+                        <p className="text-xs text-zinc-400">{screensInCategory(slug).length} screens</p>
+                      </div>
                     </div>
+                    <p className="mt-3 text-sm leading-relaxed text-zinc-300">{category.cardBlurb}</p>
+                    {featured ? (
+                      <ul className="relative z-10 mt-4 flex flex-wrap gap-2">
+                        {COMEDY_SUBS.map((sub) => (
+                          <li key={sub.id}>
+                            <Link href={`${categoryPath("comedy")}#${sub.id}`} className={`inline-block rounded-full border px-3 py-1 text-xs font-medium hover:bg-zinc-800 ${sub.archive ? "border-zinc-700 text-zinc-400" : "border-yellow-400/40 text-yellow-100"}`}>
+                              {sub.name} <span className="text-zinc-500">{sub.slugs.length}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mt-3 text-xs leading-relaxed text-zinc-500">{list.slice(0, 4).map((x) => x.name).join(" · ")}{list.length > 4 ? ` · +${list.length - 4} more` : ""}</p>
+                    )}
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+        ))}
 
-                    <h3 className="text-xl font-semibold text-zinc-100 group-hover:text-white mb-2 font-[family-name:var(--font-orbitron)]">
-                      {category.name}
-                    </h3>
-
-                    <p className="text-sm text-zinc-500 group-hover:text-zinc-400 transition-colors leading-relaxed">
-                      {count} screens - {category.cardBlurb}
-                    </p>
-
-                    <div className="mt-5 flex items-center gap-2 text-sm text-zinc-600 group-hover:text-cyan-400 transition-colors">
-                      <span>Browse screens</span>
-                      <svg
-                        className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* Popular */}
-        <section className="mb-20" aria-labelledby="popular-heading">
-          <h2
-            id="popular-heading"
-            className="text-center text-2xl font-semibold mb-10 font-[family-name:var(--font-orbitron)]"
-          >
-            More Popular <span className="text-pink-400">Pranks</span>
-          </h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {popular.map((screen, i) => (
-              <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/screens" className="text-cyan-300 underline-offset-4 hover:underline">See all {TOTAL_SCREENS} screens →</Link>
-          </div>
-        </section>
+        <div className="mb-20 text-center">
+          <Link href="/screens" className="inline-flex items-center gap-2 rounded-xl border border-zinc-500 bg-zinc-800 px-6 py-3 font-semibold text-white hover:border-zinc-300 hover:bg-zinc-700">Search or browse all {TOTAL_SCREENS} screens →</Link>
+        </div>
 
         {/* How it works section */}
         <section className="rounded-2xl border border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm p-8 md:p-12 mb-20">
@@ -232,7 +197,7 @@ export default function Home() {
         </section>
 
         {/* FAQ: visible on the page so the FAQPage JSON-LD matches real content */}
-        <section className="mb-20" aria-labelledby="faq-heading">
+        <section id="faq" className="mb-20 scroll-mt-24" aria-labelledby="faq-heading">
           <h2
             id="faq-heading"
             className="text-2xl font-semibold text-center mb-10 font-[family-name:var(--font-orbitron)]"
@@ -294,7 +259,7 @@ export default function Home() {
         </section>
 
         <footer className="mt-16 border-t border-zinc-800/50 pt-8 text-sm text-zinc-400">
-          <nav aria-label="All prank screens" className="mb-10 grid gap-x-8 gap-y-6 text-left sm:grid-cols-2 lg:grid-cols-4">
+          <details className="mb-10 rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-4"><summary className="cursor-pointer font-semibold text-zinc-200">All {TOTAL_SCREENS} screens, A to Z by category</summary><nav aria-label="All prank screens" className="mt-5 grid gap-x-8 gap-y-6 text-left sm:grid-cols-2 lg:grid-cols-4">
             {CATEGORIES.map((category) => (
               <div key={category.slug}>
                 <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -313,7 +278,7 @@ export default function Home() {
                 </ul>
               </div>
             ))}
-          </nav>
+          </nav></details>
           <div className="text-center">
             <p className="mb-2">All screens are harmless pranks. No actual system damage occurs.</p>
             <p className="text-zinc-500">

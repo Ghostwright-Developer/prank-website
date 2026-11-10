@@ -45,6 +45,13 @@ const PA = [
   "Please do not leave unsaved work unattended. Unattended work will be lost and possibly destroyed.",
   "A reminder that the good mug is not a shared mug.",
   "Passengers on the nine hundred and forty fifth tab, we can see you. Please close one.",
+  "Flight Monday to Friday is now boarding. Passengers in denial may board last.",
+  "Would the person who microwaved fish in the shared kitchen please report to the nearest exit.",
+  "The ten fifteen to Inbox Zero has been cancelled indefinitely.",
+  "Please be advised that the printer is not broken. It simply does not like you.",
+  "Gate change. Gate change. Your weekend has been moved to gate Never.",
+  "Lost and found has your will to live. Please collect it from the information desk.",
+  "All passengers named Chad are requested to stop microwaving things.",
 ]
 
 const TONE: Record<Tone, string> = { ok: "#4ade80", late: "#fbbf24", bad: "#f87171", go: "#ffffff" }
