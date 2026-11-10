@@ -16,7 +16,9 @@ interface FullscreenPrankProps {
   children: React.ReactNode
   className?: string
   /** Shown briefly on the home page after the viewer exits (Esc, Q or leaving fullscreen). */
-  exitMessage?: string
+  exitMessage?: string | (() => string)
+  /** Called once when the viewer leaves (Esc, Q, leaving fullscreen), just before we navigate away. */
+  onExit?: () => void
   /** Unused (kept so existing screens compile). */
   secondary?: string
   /** Optional ambient sound loop (synthesized, starts after the first click/tap/key). */
@@ -54,6 +56,7 @@ export function FullscreenPrank({
   children,
   className = "",
   exitMessage,
+  onExit,
   sound,
 }: FullscreenPrankProps) {
   const router = useRouter()
@@ -63,6 +66,8 @@ export function FullscreenPrank({
   const engagedTimerRef = useRef<number | undefined>(undefined)
   const exitMessageRef = useRef(exitMessage)
   exitMessageRef.current = exitMessage
+  const onExitRef = useRef(onExit)
+  onExitRef.current = onExit
 
   /**
    * Single exit path, used by Esc, Q and "viewer left fullscreen". Guarded so
@@ -79,15 +84,14 @@ export function FullscreenPrank({
       trackPrank("prank_exit", { prank_name: exitedSlug, duration_s: Math.min(secs, 3600) })
     }
     try {
-      sessionStorage.setItem(
-        EXIT_MESSAGE_KEY,
-        exitMessageRef.current ?? DEFAULT_EXIT_MESSAGE,
-      )
+      const em = exitMessageRef.current
+      sessionStorage.setItem(EXIT_MESSAGE_KEY, (typeof em === "function" ? em() : em) ?? DEFAULT_EXIT_MESSAGE)
       const slug = location.pathname.split("/")[2]
       if (slug) sessionStorage.setItem(LAST_SCREEN_KEY, slug)
     } catch {
       /* storage unavailable: the exit still works, only the toast is skipped */
     }
+    try { onExitRef.current?.() } catch { /* a screen hook must never block leaving */ }
     leaveFullscreen()
     router.push("/")
   }, [router])

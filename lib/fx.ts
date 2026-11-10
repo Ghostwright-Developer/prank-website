@@ -57,6 +57,22 @@ function burst(dur: number, { type = "bandpass" as BiquadFilterType, freq = 1000
   src.stop(t0 + dur + 0.05)
 }
 
+
+/* Crowd bus: crowd clips go through one gain node that ducks while anyone is talking, so voices stay clear. */
+let crowdBus: GainNode | null = null
+let duckCount = 0
+function getBus(ctx: AudioContext) {
+  if (!crowdBus || crowdBus.context !== ctx) { crowdBus = ctx.createGain(); crowdBus.connect(ctx.destination); duckCount = 0 }
+  return crowdBus
+}
+export function duck(on: boolean) {
+  const ctx = audioCtx()
+  if (!ctx) return
+  const b = getBus(ctx)
+  duckCount = Math.max(0, duckCount + (on ? 1 : -1))
+  b.gain.setTargetAtTime(duckCount > 0 ? 0.28 : 1, ctx.currentTime, 0.07)
+}
+
 const sfxCache = new Map<string, Promise<AudioBuffer | null>>()
 function loadSfx(name: string): Promise<AudioBuffer | null> {
   let p = sfxCache.get(name)
@@ -86,7 +102,7 @@ function crowd(names: string[], gain: number, fallback: () => void) {
     src.playbackRate.value = 0.97 + Math.random() * 0.06
     const g = ctx.createGain()
     g.gain.value = gain
-    src.connect(g).connect(ctx.destination)
+    src.connect(g).connect(getBus(ctx))
     src.start()
   })
 }
@@ -100,15 +116,16 @@ export const fx = {
     const names = dur < 2.8 ? ["cheer-3", "cheer-1"] : dur < 5 ? ["cheer-1", "cheer-2", "cheer-3"] : ["cheer-big-1", "cheer-big-2"]
     crowd(names, 0.9, () => fx.cheerSynth(dur))
   },
-  /** The big one: a goal, a corner, a comeback. */
-  roar() { crowd(["roar-1", "roar-2", "roar-3"], 1, () => fx.cheerSynth(5)) },
+  /** The big moment: a goal, a corner, a comeback. A wall of whistles, cheers and distinct claps, no vowel mush. */
+  roar() { crowd(["ovation-1", "ovation-2", "ovation-3"], 1, () => fx.cheerSynth(5)) },
+  anthem() { void playSfx("anthem", { gain: 0.8 }) },
   /** Collective "ooooh, so close". */
   groan(long = false) { crowd(long ? ["groan-2", "groan-4"] : ["groan-1", "groan-3"], 0.95, () => fx.groanSynth()) },
   boo(long = false) { crowd(long ? ["boo-2", "boo-3"] : ["boo-1", "boo-2"], 0.95, () => fx.groanSynth()) },
   gasp() { crowd(["gasp-1", "gasp-2"], 0.9, () => fx.murmurSynth(1)) },
   /** Rising "ooooh": something is about to happen. */
   ooh() { crowd(["ooh-1", "ooh-2"], 0.85, () => fx.murmurSynth(2)) },
-  applause(big = false) { crowd(big ? ["applause-2", "applause-3"] : ["applause-1", "applause-2"], 0.9, () => fx.cheerSynth(3)) },
+  applause(big = false) { crowd(big ? ["applause-2", "applause-3"] : ["applause-1", "applause-2"], 1.15, () => fx.cheerSynth(3)) },
   murmur(dur = 2) { crowd(["murmur-1", "murmur-2"], dur > 5 ? 0.45 : 0.3, () => fx.murmurSynth(dur)) },
   airhorn(n = 1) { crowd(n >= 3 ? ["airhorn-3"] : n === 2 ? ["airhorn-2"] : ["airhorn-1"], 0.8, () => fx.airhornSynth()) },
   /** Stadium crowd going wild. */
@@ -255,14 +272,23 @@ export function startHoldMusic(): () => void {
  * voice, which we now pick carefully and read with per-sentence energy.
  */
 
-export type VoiceName = "rex" | "tony" | "biff" | "nigel" | "pa" | "robot" | "cat"
+export type VoiceName = "rex" | "tony" | "jet" | "marv" | "pa" | "robot" | "cat" | "coach" | "coachw" | "cheer" | "clock" | "tyler" | "tylerw" | "gary" | "brenda" | "wifi"
 
 /** How each character sounds when the browser's own voice has to stand in. */
 const FALLBACK: Record<VoiceName, { gender: "male" | "female"; hype: boolean; rate: number; pitch: number }> = {
   rex: { gender: "male", hype: true, rate: 1.2, pitch: 1.1 },
   tony: { gender: "male", hype: true, rate: 1.15, pitch: 0.95 },
-  biff: { gender: "male", hype: true, rate: 1.1, pitch: 1.0 },
-  nigel: { gender: "male", hype: false, rate: 1.0, pitch: 0.85 },
+  jet: { gender: "male", hype: true, rate: 1.15, pitch: 1.05 },
+  marv: { gender: "male", hype: false, rate: 0.95, pitch: 0.8 },
+  coach: { gender: "male", hype: false, rate: 1.0, pitch: 0.95 },
+  coachw: { gender: "male", hype: false, rate: 0.9, pitch: 0.9 },
+  cheer: { gender: "female", hype: true, rate: 1.2, pitch: 1.2 },
+  clock: { gender: "male", hype: false, rate: 0.9, pitch: 0.8 },
+  tyler: { gender: "male", hype: true, rate: 1.15, pitch: 1.1 },
+  tylerw: { gender: "male", hype: false, rate: 0.9, pitch: 1.0 },
+  gary: { gender: "male", hype: false, rate: 1.0, pitch: 0.9 },
+  brenda: { gender: "female", hype: false, rate: 0.95, pitch: 1.0 },
+  wifi: { gender: "female", hype: false, rate: 0.95, pitch: 1.05 },
   pa: { gender: "female", hype: false, rate: 0.92, pitch: 1.0 },
   robot: { gender: "female", hype: false, rate: 0.95, pitch: 1.05 },
   cat: { gender: "female", hype: false, rate: 0.85, pitch: 1.0 },
@@ -397,7 +423,8 @@ export async function speak(text: string, { voice = "robot", volume = 1 }: { voi
         g.gain.value = volume
         src.connect(g).connect(ctx.destination)
         curSource = src
-        src.onended = () => { if (curSource === src) curSource = null; resolve() }
+        duck(true)
+        src.onended = () => { duck(false); if (curSource === src) curSource = null; resolve() }
         src.start()
       })
       return
@@ -411,4 +438,81 @@ export function stopSpeaking() {
   try { curSource?.stop() } catch { /* already stopped */ }
   curSource = null
   try { if (speechAvailable()) window.speechSynthesis.cancel() } catch { /* ignore */ }
+}
+
+
+/* ── Overlapping playback for busy scenes (FOCUS): clips that never cancel each other ── */
+
+const live = new Set<AudioBufferSourceNode>()
+
+/** Plays a pre-rendered line without stopping anything else. Resolves when it ends (or at maxDur). */
+export async function playVoice(voice: VoiceName, text: string, { gain = 1, pan = 0, maxDur, delay = 0 }: { gain?: number; pan?: number; maxDur?: number; delay?: number } = {}): Promise<number> {
+  const ctx = audioCtx()
+  if (!ctx) return 0
+  const id = clipId(voice, text)
+  if (!CLIP_IDS.has(id)) return 0
+  const buf = await loadClip(id)
+  if (!buf) return 0
+  return new Promise<number>((resolve) => {
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    const g = ctx.createGain()
+    g.gain.value = gain
+    let node: AudioNode = g
+    src.connect(g)
+    if (pan !== 0 && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; g.connect(p); node = p }
+    node.connect(ctx.destination)
+    live.add(src)
+    duck(true)
+    let done = false
+    const finish = () => { if (done) return; done = true; duck(false); live.delete(src); resolve(buf.duration) }
+    src.onended = finish
+    const t0 = ctx.currentTime + delay
+    src.start(t0)
+    if (maxDur !== undefined) {
+      g.gain.setValueAtTime(gain, t0 + Math.max(0, maxDur - 0.05))
+      g.gain.linearRampToValueAtTime(0.0001, t0 + maxDur)
+      try { src.stop(t0 + maxDur + 0.02) } catch { /* ignore */ }
+    }
+  })
+}
+
+/** Length in seconds of a pre-rendered line (0 when unknown). */
+export async function clipDuration(voice: VoiceName, text: string): Promise<number> {
+  const id = clipId(voice, text)
+  if (!CLIP_IDS.has(id)) return 0
+  const buf = await loadClip(id)
+  return buf ? buf.duration : 0
+}
+
+/** Plays a sound-effect clip from /public/sfx without ducking logic. Resolves with its duration. */
+export async function playSfx(name: string, { gain = 1, rate = 1, delay = 0, bus = false, pan = 0 }: { gain?: number; rate?: number; delay?: number; bus?: boolean; pan?: number } = {}): Promise<number> {
+  const ctx = audioCtx()
+  if (!ctx) return 0
+  const buf = await loadSfx(name)
+  if (!buf) return 0
+  return new Promise<number>((resolve) => {
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    src.playbackRate.value = rate
+    const g = ctx.createGain()
+    g.gain.value = gain
+    src.connect(g)
+    let node: AudioNode = g
+    if (pan !== 0 && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; g.connect(p); node = p }
+    node.connect(bus ? getBus(ctx) : ctx.destination)
+    live.add(src)
+    src.onended = () => { live.delete(src); resolve(buf.duration / rate) }
+    src.start(ctx.currentTime + delay)
+  })
+}
+
+export function preloadSfx(names: string[]) { for (const n of names) void loadSfx(n) }
+export function preloadVoices(items: [VoiceName, string][]) { for (const [v, t] of items) { const id = clipId(v, t); if (CLIP_IDS.has(id)) void loadClip(id) } }
+
+/** Stops everything started with playVoice/playSfx (used when a screen is left). */
+export function stopAllAudio() {
+  for (const s of live) { try { s.stop() } catch { /* ignore */ } }
+  live.clear()
+  stopSpeaking()
 }

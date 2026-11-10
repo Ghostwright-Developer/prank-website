@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
 import { fx, speak, stopSpeaking } from "@/lib/fx"
 
-interface Line { who: 0 | 1; text: string }
+interface Line { who: 0 | 1; text: string; cue?: string; wait?: number }
 type Exchange = Line[]
-const A = (text: string): Line => ({ who: 0, text })
-const B = (text: string): Line => ({ who: 1, text })
+const A = (text: string, o: { cue?: string; wait?: number } = {}): Line => ({ who: 0, text, ...o })
+const B = (text: string, o: { cue?: string; wait?: number } = {}): Line => ({ who: 1, text, ...o })
 const NAMES = ["RICKY RAMPAGE", "TONY THUNDER"]
 const COLORS = ["#38bdf8", "#f472b6"]
 
@@ -29,7 +29,7 @@ const PREGAME: Exchange[] = [
   [A("The desktop has the home field advantage tonight."), B("Of course it does, Ricky. It's literally the field.")],
   [B("The wallpaper is looking sharp tonight, Ricky!"), A("Fresh coat of pixels! The grounds crew has been working overtime!")],
   [A("Any word on the human's warm-up routine?"), B("Sources say stretching. Maybe a sip of coffee. Maybe a snack. We just don't know!")],
-  [A("Ladies and gentlemen, please rise for the national anthem of the desktop."), B("It's the Windows startup sound. Brings a tear to my eye every time.")],
+  [A("Ladies and gentlemen, please rise for the national anthem of the desktop!"), B("Hats off. Tabs closed. Nobody touch the mouse.", { cue: "anthem", wait: 12500 }), A("Beautiful. Just beautiful."), B("It's the startup sound, Ricky. Brings a tear to my eye every time.")],
   [B("Ricky, I've got a feeling about tonight."), A("What kind of feeling, Tony?"), B("A feeling that somebody is about to touch that mouse!")],
   [A("Let's check in with the cursor. How are you feeling, buddy?"), B("No comment. Cursors never talk to the press. It's a professional thing.")],
   [A("The taskbar is down there, just waiting."), B("Patient. Quiet. Dangerous. The taskbar has seen things, Ricky.")],
@@ -139,6 +139,12 @@ const MILESTONE: Exchange[] = [
   [A("Ten thousand more pixels! Do you know how many that is?"), B("No, Ricky. Nobody does. But it's A LOT!")],
 ]
 const REPLAY: Exchange[] = [
+  [B("Let's go to the replay on that one, Ricky."), A("Slow it down! Slower! SLOWER!"), B("There! Look at the wrist. Look at the follow-through. That's the money shot, folks!"), A("THE MONEY SHOT!")],
+  [A("Here's the replay, in beautiful slow motion!"), B("Look at that technique. Look at the cursor kiss the pixel."), A("That is the money shot, Tony! That is the money shot of the evening!"), B("Frame it. Hang it in the lobby.")],
+  [B("Oh, we have to see that again!"), A("Roll it back! Slow it down!"), B("There it is. Frame by frame. Look at the path!"), A("Money shot! Money shot! MONEY SHOT!"), B("Calm down, Ricky. It's a mouse.")],
+  [A("Replay, please! Bring it back around!"), B("Slow motion. Half speed. Quarter speed. Just stop the tape right there."), A("Look at the line he's cutting!"), B("That's it. That's the money shot. That's the one for the highlight reel.")],
+  [B("And here's the angle from behind the cursor."), A("Look at the trail! It's like a comet!"), B("A comet with a mouse pad. Slow it down, let's see the money shot again."), A("There it is!")],
+  [A("Let's look at it again, Tony. In slow motion."), B("Slow it down, slower. I want to see every pixel."), A("Every pixel, Tony!"), B("There. Freeze it. That's your money shot, folks. Put it on a poster.")],
   [A("And here's the replay, in slow motion!"), B("Look at the technique! Look at the wrist! That's twenty years of practice!")],
   [B("Let's take another look at that play!"), A("Slow it down! Slower! Slower! There it is! That's the money shot!")],
   [A("Replay time, folks! Watch the cursor!"), B("Watch the cursor! Watch the cursor! He's gone in a blink!")],
@@ -200,6 +206,8 @@ export default function MouseSportsNetwork() {
         if (my !== token) return
         setCap({ ...line, k: ++k })
         await Promise.all([speak(line.text, { voice: line.who ? "tony" : "rex" }), sleep(Math.max(1800, line.text.length * 50))])
+        if (line.cue === "anthem") fx.anthem()
+        if (line.wait) await sleep(line.wait)
         await sleep(220)
       }
       if (my === token) { busy = false; curPrio = 0; lastEx = performance.now() }

@@ -5,105 +5,117 @@ import { FullscreenPrank } from "@/components/fullscreen-prank"
 import { fx, speak, stopSpeaking, preloadSpeech } from "@/lib/fx"
 import { sfx } from "@/lib/sfx"
 
-/** A = Biff Barker (play-by-play), B = Nigel Fox (colour). The generator pre-renders every A()/B() line. */
-const A = (t: string) => t
-const B = (t: string) => t
+/** A = Jimmy "The Jet" Jenkins (play-by-play), B = Marv Mulligan (colour). The generator pre-renders every A()/B() line. */
+interface Line { who: 0 | 1; text: string; cue?: string; wait?: number }
+type Exchange = Line[]
+const A = (text: string, o: { cue?: string; wait?: number } = {}): Line => ({ who: 0, text, ...o })
+const B = (text: string, o: { cue?: string; wait?: number } = {}): Line => ({ who: 1, text, ...o })
+const NAMES = ["JIMMY “THE JET” JENKINS", "MARV MULLIGAN"]
+const COLORS_CAP = ["#ff3d71", "#00e5ff"]
 
 const LOGO_W = 280
 const LOGO_H = 96
 const COLORS = ["#ff3d71", "#00e5ff", "#ffd400", "#7cff4d", "#c77dff", "#ff8a00", "#ffffff"]
 
-const WALL_LINES = [
-  A("Left wall. That's the third wall in a row. Strong wall performance!"),
-  A("Right wall! Perfectly fine. Nobody asked for a corner."),
-  A("It hits the top, folks, and the top has never been in better shape!"),
-  A("Floor contact. Textbook. We love to see it."),
-  A("Another bounce. The logo is simply doing its job today."),
-  A("And that's a wall! Walls everywhere tonight!"),
-  A("Changing color! Bold choice. Risky. And it pays off!"),
-  A("It's just bouncing out there. Beautiful. Not going anywhere."),
-  A("No corner yet. Patience is the whole sport, my friends."),
-  A("Fans in the arena have not looked away for forty minutes!"),
-  A("Top wall, and a lovely little ricochet!"),
-  A("Right side again. Some days the logo just likes the right side."),
-  A("Smooth. Steady. That is a professional bounce."),
-  A("Oh, a crisp turn off the left wall! Look at that angle!"),
-  A("The logo is on a tear tonight!"),
-  A("Quiet moment here in the arena. Just the hum of the monitor."),
-  A("Another day, another wall. And I love every one of them!"),
-  A("The color just shifted again. Pink to blue. A subtle change, but I noticed."),
-  A("Down to the floor and back up. That's how you stay in shape."),
-  A("Here we go again, up and away! Look at it go!"),
-  A("We've got a lovely long diagonal now. Easy on the eyes."),
-  A("The logo is perfectly centered for a moment. Calm before the storm."),
-  A("Bounce, bounce, bounce! Somebody get this logo a trophy!"),
-  A("It's a beautiful night for a bounce, ladies and gentlemen."),
-  A("Nothing but wall out there. Honest, hard-working wall."),
-  A("A little slower now. Taking its time. I respect that."),
-  A("And the arena cheers for a very nice wall!"),
-  A("Corner watch continues! Eyes on the corners, everybody!"),
+const OPENING: Exchange = [
+  A("Good evening, everybody, and welcome to the Screensaver Sports Network! I'm Jimmy The Jet Jenkins, and WOW, what a night for it!"),
+  B("And I'm Marv Mulligan. Jimmy has had four coffees. I'd like that on the record."),
+  A("Five, Marv! Five! And I regret nothing! Tonight, one logo, four corners, and a whole lot of hope!"),
+  B("Mostly hope. The odds of a corner are, historically, not great."),
 ]
-const MISS_LINES = [
-  A("SO CLOSE! A hair off the corner! Somebody's crying in section twelve!"),
-  A("OH! Did you see that?! Eleven pixels! ELEVEN!"),
-  A("NO NO NO NO! It was RIGHT THERE!"),
-  A("That one hurt. That one will be in my dreams tonight."),
-  A("Absolutely robbed! Somebody call the referee!"),
-  A("Missed it by a whisker. A very small, very cruel whisker."),
-  A("Oh, so near and yet so far. Just a pixel or two shy."),
-  A("The crowd gasps! It almost, ALMOST happened!"),
-  A("I can't believe it. I really can't. It looked perfect."),
-  A("Oh, that one stings. The logo grazed the corner and walked away."),
-  A("Right there. Gone. Just like that."),
-  A("The corner was open and the logo said no. Cold-blooded."),
-]
-const TENSION = [
-  A("Hold on... hold on... the angle is... it's lining up..."),
-  A("Everyone in the building is standing. Nobody is breathing."),
-  A("This could be it. This could be THE ONE!"),
-  A("Wait a second. Wait a second! Is this the one?!"),
-  A("Look at that line. Look at that angle. My heart is pounding!"),
-  A("It's heading for the corner. Slowly. Steadily. Dramatically."),
-  A("I have a feeling about this one, folks."),
-  A("Both walls are coming up fast! Here it comes!"),
-]
-const HIT_LINES = [
-  A("CORNER! CORNER! CORNER! CORNER!"),
-  A("IT HAPPENED! I HAVE WAITED MY WHOLE LIFE FOR THIS!"),
-  A("Put it in the museum! Put it in the museum RIGHT NOW!"),
-  A("THE LOGO HIT THE CORNER! SOMEBODY HOLD ME!"),
-  A("DIRECT HIT! A PERFECT CORNER! THE CROWD GOES WILD!"),
-  A("UNBELIEVABLE! I will remember this day forever!"),
+const ANTHEM: Exchange = [
+  A("Ladies and gentlemen, please rise for the national anthem of the screensaver."),
+  B("Remove your hats. Remove your tabs. Remove that cat video, Dennis, we can see you.", { cue: "anthem", wait: 12500 }),
+  A("Beautiful. Just beautiful. I'm not crying, you're crying!"),
+  B("I'm crying. It's a very good anthem."),
 ]
 
-const REACT_MISS = [
-  B("I need a minute. I need a minute, Biff."),
-  B("I am physically shaking right now."),
-  B("That is the closest I have ever seen, and I have seen a lot of logos."),
-  B("Right. Well. That's going to haunt me for a while."),
-  B("Oh dear. Oh dear, oh dear. I'm going to sit down."),
-  B("A pixel! A single pixel! Can you imagine?"),
-  B("Biff, I don't think my heart can take this."),
-  B("Tragic. Simply tragic. Beautiful, but tragic."),
+const WALL: Exchange[] = [
+  [A("Left wall! And that's the third wall in a row, folks!"), B("Strong wall performance. I'd say the wall is having a career year.")],
+  [A("Right wall! A clean, crisp bounce!"), B("A bounce is a bounce, Jimmy. Let's not hand out medals.")],
+  [A("It hits the top, and the top has NEVER looked better!"), B("The top is the same top it was ten minutes ago. But I'll allow the enthusiasm.")],
+  [B("Floor contact. Textbook."), A("Textbook! You could teach a class on that bounce!"), B("I have. Nobody came.")],
+  [A("Changing color! Bold choice!"), B("Risky. But it pays off. Purple on black. Confident.")],
+  [A("Look at it go! Just look at it go!"), B("I am looking at it, Jimmy. It's all there is to look at.")],
+  [B("It's just bouncing out there."), A("Beautiful, isn't it?"), B("It's... beautiful, yes. Not going anywhere, but beautiful.")],
+  [A("No corner yet. But you can feel it, Marv! You can feel it in the air!"), B("That's the air conditioning, Jimmy.")],
+  [A("The fans in this arena have not looked away for forty minutes!"), B("They can't. They're mostly pixels.")],
+  [B("Top wall, nice little ricochet."), A("Oh, he's thinking about it! He's THINKING!"), B("The logo does not think, Jimmy. It travels.")],
+  [A("Folks, this logo has been bouncing for decades!"), B("Since the nineties. Hasn't missed a night. Well, it's missed a lot of corners.")],
+  [A("Right side again! He loves the right side!"), B("Some days the logo just likes the right side. Nobody asks why.")],
+  [B("Smooth. Steady. Professional."), A("That is a PROFESSIONAL bounce!"), B("Pay the man.")],
+  [A("Marv, tell me what you're seeing out there!"), B("I'm seeing a logo. In motion. Doing logo things.")],
+  [A("Down to the floor, and back up! That is how you stay in shape!"), B("I haven't stayed in shape since the Clinton administration.")],
+  [A("Oh, a crisp turn off the left wall! Look at that angle!"), B("It's the same angle as the last one. Geometry is consistent.")],
+  [B("Quiet moment here in the arena."), A("Just the hum of the monitor, Marv."), B("A lovely hum. Fifty hertz. Chef's kiss.")],
+  [A("It's a beautiful night for a bounce, ladies and gentlemen!"), B("It's a beautiful night for anything with a roof, Jimmy.")],
+  [A("Folks, we are into the fortieth minute and nothing but wall!"), B("Honest, hard-working wall. The backbone of this sport.")],
+  [A("The color just shifted again! Pink to blue!"), B("A subtle change, but I noticed. I notice things. It's why I'm here.")],
+  [B("Jimmy, do you ever think about the logo's feelings?"), A("EVERY DAY, Marv!"), B("I figured. You look tired.")],
+  [A("Eyes on the corners, everybody! Corner Watch continues!"), B("Eyes on the corners. And a sandwich, if somebody's going.")],
+  [A("A little slower now! Taking its time!"), B("Knows how to pace itself. Which is more than I can say for you.")],
+  [A("Bounce, bounce, bounce! Somebody get this logo a trophy!"), B("We tried. It bounced off.")],
+  [B("You know what I love about this sport?"), A("What, Marv?"), B("Nothing. I was hoping you'd have something.")],
+  [A("Ladies and gentlemen, we are LIVE, we are LOUD, we are in the building!"), B("We are in a browser tab, Jimmy. But sure.")],
+  [A("There it goes, off the wall! Just like that!"), B("Just like the last one. And the one before that. And the one before that.")],
+  [B("I'll tell you what, Jimmy. In forty years, I've never seen a logo so committed."), A("Forty years?! You don't look a day over fifty!"), B("I'm forty-one.")],
+  [A("It's lining up for a run at the top left!"), B("It's lining up for the top left every time it's in the middle.")],
+  [A("Folks, the atmosphere in here is ELECTRIC!"), B("It's the monitor, Jimmy. It runs on electricity.")],
 ]
-const REACT_HIT = [
-  B("Is this real? Biff, is this real life?!"),
-  B("I'm crying. Don't look at me. I'm crying."),
-  B("My grandmother waited forty years for this and she missed it by one week."),
-  B("That's it. That's the best day of my entire career."),
-  B("I'm completely speechless. Well, nearly. I'm still talking."),
-  B("Somebody frame this moment. Seriously. Frame it."),
-  B("I knew it! I knew it all along! Well, no, I didn't. But I'm thrilled!"),
+const MISS: Exchange[] = [
+  [A("SO CLOSE! A hair off the corner! Somebody's crying in section twelve!"), B("It's me. I'm in section twelve."), A("It was ELEVEN PIXELS, Marv!"), B("I know how many pixels it was, Jimmy. I counted. Twice.")],
+  [A("OH! DID YOU SEE THAT?! NO! NO! NO NO NO NO!"), B("Take a breath, Jimmy."), A("I can't breathe, Marv! I CAN'T BREATHE!"), B("That's the coffee talking.")],
+  [A("ABSOLUTELY ROBBED! Somebody call the referee!"), B("There's no referee, Jimmy."), A("THEN SOMEBODY BE THE REFEREE!"), B("...Fine. Ruling on the field: not a corner.")],
+  [B("Oh dear. Oh, that one hurts."), A("It was RIGHT THERE, Marv!"), B("It was. It was right there. And then it wasn't.")],
+  [A("The crowd gasps! It ALMOST happened!"), B("Almost is a hard word, Jimmy."), A("It's the hardest word, Marv."), B("Second hardest. First is 'refund.'")],
+  [A("Missed it by a whisker! A tiny, cruel whisker!"), B("Cruel is the right word. The logo grazed the corner and just... walked away.")],
+  [B("That's going to haunt me."), A("It's going to haunt ALL of us!"), B("No, I mean literally. I'm going to dream about that corner. Look at it. It's still just sitting there.")],
+  [A("Oh, so near and yet so far!"), B("Like a bus, Jimmy. You wait forty minutes, and it drives straight past.")],
+  [A("I cannot BELIEVE it! That was perfect! That was PERFECT!"), B("It wasn't, though. That's what makes it so painful.")],
+  [A("NOOOO! The logo grazed the edge and bounced away!"), B("I'm going to sit down."), A("You're already sitting down!"), B("Then I'm going to sit down harder.")],
+  [B("Let's go to the replay on that one."), A("Slow it down! Slower! SLOWER! There!"), B("Look at that. Eleven pixels off the corner. You could fit a small sandwich in there."), A("It's the closest we've been all night!")],
+  [A("That one will be in my dreams tonight, Marv!"), B("Mine too. We'll compare notes in the morning.")],
+  [A("The corner was RIGHT THERE and the logo said no!"), B("Cold-blooded. Pure cold-blooded.")],
+  [A("Folks, that was a heartbreaker!"), B("Folks, we need a minute. Please. Stay seated. We'll be right back.")],
+  [A("Right there! Gone! Just like that!"), B("Like my dreams. Like my knees. Like the rest of this sentence.")],
 ]
-const REACT_TENSE = [
-  B("Biff, I can't look. Tell me when it's over."),
-  B("My hands are cold. Why are my hands so cold?"),
-  B("Steady now. Steady. Don't do anything silly."),
-  B("Oh, I do hope so. I really do hope so."),
-  B("Please, please, please. I'll never ask for anything again."),
-  B("Hush, everyone. Absolute silence. This is delicate."),
+const TENSE: Exchange[] = [
+  [A("Hold on... hold on... the angle is... it's lining up..."), B("Nobody breathe. Nobody breathe.")],
+  [B("Jimmy. Jimmy, look at the angle."), A("I'm looking, Marv! I'm looking!"), B("It's lined up. It is lined up.")],
+  [A("Everyone in the building is standing! Nobody is breathing!"), B("Please, please, please. I'll never ask for anything again.")],
+  [A("This could be it! This could be THE ONE!"), B("Don't say that. Don't jinx it.")],
+  [B("It's heading for the corner. Slowly. Steadily. Dramatically."), A("I have goosebumps, Marv!"), B("That's the air conditioning.")],
+  [A("Wait a second. WAIT A SECOND! Is this the one?!"), B("Hush, everyone. Absolute silence. This is delicate.")],
+  [B("I have a feeling about this one."), A("A good feeling?"), B("A feeling. That's all I'll say. A feeling.")],
+  [A("Both walls are coming up fast! HERE IT COMES!"), B("Steady now. Steady. Don't do anything silly.")],
+  [A("The logo's coming back across the screen, Marv!"), B("With a look in its eye. A determined look.")],
+  [B("The human's back, Jimmy. Look at the cursor."), A("It's the human! They've returned to the stadium!"), B("And the logo can feel it. Watch the angle. Watch the angle.")],
 ]
-const OPENING = A("Welcome to the arena, everybody! We are live! The logo is warming up!")
+const HIT: Exchange[] = [
+  [A("CORNER! CORNER! CORNER! CORNER!"), B("Is this real? Jimmy, is this real life?!"), A("IT'S REAL, MARV! IT'S REAL! I HAVE WAITED MY WHOLE LIFE FOR THIS!"), B("Let's go to the replay!"), A("Slow it down! Slow it down!"), B("Look at that angle. Look at the lead-up. Look at that CORNER."), A("That's the money shot, Marv!"), B("That is the money shot, folks. Frame it.")],
+  [A("IT HAPPENED! THE LOGO HIT THE CORNER! SOMEBODY HOLD ME!"), B("I'm holding you, Jimmy. I'm holding you. I'm also crying."), A("Put it in the museum! Put it in the museum RIGHT NOW!"), B("Let's see that again. Slow motion, please."), A("Look at the form!"), B("Look at the corner. It's sitting there like it's been waiting for him. That's the money shot."), A("The MONEY SHOT, Marv!")],
+  [B("It's in the corner."), A("DIRECT HIT! A PERFECT CORNER! THE CROWD GOES WILD!"), B("My grandmother waited forty years for this, and she missed it by one week."), A("She's watching from somewhere, Marv!"), B("She is. And she's saying 'told you so.'"), A("Replay! Replay! Slow it down!"), B("There it is. Kiss the corner. Kiss it. That's the money shot of the decade.")],
+  [A("UNBELIEVABLE! I will remember this day forever!"), B("I'll remember it until about Thursday."), A("MARV! YOU'RE WITNESSING HISTORY!"), B("I'm witnessing a logo. But it's the best logo I've ever witnessed. Slow it down, let's see it again."), A("There it is. Look at that. Money shot."), B("Money shot.")],
+  [A("THE LOGO! THE CORNER! THE LOGO IN THE CORNER!"), B("I knew it. I knew it all along. Well, no, I didn't. But I'm thrilled."), A("Put it on a poster!"), B("I'm putting it on a mug. Replay, please. There. See the angle? Look at that. That's the money shot, and I'll hear no argument.")],
+]
+const REPLAY_EXTRA: Exchange[] = [
+  [B("Let's take another look at that, shall we?"), A("Slow it down! Slower! Even slower!"), B("There. That's the money shot. That's the moment the logo became a legend.")],
+  [A("Here's the replay in glorious slow motion!"), B("Look at that. Look at the edge of the logo. Kissing the corner."), A("That's the MONEY SHOT, Marv!"), B("It's the money shot, Jimmy. It's the money shot.")],
+]
+const PRESENCE: Exchange[] = [
+  [A("Folks, we've got a visitor in the building!"), B("A human. Sitting there. Watching us watch a logo."), A("Say hi to the fans, human!"), B("Don't encourage them.")],
+  [B("We've got eyes on the screen, Jimmy."), A("Real, living, breathing eyes!"), B("Please don't scare them off. They're hard to get.")],
+]
+const BANTER: Exchange[] = [
+  [A("Marv, I have a theory. What if the logo WANTS the corner?"), B("What if the logo just goes where physics sends it?"), A("Physics is just the logo's way of dreaming, Marv."), B("I'm going to need you to stop talking for a while.")],
+  [B("Jimmy, where's your head at?"), A("Right here, Marv! On my shoulders! Where it's always been!"), B("That's good to know.")],
+  [A("Marv, what's your prediction for the next hour?"), B("More bouncing."), A("Bold!"), B("I've been wrong before.")],
+  [A("Marv, you ever want to be the logo?"), B("Every day. No worries. No taxes. Just bouncing. Beautiful bouncing.")],
+  [B("You know, Jimmy, they say a watched logo never hits the corner."), A("Who says that?!"), B("Me. Just now. It's a saying now.")],
+  [A("Marv, do you think the logo has a family?"), B("I think the logo has a lot of cousins on other screens. They don't talk.")],
+  [A("Folks, we want to thank our sponsors tonight!"), B("Tonight's coverage is brought to you by Nothing. And Nothing says hello.")],
+  [A("Quick stat, Marv! The logo has covered over eleven thousand pixels this quarter!"), B("Who counts these things?"), A("I do, Marv! In my spare time!"), B("You need hobbies.")],
+]
 
 interface Plan { sx: number; sy: number }
 
@@ -141,7 +153,7 @@ export default function CornerWatch() {
   const cornerGlow = useRef<(HTMLDivElement | null)[]>([])
   const [hud, setHud] = useState({ hits: 0, miss: 0, walls: 0, secs: 0, prox: 999, viewers: 412938 })
   const [color, setColor] = useState(COLORS[0])
-  const [line, setLine] = useState(OPENING)
+  const [cap, setCap] = useState<{ who: 0 | 1; text: string; k: number } | null>(null)
   const [flash, setFlash] = useState<null | { text: string; kind: "miss" | "hit" | "tense" }>(null)
   const [alert, setAlert] = useState(false)
 
@@ -164,17 +176,28 @@ export default function CornerWatch() {
     const sparks: Spark[] = []
     let raf = 0
 
-    let talking = false
-    const voiceLine = (t: string, who: "biff" | "nigel", force: boolean) => {
-      if (talking && !force) return
-      if (force) stopSpeaking()
-      talking = true
-      void speak(t, { voice: who }).then(() => { talking = false })
+    let busy = false, curPrio = 0, token = 0, kk = 0
+    let lastEx = performance.now()
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+    const bagOf = <T,>(a: T[]) => { let q: T[] = []; return () => { if (!q.length) q = [...a].sort(() => Math.random() - 0.5); return q.pop() as T } }
+    const nextWall = bagOf(WALL), nextMiss = bagOf(MISS), nextTense = bagOf(TENSE), nextHit = bagOf(HIT), nextBanter = bagOf([...WALL, ...BANTER]), nextPresence = bagOf(PRESENCE)
+    async function play(ex: Exchange, prio: number) {
+      if (busy && prio <= curPrio) return
+      const mine = ++token
+      busy = true; curPrio = prio; lastEx = performance.now()
+      stopSpeaking()
+      for (const line of ex) {
+        if (mine !== token) return
+        setCap({ who: line.who, text: line.text, k: ++kk })
+        await Promise.all([speak(line.text, { voice: line.who ? "marv" : "jet" }), sleep(Math.max(1700, line.text.length * 45))])
+        if (line.cue === "anthem") { fx.anthem(); }
+        if (line.wait) await sleep(line.wait)
+        await sleep(200)
+      }
+      if (mine === token) { busy = false; curPrio = 0; lastEx = performance.now() }
     }
-    const say = (t: string, force = false) => { lastLine = performance.now(); setLine(t); voiceLine(t, "biff", force) }
-    const react = (t: string, delay: number) => setTimeout(() => { setLine(t); voiceLine(t, "nigel", true) }, delay)
-    preloadSpeech("biff", [OPENING, ...WALL_LINES.slice(0, 3)])
-    const openTimer = setTimeout(() => voiceLine(OPENING, "biff", false), 1200)
+    preloadSpeech("jet", OPENING.filter((l) => !l.who).map((l) => l.text))
+    const openTimer = setTimeout(() => play([...OPENING, ...ANTHEM], 2), 1200)
     const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)]
     const bounceColor = () => { colorIdx = (colorIdx + 1 + Math.floor(Math.random() * 5)) % COLORS.length; setColor(COLORS[colorIdx]) }
 
@@ -198,7 +221,7 @@ export default function CornerWatch() {
       burst()
       fx.airhorn(3); fx.roar(); setTimeout(() => fx.applause(true), 4200); fx.confetti()
       setFlash({ text: "CORNER!!!", kind: "hit" })
-      say(pick(HIT_LINES), true); react(pick(REACT_HIT), 5200)
+      play(nextHit(), 9)
       setAlert(false)
       setTimeout(() => setFlash(null), 5200)
       plan = planHit(x, y, dx, dy, W, H, 85 + Math.random() * 50)
@@ -214,9 +237,9 @@ export default function CornerWatch() {
         miss++
         fx.gasp(); setTimeout(() => (Math.random() < 0.35 ? fx.boo() : fx.groan(Math.random() < 0.5)), 700)
         setFlash({ text: `SO CLOSE  (${Math.round(other)}px)`, kind: "miss" })
-        say(pick(MISS_LINES), true); react(pick(REACT_MISS), 4800)
+        play(nextMiss(), 6)
         setTimeout(() => setFlash((f) => (f?.kind === "miss" ? null : f)), 1700)
-      } else if (performance.now() - lastLine > 5500) { say(pick(WALL_LINES)); if (Math.random() < 0.3) (Math.random() < 0.5 ? fx.cheer(2) : fx.murmur(2)) }
+      } else if (!busy && performance.now() - lastEx > 6000) { play(nextWall(), 1); if (Math.random() < 0.3) (Math.random() < 0.5 ? fx.cheer(2) : fx.murmur(2)) }
     }
 
     let lastInput = performance.now()
@@ -231,7 +254,7 @@ export default function CornerWatch() {
       plan = planHit(x, y, dx, dy, W, H, 9)
       tenseUntil = performance.now() + 9000
       setAlert(true)
-      say(pick(TENSION), true); react(pick(REACT_TENSE), 4500)
+      play(Math.random() < 0.3 ? nextPresence() : nextTense(), 8)
       fx.ooh(); fx.murmur(8)
     }
     const evs = ["mousemove", "pointerdown", "keydown", "touchstart"] as const
@@ -291,7 +314,7 @@ export default function CornerWatch() {
       const prox = Math.hypot(Math.min(x, W - x), Math.min(y, H - y))
       setHud((h) => ({ hits, miss, walls, secs: Math.floor((performance.now() - startedAt) / 1000), prox: Math.round(prox), viewers: Math.max(1000, h.viewers + Math.round((Math.random() - 0.45) * 90)) }))
     }, 250)
-    const idleTalk = setInterval(() => { if (performance.now() - lastLine > 12000 && paused <= 0) say(pick(WALL_LINES)) }, 4000)
+    const idleTalk = setInterval(() => { if (!busy && performance.now() - lastEx > 11000 && paused <= 0) play(nextBanter(), 1) }, 4000)
 
     return () => {
       cancelAnimationFrame(raf); clearTimeout(openTimer); stopSpeaking()
@@ -354,8 +377,8 @@ export default function CornerWatch() {
           <span className={`w-14 text-right font-mono ${hot ? "font-bold text-[#ff3d71]" : "text-white/70"}`}>{hud.prox}px</span>
         </div>
         <div className="flex items-stretch border-t-2 border-[#e11d48] bg-[#0a0c18]">
-          <div className="grid shrink-0 place-items-center bg-[#e11d48] px-5 text-[13px] font-extrabold tracking-widest">PLAY BY PLAY</div>
-          <p key={line} className="flex-1 px-5 py-3 text-[clamp(14px,1.7vw,20px)] [animation:cw-in_.4s_ease]">{line}</p>
+          <div className="grid w-[150px] shrink-0 place-items-center px-3 text-center text-[11px] font-extrabold leading-tight tracking-widest text-black sm:w-[190px] sm:text-[12px]" style={{ background: cap ? COLORS_CAP[cap.who] : "#e11d48" }}>{cap ? NAMES[cap.who] : "LIVE"}</div>
+          <p key={cap?.k ?? 0} className="flex-1 px-5 py-3 text-[clamp(14px,1.7vw,20px)] leading-snug [animation:cw-in_.4s_ease]">{cap?.text ?? "We are LIVE from the screensaver."}</p>
         </div>
       </div>
 

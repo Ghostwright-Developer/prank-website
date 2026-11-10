@@ -169,6 +169,12 @@ export const GUIDES: Record<string, Guide> = {
     "Anyone who has found ants in the kitchen.",
     "Watch the Recycle Bin: it takes six ants and every one of them has an opinion.",
   ),
+  focus: g(
+    "A calm, minimal productivity app: soft off-white background, one task, a huge 25:00 timer and a friendly green Start button. A coach, a cheerleader with an air horn, a clock that only says the real time, an intern, Gary from Accounting, a progress bar with feelings and a Wi-Fi that takes things personally all try to help.",
+    "Everyone has downloaded a productivity app in January. The joke is total sincerity: nobody ever knows it's funny, and the app is the most professional software ever made while it falls apart. About eight minutes long, ending with credits.",
+    "Offices, remote workers and anyone whose focus has ever needed help from a cheerleader.",
+    "Turn the sound on and leave it alone for a while. Try to type, hover over Start, switch tabs and come back, or turn the volume to zero. It reacts to all of it.",
+  ),
   "on-hold": g(
     "A phone call screen: a call timer, a queue position of #3,201, an estimated wait of 47 minutes and elevator music. A polite robot voice says your call is important. Pressing any key makes your position worse.",
     "Everyone has been on hold. The robot voice, the cheesy music and the queue number that keeps getting worse are all painfully familiar.",
@@ -332,6 +338,18 @@ export const GUIDES: Record<string, Guide> = {
     "The falling green code is the best-known hacker image from film. It is more cool than frightening.",
     "Movie fans and anyone who likes a harmless 'you got hacked' joke.",
     "A great screen to leave running on a spare monitor as a decoration.",
+  ),
+  "webcam-live": g(
+    "A full-screen view of your own camera under a recording overlay, with a face tracker, a REC timer and a count of viewers. If you say no to the camera, it tells you that was smart.",
+    "Seeing yourself under a surveillance overlay is far more convincing than any fake picture. The browser always asks first, and the picture never leaves the page.",
+    "Friends who joke about covering their webcam.",
+    "Tell your friend it is only mirroring their camera and nothing is saved. They can refuse the permission at any time.",
+  ),
+  "camera-in-use": g(
+    "A Windows 11 dark desktop with a green camera indicator in the tray, a toast that says an unknown app is using the camera, and a Settings page where the camera switch flips back on by itself.",
+    "The real Windows camera privacy warnings are small and easy to miss. Making one big and stubborn lands as a proper scare, and it is much more believable than a movie-style hacker screen.",
+    "Windows users who pride themselves on knowing computers.",
+    "Press the Camera access switch. It turns off, then back on, with a message from an unknown administrator.",
   ),
   webcam: g(
     "A message saying your webcam has been accessed, with a recording indicator and a 'someone is watching you' alert.",

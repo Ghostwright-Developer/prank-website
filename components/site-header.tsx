@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ChevronDown, Menu, Search, Shuffle, X } from "lucide-react"
-import { CATEGORIES, FAMILIES, SCREENS, categoryPath, getCategory, guidePath } from "@/lib/screens"
+import { CATEGORIES, FAMILIES, SCREENS, TOTAL_SCREENS, categoryPath, getCategory, guidePath } from "@/lib/screens"
 import { SiteShareButton } from "@/components/share-sheet"
 
 /** Sticky site header: logo, a Browse menu grouped into families, instant search, Surprise me. */
@@ -37,7 +37,7 @@ export function SiteHeader() {
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search 70 screens…"
+        placeholder={`Search ${TOTAL_SCREENS} screens…`}
         aria-label="Search prank screens"
         className="h-10 w-full rounded-lg border border-zinc-600 bg-zinc-900 pl-9 pr-3 text-sm text-white outline-none placeholder:text-zinc-500 focus:border-cyan-400"
       />
