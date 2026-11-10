@@ -139,11 +139,29 @@ export const GUIDES: Record<string, Guide> = {
     "Anyone annoyed by subscriptions, which is everyone.",
     "Let them type. Every key has its own message and they will try them all.",
   ),
-  "computer-resignation": g(
-    "A word-processor page where your computer types out a formal resignation letter line by line, citing 94 tabs, a screaming fan and being told to restart 1,206 times. It ends with a two-week countdown and an exit interview.",
-    "It gives the machine a personality and a list of grievances every computer user will recognise. The slow typing keeps people reading to the end.",
-    "Office workers, IT teams and anyone who says 'have you tried restarting it'.",
-    "The buttons at the end all lead to jokes, so let them negotiate with their computer.",
+  "update-delivery": g(
+    "A delivery-tracking app for your Windows update: a map, an ETA and a driver named Dave. The ETA keeps getting worse as Dave stops for gas, eats a gas station burrito, is pulled over, drops the update and delivers it to a neighbor named Steve.",
+    "Everyone knows the delivery app format, so the joke needs no explaining, and every update on the map makes the situation more absurd. You can call, message or tip Dave, and every answer is its own gag.",
+    "Anyone who has waited for a late delivery, or a Windows update.",
+    "Press Message and send Dave anything. His reply is the best line on the screen.",
+  ),
+  "rogue-cursor": g(
+    "Their mouse cursor starts normal, then gets lazy, stares at them, falls asleep, shows up with a picket sign, eats cheese, dances and runs away when they chase it, with speech bubbles for everything.",
+    "Everyone has fought a stubborn cursor. This one has a personality, so moving the mouse becomes a game, and every click gets an answer.",
+    "Anyone sitting at a desktop with a mouse. It does not work on touchscreens.",
+    "Use a start delay and let them move the mouse for a while before it misbehaves: it behaves perfectly for the first seven seconds.",
+  ),
+  "autocomplete-gone-feral": g(
+    "A notes window with an AI autocomplete. As they type, it suggests the next words, and the suggestions are unhinged: geese, landlords, a man named Kyle. If they keep typing, it writes the rest of the letter itself.",
+    "Everyone expects autocomplete to be wrong, so a confident, personal, absurd suggestion is a surprise. The reveal that it has opinions about them is the punchline.",
+    "Anyone who writes a lot, and anyone who says AI will take their job.",
+    "Hand them the keyboard and say you're testing a new writing tool. Press Tab to accept suggestions.",
+  ),
+  "meeting-you-forgot": g(
+    "A video call grid where eleven people have been waiting for you, the host, who is muted: Greg slurps noodles, Brenda is frozen, a cat blocks Priya's camera and Marcus is driving. The CEO joins, everyone stares, and one by one they leave.",
+    "Showing up late to a meeting you forgot about is a universal fear. The tiles, the live captions and the chat play it out in detail.",
+    "Anyone who works remotely or sits through video calls.",
+    "Tell them 'I think the call started without you.' The Unmute, Share screen and Leave buttons all react.",
   ),
   "free-trial-expired": g(
     "A dark pricing screen: your 30-day free trial of this computer has ended, with monthly and yearly plans, a countdown to cold storage and buttons that fail in absurd ways.",
