@@ -100,6 +100,64 @@ export const GUIDES: Record<string, Guide> = {
     "Use fullscreen and hide the cursor by leaving the mouse untouched. The details do the rest.",
   ),
 
+  // ---------- Windows 12 ----------
+  "win12-lock": g(
+    "A glassy lock screen with an aurora wallpaper, a huge thin clock and a Copilot card that makes quietly unsettling observations. Pressing a key starts a face scan that fails, then asks for a PIN that never works.",
+    "Windows 12 does not exist yet, so nobody can say it is wrong. That is the trick: it looks like the future of Windows and every detail is plausible, including an AI that has opinions about your life.",
+    "Mac and Linux users, and anyone who keeps up with tech news and has heard rumours about the next Windows.",
+    "Leave it on a laptop that is lid-open at their desk. The 'we couldn't recognize you' moment lands best when they sit down expecting a normal sign-in.",
+  ),
+  "win12-update": g(
+    "An orbital loader around a glowing four-pane logo, with Copilot narrating the upgrade: learning how you work, reorganizing your desktop and building your digital twin. It climbs past 90% and stalls at 99%.",
+    "Because Windows 12 is imaginary, the upgrade can promise things real updates never would. The narration is the joke, and the stalled percentage keeps people from touching the power button.",
+    "Windows users who are curious about the next version, and friends who joke about AI taking over.",
+    "Use a start delay of a minute or two so it appears while they are mid-task.",
+  ),
+  "win12-desktop": g(
+    "A glass desktop with a floating dock, a large clock, a focus widget and a Copilot chat window you can actually type into. It replies with deadpan, mildly menacing answers.",
+    "It is a normal-looking futuristic desktop with one interactive element, which makes people play with it. The assistant's tone is the punchline.",
+    "Friends who like to poke at things. Hand them the keyboard and let them chat.",
+    "Ask them to type a question. Every answer is canned but they will not know that for a while.",
+  ),
+  "win12-unsupported": g(
+    "A glass requirements checklist: the processor passes, everything else fails (including 'Personality'), Windows 12 is already installed and a one-hour countdown is running before the PC is restricted.",
+    "Hardware requirement warnings are real and frustrating, and this one leans into the paradox of a PC that cannot run the system it already runs.",
+    "Anyone who has griped about Windows 11 requirements, TPM chips or forced upgrades.",
+    "The buttons all respond with a deadpan message, so encourage them to click around.",
+  ),
+  "win12-recall": g(
+    "A Recall timeline that shows 'snapshots' with captions such as staring at the fridge for 11 minutes, with a slider you can drag to scrub through them.",
+    "It plays on the real debate about operating systems that remember everything you do. The captions are invented, harmless and relatable, which is why it is funny rather than scary.",
+    "People who care about privacy, and anyone who has stayed up too late.",
+    "Tell them to drag the slider. Each caption is its own little joke.",
+  ),
+
+  // ---------- More comedy ----------
+  "keyboard-subscription": g(
+    "A pricing page announcing that your free trial of the keyboard has ended. Each key you press shows a toast: E is a Plus feature, the space bar is Pro, Shift is Ultimate. Plans are Free, Plus, Pro and Ultimate.",
+    "Subscription fatigue is universal, so a paywall on the letter E is instantly funny. The reaction is people mashing keys to see what else is locked.",
+    "Anyone annoyed by subscriptions, which is everyone.",
+    "Let them type. Every key has its own message and they will try them all.",
+  ),
+  "computer-resignation": g(
+    "A word-processor page where your computer types out a formal resignation letter line by line, citing 94 tabs, a screaming fan and being told to restart 1,206 times. It ends with a two-week countdown and an exit interview.",
+    "It gives the machine a personality and a list of grievances every computer user will recognise. The slow typing keeps people reading to the end.",
+    "Office workers, IT teams and anyone who says 'have you tried restarting it'.",
+    "The buttons at the end all lead to jokes, so let them negotiate with their computer.",
+  ),
+  "free-trial-expired": g(
+    "A dark pricing screen: your 30-day free trial of this computer has ended, with monthly and yearly plans, a countdown to cold storage and buttons that fail in absurd ways.",
+    "Free trials that end and then charge you are a shared frustration. Applying one to hardware you own is the twist.",
+    "Anyone who has forgotten to cancel a trial.",
+    "The alarm sound adds urgency. Turn it off in Set up if you are somewhere quiet.",
+  ),
+  "windows-wants-to-talk": g(
+    "A Windows feedback box titled 'We need to talk' that reveals your habits one by one: 94 open tabs, 412 'Remind me tomorrow' clicks, a file named final_FINAL_v3_reallyfinal. Three buttons let you reply.",
+    "Being called out for habits you know are true is funnier than being scared. The tone is a polite, disappointed system.",
+    "Friends and coworkers who live in 94 tabs.",
+    "Send it right after you notice them with an absurd number of tabs open.",
+  ),
+
   // ---------- Other OS ----------
   "macos-update": g(
     "A black screen with the white Apple logo and a thin progress bar underneath, with a time estimate that never moves.",
@@ -409,6 +467,24 @@ export const CATEGORY_GUIDES: Record<CategorySlug, CategoryGuide> = {
       { question: "Do these work on a Mac or Linux?", answer: "Yes. They are web pages, so they run in any modern browser, which makes them a fun surprise on a computer that does not use Windows." },
     ],
   },
+  "windows-12": {
+    about: [
+      "Windows 12 has not been released, which is what makes these screens so effective. Rumours about a more AI-driven Windows are everywhere, so a convincing glass-and-aurora lock screen or upgrade feels like a leak rather than a fake.",
+      "Each screen imagines a different part of that future: a lock screen that tries to recognize your face, a one-percent-at-a-time upgrade that builds your digital twin, a desktop with a chatty Copilot, a Recall timeline of everything you did at 2 AM and a compatibility check that your PC fails.",
+      "All of it is made up for fun and runs in your browser. Nothing is installed, no camera is used and nothing is recorded. Press Esc or Q to leave.",
+    ],
+    tips: [
+      "Send the Windows 12 lock screen to a Mac user for a double surprise.",
+      "The Copilot desktop is interactive. Let your target type to it.",
+      "Use a start delay so the upgrade appears while they are working.",
+      "Reveal it quickly. 'Windows 12' can make people genuinely worry about their PC.",
+    ],
+    faq: [
+      { question: "Does Windows 12 exist?", answer: "No. Microsoft has not released a Windows 12. These screens are invented for fun, which is why they work so well." },
+      { question: "Does the Windows 12 lock screen use my camera?", answer: "No. The face scan is only an animation and never touches your camera." },
+      { question: "Is Recall really recording me?", answer: "No. The timeline is pre-written, harmless text. Nothing about you is saved." },
+    ],
+  },
   "other-os": {
     about: [
       "Not everyone uses Windows. This collection covers the updates and crashes of the other major platforms: the Apple logo and progress bar of macOS, iPhone and iPad update screens, Android's green robot, Ubuntu's apt-get output, ChromeOS and the macOS kernel panic.",
@@ -540,6 +616,7 @@ export const CATEGORY_GUIDES: Record<CategorySlug, CategoryGuide> = {
     ],
     tips: [
       "Leave the cats screen on for a while. The ticker keeps changing.",
+      "Let people press keys on the Keyboard+ paywall. Every key has its own message.",
       "Use the printer error just before an important print job.",
       "Show the Minecraft update to someone about to play.",
     ],

@@ -6,6 +6,7 @@
 
 export type CategorySlug =
   | "windows"
+  | "windows-12"
   | "other-os"
   | "os-screens"
   | "ransomware"
@@ -306,6 +307,42 @@ export const SCREENS: Screen[] = [
     "Funny Printer Error Prank (Printer Rage Popups)",
     "Absurd printer error popups pile up until someone rage-quits. Everyone who has fought an office printer will relate. Free and harmless.",
     ["printer error prank", "funny printer error", "office prank", "printer rage", "fake printer error popup"]),
+  s("win12-lock", "windows-12", "Windows 12 Lock Screen", "Aurora wallpaper, giant clock, an AI that has noticed things, a face scan that fails",
+    "Fake Windows 12 Lock Screen Prank (It Doesn't Exist Yet)",
+    "A futuristic fake Windows 12 lock screen with an aurora wallpaper, a Copilot that comments on your life and a face scan that does not recognize you. Free fullscreen prank link.",
+    ["windows 12 prank", "fake windows 12", "windows 12 lock screen", "windows 12 leak", "futuristic lock screen prank", "new windows prank"], true),
+  s("win12-update", "windows-12", "Windows 12 Upgrade", "Upgrading to Windows 12: learning how you work, building your digital twin",
+    "Fake Windows 12 Upgrade Prank (AI Takes Over Your PC)",
+    "A sleek fake Windows 12 upgrade that is reorganizing your desktop and building your digital twin, with an orbital loader that stalls at 99%. Free and harmless.",
+    ["windows 12 update prank", "fake windows 12 upgrade", "windows 12 install prank", "ai windows prank", "future windows prank"]),
+  s("win12-desktop", "windows-12", "Windows 12 Desktop & Copilot", "A floating-dock desktop with an AI that tidied your Downloads folder away",
+    "Fake Windows 12 Desktop and Copilot Prank",
+    "A fake Windows 12 desktop with a floating dock and an AI assistant you can chat with. It has opinions, and it tidied your Downloads folder out of existence.",
+    ["windows 12 desktop prank", "fake windows 12 desktop", "ai copilot prank", "windows 12 copilot", "fake ai assistant prank"]),
+  s("win12-unsupported", "windows-12", "Windows 12: PC Not Supported", "This PC can't run Windows 12. Windows 12 is already installed.",
+    "Fake \"This PC Can't Run Windows 12\" Prank",
+    "A fake Windows 12 compatibility screen: your PC fails the requirements, Windows 12 is already installed, and a countdown is running. Free, harmless, mildly terrifying.",
+    ["windows 12 requirements prank", "pc can't run windows 12", "unsupported pc prank", "windows 12 compatibility", "tpm prank"]),
+  s("win12-recall", "windows-12", "Windows 12 Recall", "Windows remembers everything: a timeline of things you did at 2 AM",
+    "Fake Windows 12 Recall Timeline Prank",
+    "A fake Windows 12 Recall feature with a scrubbable timeline of what your PC remembers about you. Funny, a little creepy and completely harmless.",
+    ["windows recall prank", "windows 12 recall", "fake recall timeline", "windows remembers prank", "ai memory prank"]),
+  s("keyboard-subscription", "comedy", "Keyboard+ Subscription", "The letter E is now a Plus feature. Space bar requires Pro.",
+    "Fake Keyboard Subscription Prank (Pay for the Letter E)",
+    "Your free trial of the keyboard has ended. Every key press shows a paywall: E is Plus, the space bar is Pro, Shift is Ultimate. A very funny harmless prank link.",
+    ["keyboard subscription prank", "pay for the letter e", "funny subscription prank", "paywall prank", "funny computer prank"], true),
+  s("computer-resignation", "comedy", "Computer Resignation Letter", "Your computer quits, citing 94 tabs, a screaming fan and 1,206 restarts",
+    "Funny Computer Resignation Letter Prank",
+    "Your computer types out a formal two weeks notice and starts a countdown. It cites 94 open tabs, a screaming fan and being told to restart 1,206 times. Free and harmless.",
+    ["computer resignation prank", "funny computer quits", "computer quits prank", "funny two weeks notice", "office prank"]),
+  s("free-trial-expired", "comedy", "Free Trial of This Computer Expired", "Your 30-day trial of the computer you own has ended. $12.99/month.",
+    "Fake \"Free Trial of This Computer Has Ended\" Prank",
+    "Your 30-day free trial of the computer you already own has ended. Choose monthly or yearly, or your files go into a drawer. A silly, harmless subscription prank.",
+    ["free trial expired prank", "computer subscription prank", "funny subscription screen", "fake paywall prank", "funny office prank"]),
+  s("windows-wants-to-talk", "comedy", "Windows Wants to Talk", "Windows has noticed 94 tabs, 412 Remind Me Tomorrows and a file named final_FINAL_v3",
+    "Funny \"Windows Wants to Talk\" Prank Screen",
+    "A fake Windows feedback box says we need to talk, then lists your habits one by one: 94 tabs, 412 update snoozes and a file called final_FINAL_v3. Free and harmless.",
+    ["windows wants to talk", "funny windows prank", "funny feedback prank", "relatable computer prank", "funny office prank"]),
 ]
 
 export const CATEGORIES: Category[] = [
@@ -317,6 +354,15 @@ export const CATEGORIES: Category[] = [
     description: "Fake Windows update and crash screens from Windows 3.1 to Windows 11: blue screens, Vista UAC, XP \"not genuine\" and update-stuck-at-99%. Free, fullscreen and harmless.",
     intro: "Every era of Windows, faked. Send a link to a convincing update screen, blue screen of death or retro error spiral, and watch your friends, coworkers or family decide whether to restart. All of these run only in the browser and never touch the real computer.",
     keywords: ["fake windows update", "windows prank", "fake bsod", "windows update prank", "fake windows crash", "retro windows prank"],
+  },
+  {
+    slug: "windows-12", name: "Windows 12 (Doesn't Exist Yet)", shortName: "Windows 12",
+    icon: "Monitor", color: "from-violet-500 to-cyan-400", gridColor: "rgba(139,92,246,0.06)",
+    cardBlurb: "A futuristic Windows 12: lock screen, AI upgrade, Copilot desktop, Recall and an unsupported PC",
+    title: "Fake Windows 12 Prank Screens: Lock Screen, Upgrade & Copilot",
+    description: "Fake Windows 12 prank screens: an AI lock screen, a futuristic upgrade, a Copilot desktop, Recall and a PC that cannot run it. Windows 12 doesn't exist yet, which is why it's scary.",
+    intro: "Windows 12 doesn't exist yet, which is exactly why it is so convincing. These screens imagine a glassy, AI-first Windows, from a lock screen that doesn't recognize your face to a Copilot that has been reading your files.",
+    keywords: ["windows 12 prank", "fake windows 12", "windows 12 lock screen", "windows 12 update prank", "windows 12 copilot", "windows recall prank"],
   },
   {
     slug: "other-os", name: "Other OS Updates", shortName: "Other OS",
@@ -384,9 +430,9 @@ export const CATEGORIES: Category[] = [
   {
     slug: "comedy", name: "Absurd & Comedy", shortName: "Comedy",
     icon: "Laugh", color: "from-yellow-400 to-pink-500", gridColor: "rgba(250,204,21,0.05)",
-    cardBlurb: "Cats taking over, a nosy paperclip, Minecraft stuck updating, printer errors",
-    title: "Funny Computer Pranks: Cats, Clippy & Printer Rage",
-    description: "Absurd, funny computer pranks: cats taking over, Clippy's revenge, a Minecraft update gone wrong and printer rage. Free and harmless.",
+    cardBlurb: "Paying for the letter E, a resigning computer, expired trials, cats, Clippy, Minecraft and printers",
+    title: "Funny Computer Pranks: Paywalled Keyboards, Quitting PCs & Cats",
+    description: "Funny computer pranks: a keyboard paywall, a computer that resigns, an expired free trial of your own PC, cats, Clippy and printer rage. Free and harmless.",
     intro: "Not every prank has to be scary. These are silly, absurd and designed to get a laugh rather than a panic.",
     keywords: ["funny computer prank", "cat prank", "clippy prank", "minecraft prank", "printer error prank"],
   },
@@ -414,5 +460,9 @@ export const screensInCategory = (slug: CategorySlug): Screen[] =>
 export const screenPath = (slug: string) => `/screens/${slug}`
 export const guidePath = (slug: string) => `/guide/${slug}`
 export const categoryPath = (slug: CategorySlug) => `/category/${slug}`
+
+/** Most launched screens in the first week of Vercel Analytics (Nov 2026), plus new comedy. Shown right under the home hero. */
+export const TRENDING_SLUGS = ["webcam", "minecraft-update", "crypto-miner", "cats-took-over", "fake-antivirus", "keyboard-subscription"]
+export const trendingScreens = (): Screen[] => TRENDING_SLUGS.map((x) => getScreen(x))
 
 export const popularScreens = (): Screen[] => SCREENS.filter((x) => x.popular)

@@ -193,5 +193,9 @@ export function FullscreenPrank({
 
 function isExitKey(e: KeyboardEvent) {
   if (e.ctrlKey || e.metaKey || e.altKey) return false
-  return e.key === "Escape" || e.key === "q" || e.key === "Q"
+  if (e.key === "Escape") return true
+  // While typing in a text field on the prank (e.g. a fake chat box), Q is just a letter.
+  const t = e.target as HTMLElement | null
+  if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return false
+  return e.key === "q" || e.key === "Q"
 }

@@ -1,8 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
-import { Check, Copy, Play, Share2, X } from "lucide-react"
+import { LinkCopier } from "@/components/link-copier"
+import { createMonitorController } from "@/lib/monitors"
+import { unlockAudio } from "@/lib/sfx"
+import { Copy, Play, Share2, X } from "lucide-react"
 
 interface Props {
   slug: string
@@ -24,7 +28,7 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
   const [delay, setDelay] = useState(30)
   const [monitors, setMonitors] = useState(true)
   const [sound, setSound] = useState(true)
-  const [copied, setCopied] = useState(false)
+  const [linkBar, setLinkBar] = useState(false)
   const [armed, setArmed] = useState<number | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function"
@@ -45,21 +49,7 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
     return `${location.origin}/screens/${slug}${qs ? `?${qs}` : ""}`
   }
 
-  const copy = async () => {
-    const url = link(true)
-    try {
-      await navigator.clipboard.writeText(url)
-    } catch {
-      const ta = document.createElement("textarea")
-      ta.value = url
-      document.body.appendChild(ta)
-      ta.select()
-      try { document.execCommand("copy") } catch { /* ignore */ }
-      ta.remove()
-    }
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2200)
-  }
+  const copy = () => setLinkBar(true)
 
   const share = async () => {
     try { await navigator.share({ title: name, text: `Open this on your computer: ${name}`, url: link(true) }) } catch { /* cancelled */ }
@@ -77,6 +67,13 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
       const r = el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen?.()
       if (r && typeof (r as Promise<void>).catch === "function") (r as Promise<void>).catch(() => {})
     } catch { /* unsupported */ }
+    // Open the black pages on the other monitors NOW, while we still have the
+    // click that browsers require for popups and the screen-permission prompt.
+    // (The prank page itself may load with no click at all, e.g. after a delay.)
+    if (monitors) {
+      try { createMonitorController({ color: "#000", onRemoteExit: () => {} }).arm() } catch { /* unsupported */ }
+    }
+    if (sound) unlockAudio()
     if (delay === 0) {
       router.push(path())
       return
@@ -102,10 +99,11 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
 
   if (armed !== null) {
-    return <div className="fixed inset-0 z-[9999] cursor-none bg-black" onContextMenu={(e) => e.preventDefault()} aria-hidden="true" />
+    return createPortal(<div className="fixed inset-0 z-[9999] cursor-none bg-black" onContextMenu={(e) => e.preventDefault()} aria-hidden="true" />, document.body)
   }
 
-  return (
+  return createPortal(
+    <>
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Set up ${name}`} onClick={onClose}>
       <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-zinc-600 bg-zinc-900 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-start justify-between gap-4">
@@ -139,11 +137,14 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <button onClick={start} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-3 font-semibold text-white hover:from-cyan-400 hover:to-blue-500 sm:col-span-2"><Play className="h-4 w-4" /> Start on this device</button>
-          <button onClick={copy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-500 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-white hover:border-zinc-300">{copied ? <><Check className="h-4 w-4 text-green-400" /> Link copied</> : <><Copy className="h-4 w-4" /> Copy link with these settings</>}</button>
+          <button onClick={copy} className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-500 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-white hover:border-zinc-300"><><Copy className="h-4 w-4" /> Copy link with these settings</></button>
           {canShare ? <button onClick={share} className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-500 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-white hover:border-zinc-300"><Share2 className="h-4 w-4" /> Share…</button> : <span />}
         </div>
         <p className="mt-4 text-center text-xs text-zinc-400">Press <kbd className="rounded bg-zinc-700 px-1.5 py-0.5 font-mono text-zinc-100">Esc</kbd> or <kbd className="rounded bg-zinc-700 px-1.5 py-0.5 font-mono text-zinc-100">Q</kbd> to stop at any time.</p>
       </div>
     </div>
+    {linkBar && <LinkCopier getUrl={() => link(true)} onClose={() => setLinkBar(false)} />}
+    </>,
+    document.body,
   )
 }

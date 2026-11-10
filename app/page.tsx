@@ -12,6 +12,7 @@ import {
   categoryPath,
   SCREENS,
   popularScreens,
+  trendingScreens,
   guidePath,
   screensInCategory,
 } from "@/lib/screens"
@@ -43,7 +44,9 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
-  const popular = popularScreens()
+  const trending = trendingScreens()
+  const trendingSlugs = new Set(trending.map((t) => t.slug))
+  const popular = popularScreens().filter((p) => !trendingSlugs.has(p.slug))
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-zinc-100 relative overflow-hidden">
@@ -94,6 +97,19 @@ export default function Home() {
             <span>Works on all devices</span>
           </div>
         </header>
+
+        {/* Try one right now: most launched screens, for people who just arrived */}
+        <section className="mb-20" aria-labelledby="trending-heading">
+          <h2 id="trending-heading" className="text-center text-2xl font-semibold mb-3 font-[family-name:var(--font-orbitron)]">
+            Try One <span className="text-cyan-400">Right Now</span>
+          </h2>
+          <p className="mx-auto mb-8 max-w-2xl text-center text-zinc-400">The most launched prank screens this week. Press Launch to see it fullscreen, then Esc to come back.</p>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {trending.map((screen, i) => (
+              <ScreenCard key={screen.slug} screen={{ slug: screen.slug, name: screen.name, blurb: screen.blurb }} priority={i < 3} />
+            ))}
+          </div>
+        </section>
 
         {/* Category Cards */}
         <section className="mb-20" aria-labelledby="categories-heading">
@@ -167,7 +183,7 @@ export default function Home() {
             id="popular-heading"
             className="text-center text-2xl font-semibold mb-10 font-[family-name:var(--font-orbitron)]"
           >
-            Most Popular <span className="text-pink-400">Pranks</span>
+            More Popular <span className="text-pink-400">Pranks</span>
           </h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {popular.map((screen, i) => (

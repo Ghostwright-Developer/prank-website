@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Check, Copy, Play, SlidersHorizontal } from "lucide-react"
+import { Copy, Play, SlidersHorizontal } from "lucide-react"
+import { LinkCopier } from "@/components/link-copier"
 import { SetupDialog } from "@/components/setup-dialog"
 
 export interface CardScreen {
@@ -15,25 +16,11 @@ export interface CardScreen {
 /** One prank screen: big preview, plain launch button, set-up and copy-link actions. */
 export function ScreenCard({ screen, priority = false }: { screen: CardScreen; priority?: boolean }) {
   const [setup, setSetup] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [linkBar, setLinkBar] = useState(false)
   const [thumbOk, setThumbOk] = useState(true)
   const href = `/screens/${screen.slug}`
 
-  const copy = async () => {
-    const url = `${location.origin}${href}`
-    try {
-      await navigator.clipboard.writeText(url)
-    } catch {
-      const ta = document.createElement("textarea")
-      ta.value = url
-      document.body.appendChild(ta)
-      ta.select()
-      try { document.execCommand("copy") } catch { /* ignore */ }
-      ta.remove()
-    }
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const copy = () => setLinkBar(true)
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-xl border border-zinc-600/70 bg-zinc-900 shadow-lg shadow-black/40 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-400/70 hover:shadow-[0_0_28px_rgba(34,211,238,0.18)]">
@@ -53,9 +40,10 @@ export function ScreenCard({ screen, priority = false }: { screen: CardScreen; p
         <div className="mt-4 grid grid-cols-[1fr_auto_auto] gap-2">
           <Link href={href} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition-colors hover:bg-cyan-300"><Play className="h-4 w-4 fill-zinc-950" /> Launch</Link>
           <button onClick={() => setSetup(true)} title="Set up on this device: delay, monitors, sound" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><SlidersHorizontal className="h-4 w-4" /><span className="hidden sm:inline">Set up</span></button>
-          <button onClick={copy} title="Copy a link to send" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700">{copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}<span className="hidden sm:inline">{copied ? "Copied" : "Link"}</span></button>
+          <button onClick={copy} title="Copy a link to send" className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:border-zinc-300 hover:bg-zinc-700"><Copy className="h-4 w-4" /><span className="hidden sm:inline">Link</span></button>
         </div>
       </div>
+      {linkBar && <LinkCopier getUrl={() => `${location.origin}${href}`} onClose={() => setLinkBar(false)} />}
       {setup && <SetupDialog slug={screen.slug} name={screen.name} blurb={screen.blurb} onClose={() => setSetup(false)} />}
     </article>
   )
