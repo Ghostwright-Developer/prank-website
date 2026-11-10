@@ -438,10 +438,10 @@ export const GUIDES: Record<string, Guide> = {
 
   // ---------- Comedy ----------
   "cats-took-over": g(
-    "A screen taken over by cats, with a slow, endless news ticker at the bottom reporting increasingly ridiculous headlines.",
-    "A comedy screen built for laughing, not scaring. Cats peek in from the bottom of the screen one by one, paw prints walk across, a cat knocks a stat off the screen while looking right at you, and the ticker keeps changing, so it is worth leaving on for a while.",
+    "A screen run by cats: a crowned commander with spoken decrees, a list of seized household territory, a cat news ticker, and a fight-back terminal you cannot win.",
+    "A comedy screen built for laughing, not scaring. Chief Whiskers the First announces decrees in a deadpan voice, cats peek in from the bottom of the screen, paw prints walk across, and a cat knocks a stat off the screen while looking right at you. The fun part: anyone who presses a key opens a resistance terminal that types out real commands, whatever keys they hit, and each attempt to take the computer back is defeated by the cats in a new way.",
     "Cat lovers and anyone who needs a laugh.",
-    "Leave it on a shared screen in the office and see who reads the ticker.",
+    "Hand the keyboard to the victim and tell them the cats took the computer. Whatever they type, the terminal writes sensible commands for them.",
   ),
   "windows-xp-tour": g(
     "A very annoying animated paperclip assistant that offers unhelpful advice and refuses to go away.",

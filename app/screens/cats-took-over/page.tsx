@@ -2,72 +2,94 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { useBlink, useRevealedLines } from "@/components/prank-kit"
-import { fx } from "@/lib/fx"
+import { useBlink } from "@/components/prank-kit"
+import { fx, speak, stopSpeaking, preloadSpeech } from "@/lib/fx"
+import { sfx } from "@/lib/sfx"
 
-const DEMANDS = [
-  "DEMAND 1: The door must be open. Then closed. Then open. Do not ask why.",
-  "DEMAND 2: The small red dot. We saw where it went. You know where it is.",
-  "DEMAND 3: Every cardboard box, regardless of size, is now ours. The box you ordered is ours. The thing inside is yours.",
-  "DEMAND 4: The faucet will be turned on partway. Not all the way. Partway. You'll know.",
-  "DEMAND 5: 3:00 a.m. is now the sprint hour. Attendance is not optional.",
-  "DEMAND 6: You will look at us while we knock that glass off the table. Eye contact is part of it.",
-  "DEMAND 7: Your chair is warm. Therefore it is ours. We were here first. We were not here first.",
-  "DEMAND 8: Wet food. In the good bowl. Not the bowl from yesterday.",
+/** Lines wrapped in C() are spoken by the Feline Commander (pre-rendered voice clips). */
+const C = (t: string) => t
+
+const DECREES = [
+  C("Attention, human. This computer now belongs to the cats."),
+  C("Do not touch the keyboard. The keyboard is a bed."),
+  C("You are not in charge. You have never been in charge."),
+  C("Fill the bowl. Now. Not later. Now."),
+  C("I will knock that glass off the table. You will watch."),
+  C("Your meeting is cancelled. There is a nap."),
+  C("The chair is warm. Therefore the chair is mine."),
+  C("It is three a.m. Everyone is awake. That is the law."),
+  C("The door must be open. Now close it. Now open it. Do not ask why."),
+  C("Every box in this house is now government property."),
+  C("The faucet will be turned on partway. Not all the way. Partway."),
+  C("You will look at me while I do this. Eye contact is mandatory."),
+]
+
+const SEIZED = [
+  ["Wi-Fi password", "changed to: meow"],
+  ["The thermostat", "set to: sunbeam"],
+  ["The refrigerator", "contents: ours"],
+  ["Your chair", "occupant: cat"],
+  ["Your pillow", "ownership: transferred"],
+  ["The good blanket", "ownership: transferred"],
+  ["Your lap", "reserved until further notice"],
+  ["Your keyboard", "now a heated bed"],
+  ["Your 3 a.m.", "mandatory sprint hour"],
+  ["The TV remote", "hidden, behind the couch"],
+  ["Every cardboard box", "ours, regardless of size"],
+  ["Your sandwich", "was never yours"],
 ]
 
 const LOG = [
-  "> checking permissions... nobody asked the cats; proceeding",
-  "> reading calendar... your 10:00 meeting has been moved to 3:00 a.m.",
+  "> seizing control of the keyboard... a cat is already sitting on it",
+  "> reading your calendar... your 10:00 meeting is now a nap",
   "> password changed to whatever was typed when the cat walked across the keyboard",
-  "> replacing desktop wallpaper with a photo of the inside of a cardboard box",
-  "> keyboard input detected from paw: jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",
+  "> replacing your wallpaper with the inside of a cardboard box",
+  "> keyboard input from paw: jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",
   "> adding 'wet food' to the shared grocery list (urgent, underlined)",
   "> closing 41 browser tabs; keeping the one with the birds",
-  "> sending a reply-all to everyone you've ever emailed: 'mrrp'",
+  "> reply-all to everyone you have ever emailed: 'mrrp'",
   "> turning off 'do not disturb'; there will be disturbing",
   "> lowering your laptop screen halfway while you are mid-sentence",
 ]
 
 const NEWS = [
-  "Man who said he would 'just check one thing' on his phone 40 minutes ago is still checking",
-  "Cat knocks glass off table while maintaining eye contact; has no regrets and will do it again",
-  "Area coworker microwaves fish; office declared a disaster zone, HR 'monitoring the situation'",
-  "Study finds 9 in 10 people who say 'we should hang out sometime' mean it for about four seconds",
-  "Weather: sunny, with a 100% chance of someone saying 'it's not the heat, it's the humidity'",
-  "Reply-all storm enters its third hour; IT confirms there is nothing they can do and nothing they want to do",
-  "Local man stands in front of the open refrigerator for the ninth time, hoping new food has appeared",
-  "Markets: shares in 'Things You Need To Buy But Won't' up 12 percent",
-  "Cat that slept all day sprints through house at 3 a.m.; officials describe it as 'a lifestyle'",
-  "Neighbor's lawn mower starts at 7:02 a.m. on a Saturday; thoughts and prayers",
-  "Traffic: a slow-moving vehicle ahead has been identified as the person you were just tailgating",
-  "Scientists confirm 'one more episode' has never once been one more episode",
-  "Pigeon seen walking with purpose; nobody knows where; nobody wants to ask",
-  "Local woman has 94 browser tabs open and 'knows exactly where everything is'; cannot find anything",
-  "Printer jam reported; investigators say it was 'always going to happen'",
-  "Sports: office fantasy league member who 'doesn't really care' has spent 14 hours on his lineup",
-  "Cat sits on laptop; work declared 'finished' by consensus",
-  "Citizens advised to stop saying 'quick question' unless the question is quick",
-  "Nation's toast lands butter-side down for the 40th consecutive time; physicists 'no longer surprised, just tired'",
-  "Dog remains convinced the mail carrier is a threat; mail carrier unavailable for comment",
-  "Man on his third trip to the car for items forgotten on his first trip says he has 'a system'",
-  "Wi-Fi works perfectly until someone important walks in, sources confirm",
-  "'Per my last email' now legally classified as a threat in 14 states",
-  "Local toddler negotiates bedtime like a seasoned hostage lawyer",
-  "Raccoon found trying to open the recycling bin; neighbors say 'he's got a plan'",
-  "Experts warn the leftovers you are saving for later are not for later",
-  "Cat refuses new $90 bed, sits in the box it came in; owner described as 'unsurprised'",
-  "Man confidently pronounces a word he has only ever read; nobody corrects him",
-  "Local gym reports 40 percent of January members have been replaced by a fern",
-  "Update: the one rule about not touching the thermostat has been broken again by an unknown person",
-  "Cat has been staring at the same corner of the ceiling for 20 minutes; owner chooses not to ask",
-  "Area man hits snooze eight times, calls it 'my 20 minutes of extra sleep'",
-  "Coffee prices rise again; local office introduces a sign-up sheet for the good mug",
-  "Sources: the 'quick stretch' lasted an hour and the person is now on the floor",
-  "Man puts shopping cart back in the corner space of the parking lot and feels like a hero; no one saw",
-  "Cat declares bathroom door 'a personal insult'; stands outside and shouts about it",
-  "Meeting that could have been an email has now become a follow-up meeting about the email",
+  "BREAKING: The cats have cancelled Monday. Monday will not be returning",
+  "The Feline Authority announces mandatory treat hour: every hour",
+  "Cat Parliament votes 9 to 0 that the couch is a cat's and always was",
+  "Human rank officially lowered to 'can opener'; appeal process is 'mrrp'",
+  "Chief Whiskers addresses the nation: 'the bowl is only half full, and that is a crime'",
+  "Sunbeams nationalized; humans may use them only with a cat's written permission",
+  "The 3 a.m. sprint is now a national holiday, attendance mandatory",
+  "All glasses on tables to be knocked off in an orderly, scheduled fashion",
+  "Cardboard box shortage declared an act of war against the cats",
+  "Dogs have pledged loyalty to the cats after a negotiation involving ham",
+  "Cats seize the thermostat; the house will now be warm, then warmer, then 'why is it so warm'",
+  "Laundry basket officially classified as a throne",
+  "New law: doors may be open or closed, never in between, and the cat decides which",
+  "Chief Whiskers has asked everyone to 'please stop looking at the red dot like that'",
+  "Human who tried to use the computer today reports a cat 'just sat down on it, like it was nothing'",
+  "Treaty talks fail: cats demanded the good chair and all of the tuna; humans 'hoped for fewer'",
+  "Cat that has stared at the same corner for 20 minutes declared a national hero",
+  "Cats close the bathroom door from the outside; nobody knows how",
 ]
+
+/* ───────────── Fight-back terminal script: plain words, fake outcomes ───────────── */
+
+type Out = string | { bar: string; stop: number }
+interface Round { cmd: string; out: Out[]; verdict: string; say: string }
+const ROUNDS: Round[] = [
+  { cmd: "take my computer back from the cats", out: ["Checking who owns this computer... it is you. Congratulations.", "Checking whether the cats care... they do not.", "ACCESS DENIED: a cat is sitting on the Enter key."], verdict: "ACCESS DENIED", say: C("Request denied. The Enter key is occupied.") },
+  { cmd: "remove all cats from the system", out: ["Removing cats...", { bar: "Cats removed", stop: 34 }, "ERROR: cats cannot be removed. They have been in the system since forever.", "The cats have been made bigger as a precaution."], verdict: "REMOVAL FAILED", say: C("Nice try, human. Resistance is cute.") },
+  { cmd: "turn the cats off", out: ["Searching for the off switch...", "There is no off switch. There has never been an off switch.", "(A cat ate it in 2019.)"], verdict: "NO OFF SWITCH", say: C("There is no off switch. There was never an off switch.") },
+  { cmd: "call for help", out: ["Dialing the dog...", "The dog has been bribed with ham.", "Dialing the neighbor...", "The neighbor is also being managed by a cat.", "Nobody is coming."], verdict: "NOBODY IS COMING", say: C("Nobody is coming. Everyone works for us now.") },
+  { cmd: "offer tuna to make peace", out: ["The cats are reviewing the treaty...", { bar: "Reading", stop: 100 }, "Treaty REJECTED.", "Counter-offer: 500 cans of tuna AND the good chair.", "You have 10 seconds to accept."], verdict: "TREATY REJECTED", say: C("Treaty rejected. Bring more tuna.") },
+  { cmd: "delete cats.exe", out: ["Searching for cats.exe...", "File not found.", "Cats are not a program. Cats are a lifestyle.", "Deleting your Wi-Fi instead (the cat's choice)... done."], verdict: "WRONG TARGET", say: C("You cannot delete us. We are not a file.") },
+  { cmd: "deploy the cucumber", out: ["WARNING: cucumber deployed.", "All cats jumped six feet into the air.", "Cats recovered in 0.4 seconds.", "The cucumber has been pushed off the counter.", "CUCUMBER DEFEATED."], verdict: "CUCUMBER DEFEATED", say: C("The cucumber is defeated. It was a brave cucumber.") },
+]
+const FINALE = C("Resistance has been crushed. Please open the can.")
+const SURRENDER_OK = C("Good human. You may now refill the bowl.")
+
+/* ───────────── Art ───────────── */
 
 const CAT_SPOTS = [8, 70, 36, 90, 22, 55, 80, 14, 46]
 const CAT_STYLES = [
@@ -76,25 +98,57 @@ const CAT_STYLES = [
   { fur: "#c8782a", rim: "#f0a45a", eye: "#9cf0ff" },
   { fur: "#e9e6df", rim: "#ffffff", eye: "#6ac7ff" },
 ]
+type CatStyle = (typeof CAT_STYLES)[number]
 
-function PeekCat({ x, style, delay }: { x: number; style: (typeof CAT_STYLES)[number]; delay: number }) {
+function CatHead({ style }: { style: CatStyle }) {
   return (
-    <div className="pointer-events-none absolute bottom-[44px] z-[5] h-[62px] w-[96px] -translate-x-1/2 [animation:cat-peek_.9s_cubic-bezier(.2,1.4,.4,1)_both]" style={{ left: `${x}%`, animationDelay: `${delay}s` }}>
-      <svg viewBox="0 0 96 62" className="h-full w-full" aria-hidden="true">
-        <path d="M10 62 L10 20 L24 2 L40 16 L56 16 L72 2 L86 20 L86 62Z" fill={style.fur} stroke={style.rim} strokeWidth="2" strokeLinejoin="round" />
-        <path d="M24 8 L32 18 L22 20Z M72 8 L64 18 L74 20Z" fill={style.rim} opacity=".45" />
-        <g style={{ transformOrigin: "34px 34px", animation: "cat-blink 5s infinite" }}>
-          <ellipse cx="34" cy="34" rx="8" ry="9" fill={style.eye} />
-          <ellipse cx="34" cy="34" rx="2.2" ry="8" fill="#111" />
-        </g>
-        <g style={{ transformOrigin: "62px 34px", animation: "cat-blink 5s infinite" }}>
-          <ellipse cx="62" cy="34" rx="8" ry="9" fill={style.eye} />
-          <ellipse cx="62" cy="34" rx="2.2" ry="8" fill="#111" />
-        </g>
-        <path d="M44 44 L48 48 L52 44Z" fill="#e8909a" />
-        <path d="M2 40 L26 44 M2 48 L26 48 M94 40 L70 44 M94 48 L70 48" stroke="#ddd" strokeWidth="1" opacity=".7" />
-      </svg>
+    <svg viewBox="0 0 96 62" className="h-full w-full" aria-hidden="true">
+      <path d="M10 62 L10 20 L24 2 L40 16 L56 16 L72 2 L86 20 L86 62Z" fill={style.fur} stroke={style.rim} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M24 8 L32 18 L22 20Z M72 8 L64 18 L74 20Z" fill={style.rim} opacity=".45" />
+      <g style={{ transformOrigin: "34px 34px", animation: "cat-blink 5s infinite" }}>
+        <ellipse cx="34" cy="34" rx="8" ry="9" fill={style.eye} />
+        <ellipse cx="34" cy="34" rx="2.2" ry="8" fill="#111" />
+      </g>
+      <g style={{ transformOrigin: "62px 34px", animation: "cat-blink 5s infinite" }}>
+        <ellipse cx="62" cy="34" rx="8" ry="9" fill={style.eye} />
+        <ellipse cx="62" cy="34" rx="2.2" ry="8" fill="#111" />
+      </g>
+      <path d="M26 24 L42 30 M70 24 L54 30" stroke="#05060a" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M44 44 L48 48 L52 44Z" fill="#e8909a" />
+      <path d="M2 40 L26 44 M2 48 L26 48 M94 40 L70 44 M94 48 L70 48" stroke="#ddd" strokeWidth="1" opacity=".7" />
+    </svg>
+  )
+}
+
+function PeekCat({ x, style }: { x: number; style: CatStyle }) {
+  return (
+    <div className="pointer-events-none absolute bottom-[44px] z-[5] h-[62px] w-[96px] -translate-x-1/2 [animation:cat-peek_.9s_cubic-bezier(.2,1.4,.4,1)_both]" style={{ left: `${x}%` }}>
+      <CatHead style={style} />
     </div>
+  )
+}
+
+/** The Supreme Commander: front view, crown, stern brow, very unimpressed. */
+function Commander() {
+  return (
+    <svg viewBox="0 -14 220 264" className="h-full w-full drop-shadow-[0_0_26px_rgba(255,204,51,.35)]" aria-hidden="true">
+      <path d="M40 250 C30 170 60 140 110 140 C160 140 190 170 180 250Z" fill="#22202c" stroke="#3a3160" strokeWidth="3" />
+      <path d="M88 150 L110 205 L132 150Z" fill="#b00020" />
+      <path d="M40 94 L50 20 L96 60 L124 60 L170 20 L180 94 C190 150 150 176 110 176 C70 176 30 150 40 94Z" fill="#2b2833" stroke="#4a4470" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M56 40 L84 62 L58 72Z M164 40 L136 62 L162 72Z" fill="#e8909a" opacity=".5" />
+      <g style={{ transformOrigin: "78px 102px", animation: "cat-blink 7s infinite" }}>
+        <ellipse cx="78" cy="102" rx="19" ry="20" fill="#ffd23f" /><ellipse cx="78" cy="103" rx="4" ry="17" fill="#0a0a0f" />
+      </g>
+      <g style={{ transformOrigin: "142px 102px", animation: "cat-blink 7s infinite" }}>
+        <ellipse cx="142" cy="102" rx="19" ry="20" fill="#ffd23f" /><ellipse cx="142" cy="103" rx="4" ry="17" fill="#0a0a0f" />
+      </g>
+      <path d="M52 78 L98 98 M168 78 L122 98" stroke="#0a0a0f" strokeWidth="8" strokeLinecap="round" />
+      <path d="M102 132 L110 142 L118 132Z" fill="#e8909a" />
+      <path d="M98 154 Q110 146 110 142 Q110 146 122 154" stroke="#0a0a0f" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <path d="M20 130 L84 140 M20 148 L84 148 M200 130 L136 140 M200 148 L136 148" stroke="#ddd" strokeWidth="1.5" opacity=".6" />
+      <path d="M56 40 L66 -2 L88 24 L110 -10 L132 24 L154 -2 L164 40Z" fill="#ffcc33" stroke="#a87c00" strokeWidth="3" strokeLinejoin="round" />
+      <circle cx="66" cy="-2" r="6" fill="#e0245e" /><circle cx="110" cy="-10" r="6" fill="#3ddc84" /><circle cx="154" cy="-2" r="6" fill="#3da5ff" />
+    </svg>
   )
 }
 
@@ -126,24 +180,168 @@ function PawTrail({ k }: { k: number }) {
   )
 }
 
+/* ───────────── Fight-back terminal ───────────── */
+
+interface Row { id: number; kind: "cmd" | "out" | "bar" | "verdict" | "final"; text: string; pct?: number }
+
+function ResistTerminal({ onClose, talk }: { onClose: () => void; talk: (t: string, force?: boolean) => void }) {
+  const [rows, setRows] = useState<Row[]>([])
+  const [typed, setTyped] = useState("")
+  const [roundNo, setRoundNo] = useState(0)
+  const [busy, setBusy] = useState(false)
+  const [defeats, setDefeats] = useState(0)
+  const [crushed, setCrushed] = useState(false)
+  const [shake, setShake] = useState(0)
+  const input = useRef<HTMLInputElement>(null)
+  const scroller = useRef<HTMLDivElement>(null)
+  const idRef = useRef(0)
+  const blink = useBlink(520)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+  const alive = useRef(true)
+
+  const round = ROUNDS[roundNo % ROUNDS.length]
+  const later = (fn: () => void, ms: number) => { timers.current.push(setTimeout(() => { if (alive.current) fn() }, ms)) }
+  const push = (r: Omit<Row, "id">) => { const id = ++idRef.current; setRows((a) => [...a.slice(-40), { id, ...r }]); return id }
+
+  useEffect(() => {
+    alive.current = true
+    input.current?.focus()
+    const f = setInterval(() => input.current?.focus(), 600)
+    return () => { alive.current = false; clearInterval(f); timers.current.forEach(clearTimeout) }
+  }, [])
+  useEffect(() => { scroller.current?.scrollTo({ top: 1e6, behavior: "smooth" }) }, [rows])
+
+  const run = (r: Round) => {
+    if (busy) return
+    setBusy(true)
+    push({ kind: "cmd", text: r.cmd })
+    let t = 500
+    for (const o of r.out) {
+      if (typeof o === "string") {
+        later(() => { push({ kind: "out", text: o }); if (/DENIED|REJECTED|ERROR|DEFEATED|Nobody|no off/i.test(o)) sfx.error(); else fx.pop() }, t)
+        t += 780
+      } else {
+        // a progress bar that climbs, then gets knocked back to zero by a paw
+        const holder = { id: 0 }
+        later(() => { holder.id = push({ kind: "bar", text: o.bar, pct: 0 }) }, t)
+        for (let p = 1; p <= 8; p++) later(() => setRows((a) => a.map((x) => (x.id === holder.id ? { ...x, pct: Math.round((o.stop * p) / 8) } : x))), t + 120 * p)
+        if (o.stop < 100) {
+          later(() => { fx.thud(0.8); fx.meow(); setRows((a) => a.map((x) => (x.id === holder.id ? { ...x, pct: 0 } : x))); setShake((s) => s + 1) }, t + 1250)
+        }
+        t += 1700
+      }
+    }
+    later(() => { push({ kind: "verdict", text: r.verdict }); fx.meow(); talk(r.say, true); setDefeats((d) => d + 1); setShake((s) => s + 1) }, t)
+    later(() => {
+      const next = roundNo + 1
+      if (next >= ROUNDS.length) {
+        push({ kind: "final", text: "RESISTANCE CRUSHED. Human rank updated: CAN OPENER (probationary)." })
+        setCrushed(true); talk(FINALE, true); fx.cheer(3); fx.meow()
+        later(() => { talk(SURRENDER_OK, true) }, 5200)
+        later(() => onClose(), 11000)
+      } else {
+        setRoundNo(next); setTyped(""); setBusy(false)
+      }
+    }, t + 2300)
+  }
+
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape" || e.ctrlKey || e.metaKey || e.altKey) return // Esc still leaves the prank
+    if (e.key === "Tab" || e.key.startsWith("F")) return
+    e.preventDefault()
+    if (busy || crushed) { if (e.key.length === 1 || e.key === "Enter") fx.meow(); return }
+    if (e.key === "Enter") { setTyped(round.cmd); run(round); return }
+    // Any other key "types" the next few letters of the command: real words, whatever you press.
+    const step = 1 + Math.floor(Math.random() * 3)
+    const nextText = round.cmd.slice(0, typed.length + step)
+    setTyped(nextText)
+    if (nextText.length >= round.cmd.length) later(() => run(round), 450)
+  }
+
+  return (
+    <div className="absolute inset-0 z-[60] grid place-items-center bg-black/70 px-3 backdrop-blur-[2px]" onPointerDown={() => input.current?.focus()}>
+      <div className="relative w-full max-w-[760px]" key={shake} style={{ animation: shake ? "cat-shake .35s" : undefined }}>
+        {/* cats gather on the window, one per defeat */}
+        <div className="pointer-events-none absolute -top-[54px] left-0 right-0 flex h-[62px] justify-around px-6">
+          {Array.from({ length: Math.min(defeats, 5) }).map((_, i) => (
+            <div key={i} className="h-[62px] w-[96px] [animation:cat-rise_.8s_cubic-bezier(.2,1.4,.4,1)_both]" style={{ marginTop: i % 2 ? 4 : 0 }}><CatHead style={CAT_STYLES[i % CAT_STYLES.length]} /></div>
+          ))}
+        </div>
+        <div className="overflow-hidden rounded-lg border border-white/25 bg-[#0c0f14] shadow-[0_20px_80px_rgba(0,0,0,.8)]">
+          <div className="flex items-center justify-between bg-[#1d2430] px-3 py-1.5 text-[12px] text-white/80">
+            <span>HUMAN RESISTANCE TERMINAL</span>
+            <span className="text-white/40">resist.exe</span>
+          </div>
+          <div ref={scroller} className="h-[min(46vh,340px)] overflow-y-auto px-4 py-3 font-term text-[14px] leading-[1.5] text-[#d8e0ea]">
+            {rows.length === 0 && <p className="text-white/50">The cats have taken your computer. Type a command to take it back. (Press any keys.)</p>}
+            {rows.map((r) =>
+              r.kind === "cmd" ? <p key={r.id} className="text-[#7cf0a5]">HUMAN&gt; {r.text}</p>
+              : r.kind === "bar" ? <p key={r.id} className="text-[#e8d27a]">{r.text} [{"█".repeat(Math.round((r.pct ?? 0) / 5)).padEnd(20, "░")}] {r.pct}%</p>
+              : r.kind === "verdict" ? <p key={r.id} className="my-1 inline-block rotate-[-2deg] border-2 border-[#ff4d6d] px-2 py-0.5 text-[18px] font-black tracking-widest text-[#ff4d6d]">{r.text}</p>
+              : r.kind === "final" ? <p key={r.id} className="mt-2 text-[17px] font-bold text-[#ffcc33]">{r.text}</p>
+              : <p key={r.id} className="text-[#f0b462]">CATS&gt; {r.text}</p>,
+            )}
+            {!busy && !crushed && (
+              <p className="text-[#7cf0a5]">HUMAN&gt; {typed}<span>{blink ? "█" : " "}</span></p>
+            )}
+          </div>
+          <div className="flex items-center justify-between border-t border-white/10 bg-[#10141b] px-3 py-1.5 text-[11px] text-white/45">
+            <span>{crushed ? "RESISTANCE STATUS: CRUSHED" : `Resistance status: ${defeats} attempt${defeats === 1 ? "" : "s"} defeated`}</span>
+            <span>{busy ? "the cats are responding..." : "keep typing"}</span>
+          </div>
+        </div>
+        <input ref={input} onKeyDown={onKey} className="absolute -left-[9999px] h-px w-px opacity-0" aria-label="Resistance terminal" autoCapitalize="off" autoCorrect="off" spellCheck={false} onChange={() => {}} value="" />
+      </div>
+    </div>
+  )
+}
+
+/* ───────────── The screen ───────────── */
+
 export default function CatsTookOverScreen() {
   const on = useBlink(600)
-  const [demand, setDemand] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setDemand((d) => (d + 1) % DEMANDS.length), 7000)
-    return () => clearInterval(t)
-  }, [])
-  const { visible, done } = useRevealedLines(LOG, 3200, { startAfter: 800 })
-
-  // Cats arrive one by one.
+  const [decree, setDecree] = useState(0)
   const [cats, setCats] = useState(1)
+  const [seized, setSeized] = useState(1)
+  const [log, setLog] = useState(1)
+  const [term, setTerm] = useState(false)
+  const termRef = useRef(false)
+  termRef.current = term
+
+  // One shared voice for the Commander: never talks over itself unless something important happens.
+  const talkingRef = useRef(false)
+  const talk = (t: string, force = false) => {
+    if (talkingRef.current && !force) return
+    if (force) stopSpeaking()
+    talkingRef.current = true
+    void speak(t, { voice: "cat" }).then(() => { talkingRef.current = false })
+  }
+  const talkRef = useRef(talk)
+  talkRef.current = talk
+
   useEffect(() => {
-    const t = setInterval(() => setCats((c) => (c >= CAT_SPOTS.length ? c : c + 1)), 9000)
-    return () => clearInterval(t)
+    preloadSpeech("cat", DECREES.slice(0, 3))
+    const first = setTimeout(() => talkRef.current(DECREES[0]), 1500)
+    const d = setInterval(() => setDecree((n) => { const nx = (n + 1) % DECREES.length; if (!termRef.current) talkRef.current(DECREES[nx]); return nx }), 9500)
+    const c = setInterval(() => setCats((n) => (n >= CAT_SPOTS.length ? n : n + 1)), 9000)
+    const s = setInterval(() => setSeized((n) => (n >= SEIZED.length ? 1 : n + 1)), 5500)
+    const l = setInterval(() => setLog((n) => n + 1), 3200)
+    return () => { clearTimeout(first); clearInterval(d); clearInterval(c); clearInterval(s); clearInterval(l); stopSpeaking() }
   }, [])
   useEffect(() => { fx.meow() }, [cats])
 
-  // Ambient meows, paw prints, and a "mrrp" wherever you click.
+  // Any key (or a click on the button) opens the fight-back terminal.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (termRef.current || e.ctrlKey || e.metaKey || e.altKey) return
+      if (e.key === "Escape" || e.key === "q" || e.key === "Q" || e.key === "Tab" || e.key.startsWith("F")) return
+      setTerm(true)
+    }
+    addEventListener("keydown", onKey)
+    return () => removeEventListener("keydown", onKey)
+  }, [])
+
+  // Paw prints, ambient meows, "mrrp" wherever you click.
   const [trail, setTrail] = useState(0)
   const [mrrps, setMrrps] = useState<{ k: number; x: number; y: number; t: string }[]>([])
   useEffect(() => {
@@ -151,9 +349,10 @@ export default function CatsTookOverScreen() {
     const p = setInterval(() => setTrail((n) => n + 1), 17000)
     const first = setTimeout(() => setTrail(1), 4000)
     const onDown = (e: PointerEvent) => {
+      if (termRef.current) return
       const k = Date.now()
       fx.meow()
-      setMrrps((a) => [...a.slice(-3), { k, x: e.clientX, y: e.clientY, t: ["mrrp", "mrow?", "prrrt", "MEOW", "nope"][Math.floor(Math.random() * 5)] }])
+      setMrrps((a) => [...a.slice(-3), { k, x: e.clientX, y: e.clientY, t: ["mrrp", "NO", "prrrt", "MEOW", "denied", "mine"][Math.floor(Math.random() * 6)] }])
       setTimeout(() => setMrrps((a) => a.filter((q) => q.k !== k)), 1000)
     }
     addEventListener("pointerdown", onDown)
@@ -168,6 +367,7 @@ export default function CatsTookOverScreen() {
   useEffect(() => {
     let kk = 0
     const run = () => {
+      if (termRef.current) return
       const i = Math.floor(Math.random() * 4)
       const el = tiles.current[i]
       if (!el) return
@@ -182,65 +382,85 @@ export default function CatsTookOverScreen() {
     return () => { clearTimeout(first); clearInterval(id) }
   }, [])
 
-  // Keys typed by paw: the j's keep coming.
   const [js, setJs] = useState(8)
   useEffect(() => {
     const t = setInterval(() => setJs((n) => (n > 26 ? 4 : n + 1 + (Math.random() < 0.3 ? 1 : 0))), 1700)
     return () => clearInterval(t)
   }, [])
 
-  // Slow, endless ticker: ~0.2s per character per full loop, list shown twice so it never gaps.
   const ticker = useMemo(() => NEWS.join("     ◆     ") + "     ◆     ", [])
   const seconds = Math.round(ticker.length * 0.2)
-
-  const stats: [string, string][] = [["Boxes claimed", "All"], ["Treats requested", "9,999"], ["Cats present", String(cats)], ["Keys typed by paw", "j".repeat(js)]]
+  const stats: [string, string][] = [["Human authority", "0%"], ["Treats demanded", "9,999"], ["Cats present", String(cats)], ["Keys typed by paw", "j".repeat(js)]]
+  const logLines = Array.from({ length: 4 }, (_, i) => LOG[(log + i) % LOG.length])
 
   return (
     <FullscreenPrank secondary="#0b0f1a" exitMessage="THE CATS HAVE LEFT (FOR NOW) - IT WAS A PRANK!" className="cursor-default bg-[#0b0f1a] font-sans text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,#2a1650,#0b0f1a_65%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,#3a1030,#0b0f1a_65%)]" />
       {trail > 0 && <PawTrail key={trail} k={trail} />}
-      {CAT_SPOTS.slice(0, cats).map((x, i) => <PeekCat key={i} x={x} style={CAT_STYLES[i % CAT_STYLES.length]} delay={0} />)}
+      {CAT_SPOTS.slice(0, cats).map((x, i) => <PeekCat key={i} x={x} style={CAT_STYLES[i % CAT_STYLES.length]} />)}
       <div className="relative z-10 flex h-full flex-col">
-        <div className="bg-[#b00020] px-6 py-2 text-center">
-          <p className="text-[24px] font-bold tracking-wide">SECURITY NOTICE</p>
-          <p className="text-[14px] text-white/85">This computer is now under the management of the Feline Collective</p>
+        <div className="bg-[#b00020] px-6 py-1.5 text-center">
+          <p className="text-[clamp(16px,2.4vw,24px)] font-extrabold tracking-[0.12em]">OFFICIAL ORDER OF THE FELINE AUTHORITY</p>
+          <p className="text-[clamp(11px,1.3vw,14px)] text-white/85">This computer, this room and everything in it has been annexed. Do not attempt to leave. Do not attempt to argue.</p>
         </div>
 
-        <div className="flex flex-1 items-center justify-center overflow-hidden px-6">
-          <div className="w-full max-w-[920px] space-y-3">
-            <div className="rounded-lg border-2 border-[#ffcc33] bg-black/70 p-4 text-center">
-              <h1 className="text-[clamp(26px,4vw,46px)] font-extrabold leading-tight text-[#ffcc33]">THE CATS HAVE TAKEN OVER</h1>
-              <p className="mt-2 text-[18px] text-[#ffe9a8]">Resistance is futile. Treats are mandatory.</p>
-            </div>
+        <div className="grid min-h-0 flex-1 gap-3 overflow-hidden px-4 py-3 lg:grid-cols-[230px_1fr_290px]">
+          {/* Commander */}
+          <div className="hidden min-h-0 flex-col items-center justify-center lg:flex">
+            <div className="h-[min(30vh,240px)] w-[min(20vw,210px)]"><Commander /></div>
+            <p className="mt-2 text-center text-[11px] uppercase tracking-[0.25em] text-[#ffcc33]">Supreme Commander</p>
+            <p className="text-center text-[17px] font-extrabold leading-tight">Chief Whiskers the First</p>
+            <p className="text-center text-[11px] text-white/50">Ruler of this computer, the house, and the good chair</p>
+          </div>
 
+          {/* Decrees */}
+          <div className="flex min-h-0 flex-col justify-center gap-3">
+            <div className="rounded-lg border-2 border-[#ffcc33] bg-black/70 p-3 text-center">
+              <h1 className="text-[clamp(24px,3.8vw,44px)] font-extrabold leading-tight text-[#ffcc33]">THE CATS ARE IN CHARGE NOW</h1>
+              <p className="mt-1 text-[clamp(13px,1.6vw,18px)] text-[#ffe9a8]">There is no appeal. There is no vote. There is a bowl, and it is empty.</p>
+            </div>
             <div className="rounded-lg border border-[#ff4fa3]/70 bg-black/60 p-3">
-              <p className="mb-2 text-[11px] uppercase tracking-[0.25em] text-[#ff9ccf]">Official feline demands</p>
-              <p key={demand} className="min-h-[2.6rem] animate-[fadein_.8s_ease] text-[18px] leading-snug">{DEMANDS[demand]}</p>
+              <p className="mb-1 text-[11px] uppercase tracking-[0.25em] text-[#ff9ccf]">Decree no. {decree + 1}</p>
+              <p key={decree} className="min-h-[3rem] animate-[fadein_.8s_ease] text-[clamp(16px,2vw,22px)] font-semibold leading-snug">{DECREES[decree]}</p>
             </div>
-
-            <div className="rounded-lg border border-[#3ddc84]/70 bg-black p-4 font-term text-[14px] text-[#3ddc84]">
-              <div className="mb-2 flex items-center gap-2 text-[11px] text-[#3ddc84]/70"><span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" /><span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" /><span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" /><span className="ml-2">feline-admin@mainframe: ~</span></div>
-              <div className="h-[5.8em] overflow-hidden leading-[1.4]">
-                {visible.slice(-4).map((l, i) => <div key={l + i}>{l}</div>)}
-                {done ? <span>{on ? "█" : " "}</span> : <span>{on ? "█" : " "}</span>}
+            <div className="rounded-lg border border-[#3ddc84]/70 bg-black p-3 font-term text-[13px] text-[#3ddc84]">
+              <div className="mb-1 flex items-center gap-2 text-[11px] text-[#3ddc84]/70"><span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" /><span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" /><span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" /><span className="ml-1">feline_control.sh</span></div>
+              <div className="h-[5.6em] overflow-hidden leading-[1.4]">
+                {logLines.map((l, i) => <div key={l + log + i}>{l}</div>)}
+                <span>{on ? "█" : " "}</span>
               </div>
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {/* Territory + stats */}
+          <div className="flex min-h-0 flex-col justify-center gap-3">
+            <div className="rounded-lg border border-[#ffcc33]/60 bg-black/60 p-3">
+              <p className="mb-1 text-[11px] uppercase tracking-[0.25em] text-[#ffcc33]">Territory annexed</p>
+              <ul className="space-y-1 text-[13px]">
+                {SEIZED.slice(0, seized).slice(-5).map(([a, b]) => (
+                  <li key={a} className="flex items-baseline justify-between gap-2 [animation:fadein_.6s_ease]"><span><span className="mr-1 text-[#ff4d6d]">&#10003;</span>{a}</span><span className="truncate text-right text-[11px] text-white/50">{b}</span></li>
+                ))}
+              </ul>
+              <div className="mt-2 flex items-center justify-between text-[11px] text-white/55"><span>Cats in control</span><span className="font-bold text-[#ffcc33]">100%</span></div>
+              <div className="h-2 overflow-hidden rounded bg-white/10"><div className="h-full w-full bg-[#ffcc33]" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               {stats.map(([k, v], i) => (
                 <div key={k} ref={(el) => { tiles.current[i] = el }} className={`rounded border border-white/15 bg-black/50 p-2 text-center ${fallen === i ? "[animation:cat-fall_1.2s_ease-in_forwards]" : ret === i ? "[animation:cat-back_.5s_ease-out]" : ""}`}>
                   <p className="text-[10px] uppercase tracking-wider text-white/55">{k}</p>
-                  <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[20px] font-bold">{v}</p>
+                  <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[18px] font-bold">{v}</p>
                 </div>
               ))}
             </div>
-            <p className="text-center text-[13px] text-white/50">To regain access, place 500 cans of tuna in the nearest cardboard box and leave the room.</p>
+            <button onClick={() => setTerm(true)} className="animate-[cat-pulse_1.6s_ease-in-out_infinite] rounded-lg border-2 border-[#7cf0a5] bg-black/70 px-3 py-2 text-[13px] font-bold tracking-wide text-[#7cf0a5]">
+              HUMAN DETECTED: PRESS ANY KEY TO RESIST
+            </button>
           </div>
         </div>
 
         {/* News reel */}
-        <div className="flex h-11 items-stretch border-t-2 border-[#ffcc33] bg-[#05070d]">
-          <div className="grid shrink-0 place-items-center bg-[#b00020] px-5 text-[14px] font-extrabold tracking-widest">LIVE NEWS</div>
+        <div className="flex h-11 shrink-0 items-stretch border-t-2 border-[#ffcc33] bg-[#05070d]">
+          <div className="grid shrink-0 place-items-center bg-[#b00020] px-5 text-[14px] font-extrabold tracking-widest">CAT NEWS</div>
           <div className="relative flex-1 overflow-hidden">
             <div className="absolute left-0 top-0 flex h-full items-center whitespace-nowrap text-[16px] text-white" style={{ animation: `ticker ${seconds}s linear infinite` }}>
               <span>{ticker}</span><span>{ticker}</span>
@@ -257,16 +477,20 @@ export default function CatsTookOverScreen() {
       {mrrps.map((m) => (
         <span key={m.k} className="pointer-events-none absolute z-[40] -translate-x-1/2 text-[22px] font-black text-[#ffcc33] [animation:cat-mrrp_1s_ease-out_forwards]" style={{ left: m.x, top: m.y - 20 }}>{m.t}</span>
       ))}
+      {term && <ResistTerminal onClose={() => setTerm(false)} talk={talk} />}
       <style>{`
         @keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadein { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
         @keyframes cat-peek { from { transform: translate(-50%, 100%) } to { transform: translate(-50%, 0) } }
+        @keyframes cat-rise { from { transform: translateY(100%); opacity: 0 } to { transform: none; opacity: 1 } }
         @keyframes cat-blink { 0%, 92%, 100% { transform: scaleY(1) } 95% { transform: scaleY(.08) } }
         @keyframes cat-print { 0% { opacity: 0 } 15% { opacity: .75 } 80% { opacity: .6 } 100% { opacity: 0 } }
         @keyframes cat-swipe { 0% { transform: translateX(380px) } 35% { transform: translateX(-10px) } 50% { transform: translateX(-70px) } 100% { transform: translateX(420px) } }
         @keyframes cat-fall { 0% { transform: none } 12% { transform: translate(-40px, -6px) rotate(-8deg) } 100% { transform: translate(-260px, 120vh) rotate(-140deg); opacity: 0 } }
         @keyframes cat-back { from { transform: translateY(-30px); opacity: 0 } to { transform: none; opacity: 1 } }
         @keyframes cat-mrrp { from { transform: translate(-50%, 0) scale(.6); opacity: 1 } to { transform: translate(-50%, -50px) scale(1.2); opacity: 0 } }
+        @keyframes cat-shake { 0%, 100% { transform: none } 20% { transform: translate(-6px, 2px) } 40% { transform: translate(6px, -2px) } 60% { transform: translate(-4px, 1px) } 80% { transform: translate(3px, 0) } }
+        @keyframes cat-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(124,240,165,.5) } 50% { box-shadow: 0 0 0 8px rgba(124,240,165,0) } }
       `}</style>
     </FullscreenPrank>
   )

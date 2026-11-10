@@ -67,7 +67,7 @@ export default function OnHold() {
       speaking.current = true
       const line = VOICE[idx.current++ % VOICE.length]
       setSay(line)
-      await speak(line, { voice: 0, rate: 0.92, pitch: 1.05 })
+      await speak(line, { voice: "robot" })
       setTimeout(() => { speaking.current = false }, 1500)
     }
     const first = setTimeout(announce, 2500)
@@ -78,7 +78,7 @@ export default function OnHold() {
       const line = BAD_KEY[Math.floor(Math.random() * BAD_KEY.length)]
       stopSpeaking(); speaking.current = true
       setSay(line); sfx.error()
-      speak(line, { voice: 0, rate: 0.95 }).then(() => setTimeout(() => { speaking.current = false }, 1200))
+      speak(line, { voice: "robot" }).then(() => setTimeout(() => { speaking.current = false }, 1200))
       setPos((p) => p + 100 + Math.floor(Math.random() * 900)); setBump((b) => b + 1)
     }
     addEventListener("keydown", onKey)

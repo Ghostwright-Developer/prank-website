@@ -15,7 +15,7 @@ export default function IosLockScreen() {
     else login.setValue(next)
   }
   return (
-    <FullscreenPrank exitMessage="YOUR PHONE IS FINE - IT WAS A PRANK!" secondary="#1b1f5e" className="cursor-default select-none font-sf text-white">
+    <FullscreenPrank exitMessage="YOUR PHONE IS FINE - IT WAS A PRANK!" secondary="#1b1f5e" className="cursor-none select-none font-sf text-white">
       <PhoneWallpaper />
       {!unlocking ? (
         <div

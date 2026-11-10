@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react"
 import { trackPrank } from "@/lib/track"
 import { useRouter } from "next/navigation"
 import { startLoop, unlockAudio, type LoopName } from "@/lib/sfx"
+import { keepAwake } from "@/lib/keepawake"
 
 /** sessionStorage key read by <ExitNotice /> on the page we return to. */
 export const EXIT_MESSAGE_KEY = "pranksims:exit-message"
@@ -162,6 +163,16 @@ export function FullscreenPrank({
 
     requestFullscreen()
 
+    // Keep the screen on / stop sleep and auto-lock while the prank runs (see lib/keepawake.ts).
+    const stopAwake = keepAwake()
+
+    // Sound: the viewer usually arrived by clicking "Launch", and that click already counts as
+    // "the user has interacted with this page" for the browser, so audio and speech can start
+    // right away without a second click. (A link opened in a fresh tab still needs one click or key.)
+    try {
+      if ((navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive) unlockAudio()
+    } catch { /* ignore */ }
+
     // ?d=SECONDS keeps the page black and silent for that long (set up a prank, walk away).
     let waitTimer: ReturnType<typeof setTimeout> | undefined
     let stopSound = () => {}
@@ -181,6 +192,7 @@ export function FullscreenPrank({
       if (waitTimer) clearTimeout(waitTimer)
       document.documentElement.classList.remove("pk-wait")
       stopSound()
+      stopAwake()
       mountedRef.current = false
       removeGestureListeners()
       window.removeEventListener("keydown", onKeyDown, true)

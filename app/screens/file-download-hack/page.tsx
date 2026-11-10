@@ -22,7 +22,7 @@ export default function FileDownloadHackScreen() {
   }, [phase])
 
   return (
-    <FullscreenPrank>
+    <FullscreenPrank className="cursor-none">
       <div className="w-full h-full bg-black p-8 font-mono text-green-500">
         <div className="max-w-2xl mx-auto">
           <div className="text-red-500 text-xl mb-8 text-center animate-pulse">

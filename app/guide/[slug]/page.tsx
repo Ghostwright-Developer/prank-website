@@ -46,10 +46,10 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           <p className="mt-3 text-lg leading-relaxed text-zinc-300">{screen.description}</p>
         </header>
 
-        <div className="mt-6 max-w-xl overflow-hidden rounded-xl border border-zinc-600/70 bg-zinc-900">
+        <Link href={`/screens/${slug}`} aria-label={`Launch ${screen.name}`} className="mt-6 block max-w-xl overflow-hidden rounded-xl border border-zinc-600/70 bg-zinc-900 transition-colors hover:border-cyan-400/70">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`/thumbs/${slug}.jpg`} alt={`Preview of the ${screen.name} prank screen`} width={640} height={360} className="aspect-video w-full object-cover" />
-        </div>
+        </Link>
 
         <div className="mt-6"><GuideActions slug={slug} name={screen.name} blurb={screen.blurb} /></div>
         <p className="mt-3 text-sm text-zinc-400">

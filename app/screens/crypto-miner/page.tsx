@@ -112,7 +112,7 @@ export default function CryptoMinerScreen() {
 
 
   return (
-    <FullscreenPrank className="bg-[#0a0a12]">
+    <FullscreenPrank className="cursor-none bg-[#0a0a12]">
       <div className="h-full w-full bg-[#0a0a12] font-mono text-sm overflow-hidden flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-yellow-900/50 to-red-900/50 px-6 py-3 flex items-center justify-between border-b border-yellow-800/30">

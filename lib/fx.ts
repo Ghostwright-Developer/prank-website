@@ -4,6 +4,7 @@
  * (browser rule), and ?s=0 on the link keeps a prank silent.
  */
 import { audioCtx } from "@/lib/sfx"
+import { CLIP_IDS } from "@/lib/voice-manifest"
 
 interface ToneOpts { type?: OscillatorType; gain?: number; slideTo?: number; delay?: number; attack?: number }
 
@@ -195,41 +196,164 @@ export function startHoldMusic(): () => void {
   return () => { stopped = true; if (timer) clearTimeout(timer) }
 }
 
-/* ───────────────────── Speech ───────────────────── */
+/* ───────────────────── Speech ─────────────────────
+ * Every spoken line is a pre-rendered clip (public/voice, made with an open neural voice) so it
+ * sounds the same on every device. Only if a clip is missing do we fall back to the browser's own
+ * voice, which we now pick carefully and read with per-sentence energy.
+ */
+
+export type VoiceName = "bob" | "tracy" | "pa" | "robot" | "cat"
+
+/** How each character sounds when the browser's own voice has to stand in. */
+const FALLBACK: Record<VoiceName, { gender: "male" | "female"; hype: boolean; rate: number; pitch: number }> = {
+  bob: { gender: "male", hype: true, rate: 1.12, pitch: 0.95 },
+  tracy: { gender: "female", hype: true, rate: 1.14, pitch: 1.12 },
+  pa: { gender: "female", hype: false, rate: 0.92, pitch: 1.0 },
+  robot: { gender: "female", hype: false, rate: 0.95, pitch: 1.05 },
+  cat: { gender: "female", hype: true, rate: 1.1, pitch: 1.3 },
+}
+
+function fnv1a(str: string): string {
+  let h = 0x811c9dc5
+  for (const b of new TextEncoder().encode(str)) {
+    h ^= b
+    h = Math.imul(h, 0x01000193) >>> 0
+  }
+  return h.toString(16).padStart(8, "0")
+}
+const clipId = (voice: VoiceName, text: string) => fnv1a(`${voice}|${text}`)
+
+const clipCache = new Map<string, Promise<AudioBuffer | null>>()
+function loadClip(id: string): Promise<AudioBuffer | null> {
+  let p = clipCache.get(id)
+  if (!p) {
+    p = (async () => {
+      const ctx = audioCtx()
+      if (!ctx) { clipCache.delete(id); return null }
+      try {
+        const r = await fetch(`/voice/${id}.mp3`)
+        if (!r.ok) return null
+        return await ctx.decodeAudioData(await r.arrayBuffer())
+      } catch { return null }
+    })()
+    clipCache.set(id, p)
+  }
+  return p
+}
+
+/** Fetch clips ahead of time so the first reaction is instant. */
+export function preloadSpeech(voice: VoiceName, texts: string[]) {
+  for (const t of texts) { const id = clipId(voice, t); if (CLIP_IDS.has(id)) void loadClip(id) }
+}
 
 export const speechAvailable = () => typeof window !== "undefined" && "speechSynthesis" in window
 
-function englishVoices(): SpeechSynthesisVoice[] {
-  if (!speechAvailable()) return []
-  return window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("en"))
+/* Browser-voice fallback ------------------------------------------------ */
+
+const MALE = /\b(guy|davis|jason|tony|christopher|eric|roger|steffan|ryan|mark|david|daniel|alex|fred|aaron|reed|rocko|gordon|arthur|oliver|thomas|james|george|lewis|male)\b/i
+const FEMALE = /\b(aria|jenny|michelle|sara|ana|zira|samantha|karen|moira|tessa|allison|ava|joanna|kendra|kimberly|salli|nicole|emma|libby|sonia|susan|hazel|female|victoria)\b/i
+const NOVELTY = /(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|zarvox|wobble|deranged|hysterical|eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)/i
+
+function scoreVoice(v: SpeechSynthesisVoice, gender: "male" | "female"): number {
+  let sc = 0
+  const n = v.name
+  if (!v.lang.toLowerCase().startsWith("en")) return -1000
+  if (NOVELTY.test(n)) sc -= 300
+  if (/natural|neural|online|premium|enhanced|siri/i.test(n)) sc += 120
+  if (/google/i.test(n)) sc += 40
+  if (v.lang.toLowerCase().replace("_", "-") === "en-us") sc += 25
+  else if (v.lang.toLowerCase().startsWith("en-gb")) sc += 5
+  const isM = MALE.test(n), isF = FEMALE.test(n)
+  if (gender === "male") sc += isM ? 60 : isF ? -60 : 0
+  else sc += isF ? 60 : isM ? -60 : 0
+  if (v.localService === false) sc += 10 // network voices are usually the better ones
+  return sc
 }
 
-/**
- * Speak with a built-in voice. `voice` 0, 1, 2... picks different English
- * voices (so two announcers can sound different). Resolves when finished (or
- * after a safety timeout). Does nothing before audio is unlocked or with ?s=0.
- */
-export function speak(text: string, { voice = 0, rate = 1, pitch = 1, volume = 1 }: { voice?: number; rate?: number; pitch?: number; volume?: number } = {}): Promise<void> {
+let voiceListReady: Promise<SpeechSynthesisVoice[]> | null = null
+function voicesReady(): Promise<SpeechSynthesisVoice[]> {
+  if (!voiceListReady) {
+    voiceListReady = new Promise((resolve) => {
+      if (!speechAvailable()) return resolve([])
+      const have = window.speechSynthesis.getVoices()
+      if (have.length) return resolve(have)
+      const done = () => resolve(window.speechSynthesis.getVoices())
+      window.speechSynthesis.addEventListener?.("voiceschanged", done, { once: true })
+      setTimeout(done, 1500)
+    })
+  }
+  return voiceListReady
+}
+
+/** Split into sentences; an ALL-CAPS sentence ("WAIT!") is delivered slower and harder. */
+function chunks(text: string): string[] {
+  return text.replace(/\.\.\./g, "…").split(/(?<=[.!?…])\s+/).map((c) => c.trim()).filter(Boolean)
+}
+
+let gen = 0
+let curSource: AudioBufferSourceNode | null = null
+
+function speakBrowser(text: string, voice: VoiceName, volume: number, myGen: number): Promise<void> {
   return new Promise((resolve) => {
-    if (!speechAvailable() || !audioCtx()) return resolve()
-    try {
-      const u = new SpeechSynthesisUtterance(text)
-      const vs = englishVoices()
-      if (vs.length) u.voice = vs[voice % vs.length]
-      u.rate = rate
-      u.pitch = pitch
-      u.volume = volume
-      const done = () => resolve()
-      u.onend = done
-      u.onerror = done
-      window.speechSynthesis.speak(u)
-      setTimeout(done, 4000 + text.length * 120)
-    } catch {
+    if (!speechAvailable()) return resolve()
+    void voicesReady().then(async (all) => {
+      const f = FALLBACK[voice]
+      const best = all.slice().sort((a, b) => scoreVoice(b, f.gender) - scoreVoice(a, f.gender))[0]
+      for (const part of chunks(text)) {
+        if (myGen !== gen) return resolve()
+        const caps = /[A-Z]{3,}/.test(part) && part === part.toUpperCase()
+        const bang = part.endsWith("!"), q = part.endsWith("?")
+        const u = new SpeechSynthesisUtterance(caps ? part.toLowerCase() : part)
+        if (best) u.voice = best
+        const jitter = f.hype ? (Math.random() - 0.5) * 0.12 : 0
+        u.rate = Math.min(1.5, f.rate * (f.hype && bang ? 1.1 : 1) * (caps ? 0.9 : 1))
+        u.pitch = Math.min(2, f.pitch * (f.hype ? (bang ? 1.16 : q ? 1.08 : 1) + jitter : 1) * (caps ? 1.1 : 1))
+        u.volume = volume
+        await new Promise<void>((done) => {
+          u.onend = () => done()
+          u.onerror = () => done()
+          try { window.speechSynthesis.speak(u) } catch { done() }
+          setTimeout(done, 3500 + part.length * 110)
+        })
+        if (/…$/.test(part)) await new Promise((r) => setTimeout(r, 260))
+      }
       resolve()
-    }
+    })
   })
 }
 
+/**
+ * Say a line as a character. Plays the pre-rendered clip when there is one, otherwise falls back to
+ * the browser's voice. Resolves when finished. Does nothing before audio is unlocked or with ?s=0.
+ */
+export async function speak(text: string, { voice = "robot", volume = 1 }: { voice?: VoiceName; volume?: number } = {}): Promise<void> {
+  const ctx = audioCtx()
+  if (!ctx) return
+  const myGen = gen
+  const id = clipId(voice, text)
+  if (CLIP_IDS.has(id)) {
+    const buf = await loadClip(id)
+    if (myGen !== gen) return
+    if (buf) {
+      await new Promise<void>((resolve) => {
+        const src = ctx.createBufferSource()
+        src.buffer = buf
+        const g = ctx.createGain()
+        g.gain.value = volume
+        src.connect(g).connect(ctx.destination)
+        curSource = src
+        src.onended = () => { if (curSource === src) curSource = null; resolve() }
+        src.start()
+      })
+      return
+    }
+  }
+  await speakBrowser(text, voice, volume, myGen)
+}
+
 export function stopSpeaking() {
+  gen++
+  try { curSource?.stop() } catch { /* already stopped */ }
+  curSource = null
   try { if (speechAvailable()) window.speechSynthesis.cancel() } catch { /* ignore */ }
 }

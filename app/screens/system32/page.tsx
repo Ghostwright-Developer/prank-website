@@ -82,7 +82,7 @@ export default function System32Screen() {
   }, [])
 
   return (
-    <FullscreenPrank sound="typing" exitMessage="SYSTEM RESTORED!" className="bg-black">
+    <FullscreenPrank sound="typing" exitMessage="SYSTEM RESTORED!" className="cursor-none bg-black">
       <div className="flex h-full w-full flex-col bg-black p-8 font-mono">
         {/* Header */}
         <div className="mb-6 border-b border-gray-700 pb-4">

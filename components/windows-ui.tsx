@@ -130,36 +130,12 @@ export function Win10Wallpaper() {
   )
 }
 
-/** Windows 11 "Bloom". */
-export function Win11Wallpaper({ dark = false }: { dark?: boolean }) {
-  const bg = dark ? ["#0a1530", "#050a1c"] : ["#d6e6f7", "#b9d3f0"]
+/** Windows 11 "Bloom" (the real wallpaper). `variant` picks a framing/brightness. */
+export function Win11Wallpaper({ dark = false, variant }: { dark?: boolean; variant?: "light" | "dark" | "light2" | "dark2" }) {
+  const v = variant ?? (dark ? "dark" : "light")
   return (
-    <svg {...svgProps}>
-      <defs>
-        <linearGradient id="w11-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={bg[0]} />
-          <stop offset="1" stopColor={bg[1]} />
-        </linearGradient>
-        <filter id="w11-blur"><feGaussianBlur stdDeviation="16" /></filter>
-        <filter id="w11-blur2"><feGaussianBlur stdDeviation="5" /></filter>
-        <linearGradient id="w11-p1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#7fb7ff" /><stop offset="1" stopColor="#1b55d6" /></linearGradient>
-        <linearGradient id="w11-p2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stopColor="#1a3fb5" /><stop offset="1" stopColor="#8fc4ff" /></linearGradient>
-        <linearGradient id="w11-p3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9ecff" /><stop offset="1" stopColor="#3c8cf0" /></linearGradient>
-      </defs>
-      <rect width="1600" height="900" fill="url(#w11-bg)" />
-      <g transform="translate(800 450)">
-        <g filter="url(#w11-blur)" opacity="0.95">
-          <ellipse rx="150" ry="440" transform="rotate(35)" fill="url(#w11-p2)" />
-          <ellipse rx="150" ry="440" transform="rotate(-35)" fill="url(#w11-p1)" />
-        </g>
-        <g filter="url(#w11-blur2)">
-          <ellipse rx="130" ry="400" transform="rotate(90) translate(0 -30)" fill="url(#w11-p3)" opacity="0.92" />
-          <ellipse rx="115" ry="330" transform="rotate(-70)" fill="url(#w11-p1)" opacity="0.85" />
-          <ellipse rx="115" ry="330" transform="rotate(70)" fill="url(#w11-p2)" opacity="0.85" />
-          <ellipse rx="90" ry="230" transform="rotate(0)" fill="url(#w11-p3)" opacity="0.9" />
-        </g>
-      </g>
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={`/art/wp-${v}.jpg`} alt="" draggable={false} className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover" style={{ background: v.startsWith("dark") ? "#04122e" : "#a9c6e6" }} />
   )
 }
 
@@ -260,8 +236,9 @@ export function Win10Taskbar({ tasks = [] as string[] }: { tasks?: string[] }) {
       <div className="grid w-[48px] place-items-center hover:bg-white/10"><Win10Logo size={16} color="#fff" gap={2} /></div>
       <div className="my-0 flex w-[min(320px,30vw)] items-center bg-[#e6e6e6] px-3 text-[13px] text-[#444]">⌕&nbsp; Type here to search</div>
       <div className="flex items-center">
-        {["#0078d7", "#f2c94c", "#e04a3a", "#3aa856"].map((c, i) => (
-          <span key={i} className="grid h-full w-[46px] place-items-center"><span className="h-5 w-5 rounded-sm" style={{ background: c }} /></span>
+        {["edge", "explorer", "store", "chrome"].map((n) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <span key={n} className="grid h-full w-[46px] place-items-center"><img src={`/icons/${n}.webp`} alt="" width={22} height={22} draggable={false} className="h-[22px] w-[22px] object-contain" /></span>
         ))}
         {tasks.map((t) => (
           <span key={t} className="grid h-full max-w-[170px] place-items-center truncate border-b-2 border-[#76b9ed] bg-white/15 px-3 text-[12px]">{t}</span>
@@ -276,22 +253,28 @@ export function Win10Taskbar({ tasks = [] as string[] }: { tasks?: string[] }) {
   )
 }
 
-/** Windows 11 taskbar (centered). */
-export function Win11Taskbar({ tasks = [] as string[], dark = true }: { tasks?: string[]; dark?: boolean }) {
+/** Windows 11 taskbar (centered), with the real Start, app and network icons. */
+export function Win11Taskbar({ tasks = [] as string[], dark = true, apps = ["explorer", "edge", "store", "outlook", "teams", "word"] }: { tasks?: string[]; dark?: boolean; apps?: string[] }) {
   return (
-    <div className={`absolute inset-x-0 bottom-0 flex h-[48px] items-center justify-center font-segoe backdrop-blur-xl ${dark ? "bg-[#1c1c1c]/85 text-white" : "bg-[#f3f3f3]/85 text-black"} border-t ${dark ? "border-white/10" : "border-black/10"}`}>
+    <div className={`absolute inset-x-0 bottom-0 z-[3] flex h-[48px] items-center justify-center font-segoe backdrop-blur-xl ${dark ? "bg-[#1c1c1c]/85 text-white" : "bg-[#f3f3f3]/85 text-black"} border-t ${dark ? "border-white/10" : "border-black/10"}`}>
       <div className="flex items-center gap-1">
-        <span className="grid h-9 w-9 place-items-center rounded hover:bg-white/10"><Win10Logo size={18} color="#4cc2ff" gap={2} /></span>
-        {["#9aa0a6", "#0078d4", "#f2c94c", "#3aa856", "#e04a3a"].map((c, i) => (
-          <span key={i} className="grid h-9 w-9 place-items-center rounded hover:bg-white/10"><span className="h-5 w-5 rounded-[5px]" style={{ background: c }} /></span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <span className="grid h-9 w-9 place-items-center rounded hover:bg-white/10"><img src="/icons/windows.webp" alt="" width={24} height={24} draggable={false} className="h-6 w-6 object-contain" /></span>
+        <span className={`mx-1 hidden h-8 w-[150px] items-center gap-2 rounded-full px-3 text-[12px] sm:flex ${dark ? "bg-white/10 text-white/80" : "bg-white/80 text-black/70"}`}>
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" /><path d="M10 10l4.5 4.5" strokeLinecap="round" /></svg>Search
+        </span>
+        {apps.map((n) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <span key={n} className="grid h-9 w-9 place-items-center rounded hover:bg-white/10"><img src={`/icons/${n}.webp`} alt="" width={24} height={24} draggable={false} className="h-6 w-6 object-contain" /></span>
         ))}
         {tasks.map((t) => (
-          <span key={t} className="grid h-9 place-items-center rounded bg-white/10 px-3 text-[12px]">{t}</span>
+          <span key={t} className="grid h-9 place-items-center rounded border-b-2 border-[#4cc2ff] bg-white/10 px-3 text-[12px]">{t}</span>
         ))}
       </div>
       <div className="absolute right-3 flex items-center gap-3 text-[12px] leading-tight">
-        <span>ENG<br />US</span>
-        <span className="text-right"><Clock className="block" options={{ hour: "numeric", minute: "2-digit" }} /><Clock kind="date" options={{ year: "numeric", month: "numeric", day: "numeric" }} className="block" /></span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/wifi.webp" alt="" width={18} height={18} draggable={false} className="hidden h-[18px] w-[18px] object-contain sm:block" />
+        <span className="text-right"><Clock className="block" options={{ hour: "numeric", minute: "2-digit" }} /><Clock kind="date" options={{ month: "short", day: "numeric", year: "numeric" }} className="block" /></span>
       </div>
     </div>
   )
@@ -300,22 +283,14 @@ export function Win11Taskbar({ tasks = [] as string[], dark = true }: { tasks?: 
 /* ──────────────── Desktop icons ──────────────── */
 
 type IconKind = "recycle" | "computer" | "folder" | "browser" | "doc" | "network"
-const ICON_COLORS: Record<IconKind, [string, string]> = {
-  recycle: ["#cfe8ff", "#6fa8dc"], computer: ["#dfe8f2", "#7a93b3"], folder: ["#ffe08a", "#e0a82a"], browser: ["#4aa8ff", "#1d5fd0"], doc: ["#ffffff", "#bcc6d4"], network: ["#d6e6f7", "#5a86c0"],
-}
-export function DesktopIcon({ kind, label, shadow = true, className = "" }: { kind: IconKind; label: string; shadow?: boolean; className?: string }) {
-  const [a, b] = ICON_COLORS[kind]
+const REAL_ICON: Record<IconKind, string> = { recycle: "recycle-bin", computer: "this-pc", folder: "folder", browser: "edge", doc: "file-docx", network: "network" }
+
+/** A desktop icon with the real Windows artwork. Pass `icon` (a name from /public/icons) to override the picture. */
+export function DesktopIcon({ kind, label, shadow = true, className = "", icon }: { kind: IconKind; label: string; shadow?: boolean; className?: string; icon?: string }) {
   return (
     <div className={`flex w-[76px] cursor-default flex-col items-center gap-1 p-1 text-center hover:bg-white/15 ${className}`}>
-      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style={{ filter: "drop-shadow(0 2px 2px rgba(0,0,0,.45))" }}>
-        <defs><linearGradient id={`ic-${kind}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={a} /><stop offset="1" stopColor={b} /></linearGradient></defs>
-        {kind === "recycle" && (<><path d="M9 11h22l-2 24H11z" fill={`url(#ic-${kind})`} stroke="#4a6f9c" /><path d="M7 8h26v3H7z" fill="#e8f2ff" stroke="#4a6f9c" /><path d="M16 8V5h8v3" fill="none" stroke="#4a6f9c" /><path d="M15 16v14M20 16v14M25 16v14" stroke="#4a6f9c" /></>)}
-        {kind === "computer" && (<><rect x="5" y="6" width="30" height="21" rx="2" fill={`url(#ic-${kind})`} stroke="#42587a" /><rect x="8" y="9" width="24" height="15" fill="#2a78d8" /><rect x="14" y="29" width="12" height="3" fill="#9aa8bd" /><rect x="9" y="32" width="22" height="3" rx="1" fill="#b8c2d2" stroke="#42587a" /></>)}
-        {kind === "folder" && (<><path d="M3 10h13l3 4h18v20H3z" fill={`url(#ic-${kind})`} stroke="#a07418" /><path d="M3 16h34v18H3z" fill="#ffd45e" stroke="#a07418" /></>)}
-        {kind === "browser" && (<><circle cx="20" cy="20" r="15" fill={`url(#ic-${kind})`} stroke="#1a4aa8" /><path d="M10 22a10 10 0 0120 0" fill="none" stroke="#fff" strokeWidth="3" /><text x="20" y="27" textAnchor="middle" fontSize="18" fontWeight="700" fill="#fff" fontFamily="Georgia,serif">e</text></>)}
-        {kind === "doc" && (<><path d="M9 4h16l7 7v25H9z" fill={`url(#ic-${kind})`} stroke="#7b88a0" /><path d="M25 4v7h7" fill="#e0e6f0" stroke="#7b88a0" /><path d="M13 18h14M13 23h14M13 28h10" stroke="#9aa8c0" /></>)}
-        {kind === "network" && (<><rect x="6" y="8" width="18" height="13" rx="1.5" fill={`url(#ic-${kind})`} stroke="#3c5a8a" /><rect x="18" y="19" width="16" height="12" rx="1.5" fill="#bcd4f0" stroke="#3c5a8a" /><path d="M14 22v5h6" stroke="#3c5a8a" fill="none" /></>)}
-      </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`/icons/${icon ?? REAL_ICON[kind]}.webp`} alt="" width={44} height={44} draggable={false} className="h-11 w-11 select-none object-contain" style={{ filter: "drop-shadow(0 2px 2px rgba(0,0,0,.4))" }} />
       <span className={`w-full break-words text-[12px] leading-tight text-white ${shadow ? "[text-shadow:1px_1px_2px_rgba(0,0,0,.9)]" : ""}`}>{label}</span>
     </div>
   )

@@ -15,7 +15,7 @@ export default function AndroidLockScreen() {
     else login.setValue(next)
   }
   return (
-    <FullscreenPrank exitMessage="YOUR PHONE IS FINE - IT WAS A PRANK!" secondary="#07211f" className="cursor-default select-none font-sans text-white">
+    <FullscreenPrank exitMessage="YOUR PHONE IS FINE - IT WAS A PRANK!" secondary="#07211f" className="cursor-none select-none font-sans text-white">
       <PhoneWallpaper variant="android" />
       {!open ? (
         <div className="absolute inset-0" onPointerDown={(e) => { startY.current = e.clientY }} onPointerUp={(e) => { if (startY.current !== null && startY.current - e.clientY > 40) setOpen(true); startY.current = null }}>

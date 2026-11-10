@@ -123,7 +123,7 @@ export default function DeparturesBoard() {
       setPa(line)
       fx.paChime()
       await new Promise((r) => setTimeout(r, 1500))
-      await speak(line, { voice: 0, rate: 0.88, pitch: 1.05 })
+      await speak(line, { voice: "pa" })
       setTimeout(() => { if (!stopped) setPa("") }, 5500)
     }
     const first = setTimeout(announce, 5000)
@@ -132,7 +132,7 @@ export default function DeparturesBoard() {
   }, [])
 
   return (
-    <FullscreenPrank exitMessage="ALL FLIGHTS HAVE LANDED - IT WAS A PRANK!" className="cursor-default bg-[#0b0d11] font-sans text-white">
+    <FullscreenPrank exitMessage="ALL FLIGHTS HAVE LANDED - IT WAS A PRANK!" className="cursor-none bg-[#0b0d11] font-sans text-white">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,#1b2230,#0b0d11_70%)]" />
       <div className="relative z-10 flex h-full flex-col px-[2.2vw] py-[1.4vw]">
         <div className="flex items-end justify-between">

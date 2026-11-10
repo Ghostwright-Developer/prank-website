@@ -2,18 +2,19 @@
 
 import { useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { DesktopIcon, Win10Taskbar, Win10Wallpaper } from "@/components/windows-ui"
+import { DesktopIcon, Win11Taskbar, Win11Wallpaper } from "@/components/windows-ui"
 import { fx } from "@/lib/fx"
 
 type Kind = "computer" | "recycle" | "folder" | "browser" | "doc" | "network"
-const ICONS: { kind: Kind; label: string }[] = [
+const ICONS: { kind: Kind; label: string; icon?: string }[] = [
   { kind: "computer", label: "This PC" },
   { kind: "recycle", label: "Recycle Bin" },
-  { kind: "folder", label: "Documents" },
+  { kind: "folder", label: "Documents", icon: "folder-docs" },
   { kind: "browser", label: "Browser" },
   { kind: "doc", label: "resume_FINAL_v7" },
   { kind: "network", label: "Network" },
-  { kind: "folder", label: "Photos" },
+  { kind: "doc", label: "taxes_2019", icon: "file-pdf" },
+  { kind: "folder", label: "Photos", icon: "folder-pictures" },
   { kind: "folder", label: "Do Not Open" },
 ]
 const FISH = [
@@ -162,10 +163,10 @@ export default function FloodedDesktop() {
   return (
     <FullscreenPrank exitMessage="THE DESKTOP HAS DRIED OFF - IT WAS A PRANK!" className="cursor-default overflow-hidden bg-[#0a3f8c] font-segoe">
       <div ref={root} className="absolute inset-0" onPointerDown={onPointer}>
-        <Win10Wallpaper />
+        <Win11Wallpaper variant="light2" />
         {ICONS.map((ic, i) => (
           <div key={i} ref={(el) => { iconEls.current[i] = el }} className="absolute z-[5]" style={{ left: 12 + Math.floor(i / 6) * 92, top: 18 + (i % 6) * 92 }}>
-            <DesktopIcon kind={ic.kind} label={ic.label} />
+            <DesktopIcon kind={ic.kind} label={ic.label} icon={ic.icon} />
           </div>
         ))}
 
@@ -175,7 +176,7 @@ export default function FloodedDesktop() {
           <span key={i} className="absolute left-[58%] top-2 z-[4] h-3 w-2 rounded-full bg-[#7fd3ff]/90" style={{ animation: `fd-drip 1.4s ${i * 0.47}s ease-in infinite` }} />
         ))}
 
-        <Win10Taskbar tasks={["Display Protection"]} />
+        <Win11Taskbar dark={false} tasks={["Display Protection"]} />
 
         {/* water */}
         <div ref={water} className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] overflow-hidden" style={{ height: 0 }}>

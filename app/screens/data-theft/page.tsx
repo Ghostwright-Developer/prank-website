@@ -67,7 +67,7 @@ export default function DataTheftScreen() {
   }, [])
 
   return (
-    <FullscreenPrank sound="typing">
+    <FullscreenPrank sound="typing" className="cursor-none">
       <div className="w-full h-full bg-black font-mono text-green-500 p-6 overflow-hidden">
         <div className="mb-4 text-red-500 text-xl font-bold animate-pulse">
           DATA EXFILTRATION IN PROGRESS

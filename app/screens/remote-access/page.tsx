@@ -69,7 +69,7 @@ export default function RemoteAccessScreen() {
   }, [])
 
   return (
-    <FullscreenPrank sound="typing">
+    <FullscreenPrank sound="typing" className="cursor-none">
       <div className="w-full h-full bg-gray-900 p-6 font-mono overflow-hidden">
         <div className="bg-red-900 border-2 border-red-500 p-4 mb-4">
           <div className="text-white font-bold text-xl">REMOTE ACCESS TROJAN ACTIVE</div>

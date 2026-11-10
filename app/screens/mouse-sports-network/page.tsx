@@ -108,7 +108,8 @@ export default function MouseSportsNetwork() {
       for (const line of ex) {
         if (my !== token) return
         setCap({ ...line, k: ++k })
-        await Promise.all([speak(line.text, { voice: line.who, pitch: line.who ? 1.2 : 0.85, rate: 1.08 }), sleep(Math.max(2400, line.text.length * 62))])
+        await Promise.all([speak(line.text, { voice: line.who ? "tracy" : "bob" }), sleep(Math.max(1800, line.text.length * 50))])
+        await sleep(220)
       }
       if (my === token) { busy = false; curPrio = 0; lastEx = performance.now() }
     }

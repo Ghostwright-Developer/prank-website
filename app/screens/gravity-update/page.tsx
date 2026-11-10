@@ -2,17 +2,17 @@
 
 import { useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { DesktopIcon, Win10Taskbar, Win10Wallpaper } from "@/components/windows-ui"
+import { DesktopIcon, Win11Taskbar, Win11Wallpaper } from "@/components/windows-ui"
 import { fx } from "@/lib/fx"
 
 type Kind = "computer" | "recycle" | "folder" | "browser" | "doc" | "network"
-interface Def { label: string; kind?: Kind; win?: string }
+interface Def { label: string; kind?: Kind; win?: string; icon?: string }
 
 const DEFS: Def[] = [
-  { label: "This PC", kind: "computer" }, { label: "Recycle Bin", kind: "recycle" }, { label: "Documents", kind: "folder" },
+  { label: "This PC", kind: "computer" }, { label: "Recycle Bin", kind: "recycle" }, { label: "Documents", kind: "folder", icon: "folder-docs" },
   { label: "Browser", kind: "browser" }, { label: "resume_FINAL_v7", kind: "doc" }, { label: "Network", kind: "network" },
-  { label: "Photos", kind: "folder" }, { label: "taxes_2019", kind: "doc" }, { label: "Homework", kind: "folder" },
-  { label: "Games", kind: "folder" }, { label: "Downloads", kind: "folder" }, { label: "notes.txt", kind: "doc" },
+  { label: "Photos", kind: "folder", icon: "folder-pictures" }, { label: "taxes_2019", kind: "doc", icon: "file-pdf" }, { label: "Homework", kind: "folder" },
+  { label: "Games", kind: "folder" }, { label: "Downloads", kind: "folder", icon: "folder-downloads" }, { label: "notes.txt", kind: "doc", icon: "file-text" },
   { label: "Notepad", win: "Notepad" }, { label: "Calculator", win: "Calculator" }, { label: "Settings", win: "Settings" },
 ]
 
@@ -163,12 +163,12 @@ export default function GravityUpdate() {
   const P = PHASES[phase]
   return (
     <FullscreenPrank exitMessage="GRAVITY HAS BEEN DISABLED - IT WAS A PRANK!" className="cursor-default overflow-hidden bg-[#0a3f8c] font-segoe">
-      <Win10Wallpaper />
-      <Win10Taskbar tasks={["Windows Update"]} />
+      <Win11Wallpaper variant="dark2" />
+      <Win11Taskbar tasks={["Windows Update"]} />
 
       {DEFS.map((d, i) => (
         <div key={i} data-gb={i} className="absolute left-0 top-0 z-[5] touch-none select-none will-change-transform" style={{ width: d.win ? 130 : 76, height: d.win ? 90 : 84 }}>
-          {d.kind ? <DesktopIcon kind={d.kind} label={d.label} /> : (
+          {d.kind ? <DesktopIcon kind={d.kind} label={d.label} icon={d.icon} /> : (
             <div className="h-full w-full overflow-hidden rounded-md border border-[#1f6fb5] bg-white shadow-xl">
               <div className="flex h-[18px] items-center justify-between bg-[#1f6fb5] px-1.5 text-[10px] text-white"><span>{d.win}</span><span>✕</span></div>
               {d.win === "Calculator" ? <div className="grid grid-cols-4 gap-0.5 p-1">{Array.from({ length: 12 }, (_, k) => <span key={k} className="h-3.5 rounded-sm bg-[#e6e6e6]" />)}</div>

@@ -16,7 +16,7 @@ export default function KeyloggerScreen() {
   }, [])
 
   return (
-    <FullscreenPrank sound="typing">
+    <FullscreenPrank sound="typing" className="cursor-none">
       <div className="w-full h-full bg-black p-8 font-mono text-green-500 text-sm">
         <div className="border border-green-500 p-4 mb-4">
           <div className="text-red-500 font-bold mb-2">KEYLOGGER ACTIVE</div>

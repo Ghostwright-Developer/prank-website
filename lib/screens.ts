@@ -291,9 +291,9 @@ export const SCREENS: Screen[] = [
     ["dead pixels prank", "fake stuck pixels", "fake dead pixel screen", "monitor prank"]),
 
   // ───────────────────────── Comedy ─────────────────────────
-  s("cats-took-over", "comedy", "The Cats Have Taken Over", "Cats seize the computer, plus an endless news ticker",
+  s("cats-took-over", "comedy", "The Cats Have Taken Over", "The cats are in charge now: decrees, a crowned commander, and a terminal you cannot win",
     "\"The Cats Have Taken Over\" Funny Computer Prank",
-    "The Feline Collective takes over the screen with a list of increasingly specific demands and a slow, endless news ticker of deadpan headlines. A funny, harmless prank.",
+    "The cats have annexed the computer: a crowned commander issues spoken decrees, territory is seized, and cat news scrolls past. Press any key and a fake terminal types real commands, such as \"take my computer back from the cats\", that the cats defeat one by one. A funny, harmless prank.",
     ["cat prank", "funny computer prank", "cats took over prank", "funny hacker cat screen", "cat lover prank"]),
   s("corner-watch", "comedy", "The Corner Watch", "A bouncing logo and a stadium full of people waiting for it to hit the corner",
     "Funny Bouncing Logo Corner Prank (The Corner Watch)",
@@ -362,6 +362,15 @@ export const SCREENS: Screen[] = [
 ]
 
 export const CATEGORIES: Category[] = [
+  {
+    slug: "comedy", name: "Absurd & Comedy", shortName: "Comedy",
+    icon: "Laugh", color: "from-yellow-400 to-pink-500", gridColor: "rgba(250,204,21,0.05)",
+    cardBlurb: "A bouncing logo stadium, a flooding desktop, falling icons, ants, a fly, cats, Clippy, Minecraft and printers",
+    title: "Funny Computer Pranks: Flooding Desktops, Falling Icons, Ants & Cats",
+    description: "Funny computer pranks: a bouncing-logo stadium, a flooding desktop, falling icons, an ant parade, a fly on the screen, cats, Clippy and printer rage. Free and harmless.",
+    intro: "Not every prank has to be scary. These are silly, absurd and designed to get a laugh rather than a panic.",
+    keywords: ["funny computer prank", "cat prank", "clippy prank", "minecraft prank", "printer error prank"],
+  },
   {
     slug: "windows", name: "Windows Updates & Crashes", shortName: "Windows",
     icon: "Monitor", color: "from-cyan-500 to-blue-600", gridColor: "rgba(0,255,255,0.05)",
@@ -442,15 +451,6 @@ export const CATEGORIES: Category[] = [
     description: "Fake broken screen pranks: realistic cracked glass, broken LCD stripes and clusters of dead pixels. Free fullscreen links that fool anyone.",
     intro: "Make a perfectly good monitor look wrecked. These effects are drawn over the page, so the real display is never harmed, but they look convincing enough to make people wince.",
     keywords: ["cracked screen prank", "broken screen prank", "fake broken lcd", "dead pixels prank", "fake cracked monitor"],
-  },
-  {
-    slug: "comedy", name: "Absurd & Comedy", shortName: "Comedy",
-    icon: "Laugh", color: "from-yellow-400 to-pink-500", gridColor: "rgba(250,204,21,0.05)",
-    cardBlurb: "A bouncing logo stadium, a flooding desktop, falling icons, ants, a fly, cats, Clippy, Minecraft and printers",
-    title: "Funny Computer Pranks: Flooding Desktops, Falling Icons, Ants & Cats",
-    description: "Funny computer pranks: a bouncing-logo stadium, a flooding desktop, falling icons, an ant parade, a fly on the screen, cats, Clippy and printer rage. Free and harmless.",
-    intro: "Not every prank has to be scary. These are silly, absurd and designed to get a laugh rather than a panic.",
-    keywords: ["funny computer prank", "cat prank", "clippy prank", "minecraft prank", "printer error prank"],
   },
 ]
 

@@ -189,3 +189,6 @@
 html.pk-wait, html.pk-wait body { background: #000 !important; }
 html.pk-wait body > * { visibility: hidden !important; }
 html.pk-wait * { cursor: none !important; }
+
+/* Screens that hide the pointer: also beat any cursor-pointer set on children. */
+.cursor-none, .cursor-none * { cursor: none !important; }

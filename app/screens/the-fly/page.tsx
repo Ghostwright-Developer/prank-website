@@ -14,37 +14,10 @@ interface Fly {
   born: number
 }
 
+/** A real house fly, shown at about real size (~7 mm: roughly 30 CSS pixels on a normal screen). */
 function FlySvg() {
-  return (
-    <svg width="40" height="30" viewBox="0 0 40 30" aria-hidden="true">
-      {/* legs */}
-      <g stroke="#111" strokeWidth="1.1" strokeLinecap="round" fill="none">
-        <path d="M17 15 L12 5 L10 3" /><path d="M17 15 L12 25 L10 27" />
-        <path d="M20 15 L20 3 L22 1" /><path d="M20 15 L20 27 L22 29" />
-        <path d="M23 15 L29 6 L33 5" /><path d="M23 15 L29 24 L33 25" />
-      </g>
-      <g className="fl-rub" style={{ transformOrigin: "29px 15px" }}>
-        <path d="M29 14 L34 10 L36 12" stroke="#111" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-        <path d="M29 16 L34 20 L36 18" stroke="#111" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-      </g>
-      {/* wings */}
-      <g className="fl-wings">
-        <ellipse cx="14" cy="8" rx="11" ry="4.6" transform="rotate(-18 14 8)" fill="rgba(210,225,235,.55)" stroke="rgba(90,110,125,.6)" strokeWidth=".6" />
-        <ellipse cx="14" cy="22" rx="11" ry="4.6" transform="rotate(18 14 22)" fill="rgba(210,225,235,.55)" stroke="rgba(90,110,125,.6)" strokeWidth=".6" />
-        <path d="M6 9 L20 6 M8 11 L20 8" stroke="rgba(90,110,125,.5)" strokeWidth=".5" fill="none" />
-        <path d="M6 21 L20 24 M8 19 L20 22" stroke="rgba(90,110,125,.5)" strokeWidth=".5" fill="none" />
-      </g>
-      {/* body */}
-      <ellipse cx="11" cy="15" rx="9.2" ry="5.6" fill="#161616" />
-      <path d="M5 12.5 Q11 11 16 12.5 M4.5 15 Q11 13.8 17 15 M5 17.5 Q11 19 16 17.5" stroke="#3a3a3a" strokeWidth=".8" fill="none" />
-      <ellipse cx="22" cy="15" rx="5" ry="4.6" fill="#242424" />
-      <path d="M18 12 L26 12 M18 18 L26 18 M20 11 L20 19" stroke="#444" strokeWidth=".5" />
-      <ellipse cx="30" cy="15" rx="4.2" ry="4.4" fill="#1d1d1d" />
-      <ellipse cx="31" cy="11.4" rx="2.9" ry="3.1" fill="#7a1310" /><ellipse cx="31" cy="18.6" rx="2.9" ry="3.1" fill="#7a1310" />
-      <ellipse cx="30.2" cy="10.4" rx=".9" ry="1" fill="#e5655a" opacity=".8" /><ellipse cx="30.2" cy="19.6" rx=".9" ry="1" fill="#e5655a" opacity=".8" />
-      <ellipse cx="22" cy="12.6" rx="5" ry="1.4" fill="#fff" opacity=".07" />
-    </svg>
-  )
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/art/fly.webp" width={27} height={30} alt="" draggable={false} className="block h-[30px] w-[27px] select-none" />
 }
 
 const ease = (u: number) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2)
@@ -147,13 +120,13 @@ export default function TheFly() {
           if (pd < 70 && mSpeed > 300 && now - lastMove < 300) takeoff(f, T)
         }
         f.moving = f.state === "walk" || f.state === "fly"
-        f.el.style.transform = `translate(${f.x - 20}px, ${f.y - 15}px)`
+        f.el.style.transform = `translate(${f.x - 15}px, ${f.y - 15}px)`
         if (f.sprite) {
-          f.sprite.style.transform = `rotate(${f.h}rad) scale(${1 + f.z * 0.55})`
+          f.sprite.style.transform = `rotate(${f.h + Math.PI / 2}rad) scale(${1 + f.z * 0.55})`
           f.sprite.dataset.s = f.state
         }
         if (f.shadow) {
-          f.shadow.style.transform = `translate(${6 + f.z * 26}px, ${8 + f.z * 30}px) rotate(${f.h}rad) scale(${1 + f.z * 0.5})`
+          f.shadow.style.transform = `translate(${6 + f.z * 26}px, ${8 + f.z * 30}px) rotate(${f.h + Math.PI / 2}rad) scale(${1 + f.z * 0.5})`
           f.shadow.style.opacity = String(0.22 - f.z * 0.12)
         }
       })
@@ -195,21 +168,20 @@ export default function TheFly() {
       </div>
 
       {Array.from({ length: MAX_FLIES }, (_, i) => (
-        <div key={i} ref={(el) => { els.current[i] = el }} className="pointer-events-none absolute left-0 top-0 z-10 h-[30px] w-[40px] opacity-0 will-change-transform">
-          <div ref={(el) => { shadows.current[i] = el }} className="absolute inset-0 origin-center"><div className="h-full w-full scale-90 blur-[2px] [filter:brightness(0)_blur(2px)]"><FlySvg /></div></div>
-          <div ref={(el) => { sprites.current[i] = el }} className="fl-sprite absolute inset-0 origin-center"><FlySvg /></div>
+        <div key={i} ref={(el) => { els.current[i] = el }} className="pointer-events-none absolute left-0 top-0 z-10 h-[30px] w-[30px] opacity-0 will-change-transform">
+          <div ref={(el) => { shadows.current[i] = el }} className="absolute inset-0 origin-center"><div className="grid h-full w-full scale-90 place-items-center blur-[2px] [filter:brightness(0)_blur(2px)]"><FlySvg /></div></div>
+          <div ref={(el) => { sprites.current[i] = el }} className="fl-sprite absolute inset-0 grid origin-center place-items-center"><FlySvg /></div>
         </div>
       ))}
       {scold && <div className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 rounded bg-[#323232] px-4 py-2 text-[14px] text-white shadow-lg">{scold}</div>}
       <span className="sr-only">{count} fly</span>
       <style>{`
-        .fl-sprite[data-s="fly"] .fl-wings { animation: fl-flap .035s linear infinite alternate; transform-origin: 18px 15px; }
-        .fl-sprite[data-s="fly"] { filter: blur(.5px); }
-        .fl-sprite[data-s="walk"] svg { animation: fl-step .16s linear infinite alternate; }
-        .fl-sprite[data-s="rub"] .fl-rub { animation: fl-rub .12s linear infinite alternate; }
-        @keyframes fl-flap { from { transform: scaleY(1) } to { transform: scaleY(.45) } }
-        @keyframes fl-step { from { transform: translateX(-.6px) rotate(-1deg) } to { transform: translateX(.6px) rotate(1deg) } }
-        @keyframes fl-rub { from { transform: rotate(-16deg) } to { transform: rotate(16deg) } }
+        .fl-sprite[data-s="fly"] img { animation: fl-buzz .035s linear infinite alternate; filter: blur(.6px); }
+        .fl-sprite[data-s="walk"] img { animation: fl-step .16s linear infinite alternate; }
+        .fl-sprite[data-s="rub"] img { animation: fl-rub .12s linear infinite alternate; transform-origin: 50% 25%; }
+        @keyframes fl-buzz { from { transform: scale(1, 1) } to { transform: scale(1.07, .93) } }
+        @keyframes fl-step { from { transform: translateX(-.5px) rotate(-1.5deg) } to { transform: translateX(.5px) rotate(1.5deg) } }
+        @keyframes fl-rub { from { transform: rotate(-4deg) scale(1.01) } to { transform: rotate(4deg) scale(.99) } }
       `}</style>
     </FullscreenPrank>
   )

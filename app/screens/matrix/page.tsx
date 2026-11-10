@@ -157,7 +157,7 @@ export default function MatrixScreen() {
   }, [phase])
 
   return (
-    <FullscreenPrank sound="typing" className="bg-black">
+    <FullscreenPrank sound="typing" className="cursor-none bg-black">
       <div className="h-full w-full bg-black relative overflow-hidden">
         {/* Matrix rain canvas */}
         <canvas ref={canvasRef} className="absolute inset-0" />

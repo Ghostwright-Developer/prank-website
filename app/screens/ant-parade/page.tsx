@@ -2,15 +2,15 @@
 
 import { useEffect, useRef } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { DesktopIcon, Win10Taskbar, Win10Wallpaper } from "@/components/windows-ui"
+import { DesktopIcon, Win11Taskbar, Win11Wallpaper } from "@/components/windows-ui"
 import { fx } from "@/lib/fx"
 
 type Kind = "computer" | "recycle" | "folder" | "browser" | "doc" | "network"
-const ICONS: { kind: Kind; label: string; need: number }[] = [
+const ICONS: { kind: Kind; label: string; need: number; icon?: string }[] = [
   { kind: "computer", label: "This PC", need: 4 }, { kind: "recycle", label: "Recycle Bin", need: 6 },
-  { kind: "folder", label: "Documents", need: 3 }, { kind: "browser", label: "Browser", need: 3 },
+  { kind: "folder", label: "Documents", need: 3, icon: "folder-docs" }, { kind: "browser", label: "Browser", need: 3 },
   { kind: "doc", label: "resume_FINAL_v7", need: 3 }, { kind: "network", label: "Network", need: 3 },
-  { kind: "folder", label: "Photos", need: 3 }, { kind: "folder", label: "Do Not Open", need: 4 },
+  { kind: "folder", label: "Photos", need: 3, icon: "folder-pictures" }, { kind: "folder", label: "Do Not Open", need: 4 },
 ]
 const SAY = [
   "Left a bit.", "Gary, you're not even holding it.", "Lift with your legs.", "Is it heavier than it looks?",
@@ -27,28 +27,10 @@ interface Ant {
 }
 interface Task { home: { x: number; y: number }; pos: { x: number; y: number }; dest: { x: number; y: number }; state: "home" | "gather" | "carry" | "sink" | "gone" | "grow" | "gone2"; scale: number; ants: number[]; el: HTMLDivElement | null; need: number; phase: number }
 
+/** A real ant photo at roughly real size (~7 mm, about 30 CSS pixels long). Faces "up"; we rotate it to its heading. */
 function AntSvg() {
-  const legs = [-1, 0, 1]
-  return (
-    <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true">
-      {legs.map((k) => (
-        <g key={k}>
-          <g style={{ transformOrigin: `${15 + k * 4}px 11px`, animation: `ap-leg .22s ${k % 2 ? 0 : 0.11}s ease-in-out infinite alternate` }}>
-            <path d={`M${15 + k * 4} 11 L${12 + k * 6} 2`} stroke="#3a0f06" strokeWidth="1.5" strokeLinecap="round" />
-          </g>
-          <g style={{ transformOrigin: `${15 + k * 4}px 11px`, animation: `ap-leg .22s ${k % 2 ? 0.11 : 0}s ease-in-out infinite alternate` }}>
-            <path d={`M${15 + k * 4} 11 L${12 + k * 6} 20`} stroke="#3a0f06" strokeWidth="1.5" strokeLinecap="round" />
-          </g>
-        </g>
-      ))}
-      <ellipse cx="7" cy="11" rx="7" ry="5.2" fill="#7a2a14" />
-      <ellipse cx="15" cy="11" rx="4" ry="3.4" fill="#8a3217" />
-      <circle cx="23" cy="11" r="4" fill="#7a2a14" />
-      <path d="M25 8 Q31 5 32 2 M25 14 Q31 17 32 20" stroke="#3a0f06" strokeWidth="1" fill="none" strokeLinecap="round" />
-      <circle cx="24.5" cy="9.2" r=".8" fill="#fff" opacity=".8" />
-      <ellipse cx="6" cy="9.5" rx="3.4" ry="1.4" fill="#b0522e" opacity=".55" />
-    </svg>
-  )
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/art/ant.webp" width={21} height={30} alt="" draggable={false} className="block h-[30px] w-[21px] select-none" />
 }
 
 export default function AntParade() {
@@ -198,9 +180,9 @@ export default function AntParade() {
         }
         a.x = Math.max(-40, Math.min(W + 40, a.x)); a.y = Math.max(-40, Math.min(H - 20, a.y))
         a.wrap.style.opacity = "1"
-        a.wrap.style.transform = `translate(${a.x - 17}px, ${a.y - 11}px)`
+        a.wrap.style.transform = `translate(${a.x - 15}px, ${a.y - 15}px)`
         if (a.svg) {
-          a.svg.style.transform = `rotate(${a.h}rad)`
+          a.svg.style.transform = `rotate(${a.h + Math.PI / 2}rad)`
           const moving = a.mode !== "pause" && !(a.mode === "scout" && a.wait > 0) && !(a.mode === "toSlot" && a.wait > 0)
           a.svg.style.setProperty("--ap", moving ? "running" : "paused")
         }
@@ -223,9 +205,9 @@ export default function AntParade() {
   }, [])
 
   return (
-    <FullscreenPrank exitMessage="THE ANTS HAVE RETURNED YOUR ICONS - IT WAS A PRANK!" className="cursor-default overflow-hidden bg-[#0a3f8c] font-segoe">
-      <Win10Wallpaper />
-      <Win10Taskbar />
+    <FullscreenPrank exitMessage="THE ANTS HAVE RETURNED YOUR ICONS - IT WAS A PRANK!" className="cursor-default overflow-hidden bg-[#a9c6e6] font-segoe">
+      <Win11Wallpaper variant="light" />
+      <Win11Taskbar dark={false} />
       <div ref={hole} className="pointer-events-none absolute left-0 top-0 z-[2] h-[52px] w-[140px]">
         <div className="absolute inset-0 rounded-[50%] bg-[radial-gradient(ellipse,#050302_45%,#3d2a1a_60%,#6b4a2c_75%,transparent_78%)]" />
         {[[10, 38, 8], [118, 36, 6], [28, 6, 5], [100, 8, 7], [60, 46, 5]].map(([x, y, s], i) => <span key={i} className="absolute rounded-full bg-[#8a6a44]" style={{ left: x, top: y, width: s, height: s }} />)}
@@ -233,18 +215,19 @@ export default function AntParade() {
 
       {ICONS.map((ic, i) => (
         <div key={i} ref={(el) => { iconEls.current[i] = el }} className="absolute left-0 top-0 z-[4] will-change-transform" style={{ width: 76 }}>
-          <DesktopIcon kind={ic.kind} label={ic.label} />
+          <DesktopIcon kind={ic.kind} label={ic.label} icon={ic.icon} />
         </div>
       ))}
 
       {Array.from({ length: POOL }, (_, i) => (
-        <div key={i} ref={(el) => { antEls.current[i] = el }} className="pointer-events-none absolute left-0 top-0 z-[6] h-[22px] w-[34px] opacity-0 will-change-transform">
-          <div ref={(el) => { svgEls.current[i] = el }} className="ap-ant h-full w-full drop-shadow-[0_1px_1px_rgba(0,0,0,.6)]"><AntSvg /></div>
+        <div key={i} ref={(el) => { antEls.current[i] = el }} className="pointer-events-none absolute left-0 top-0 z-[6] h-[30px] w-[30px] opacity-0 will-change-transform">
+          <div ref={(el) => { svgEls.current[i] = el }} className="ap-ant grid h-full w-full place-items-center drop-shadow-[0_1px_1px_rgba(0,0,0,.5)]"><AntSvg /></div>
           <div ref={(el) => { bubEls.current[i] = el }} className="absolute -top-9 left-1/2 w-max max-w-[210px] -translate-x-1/2 rounded-lg bg-white px-2 py-1 text-[12px] leading-tight text-[#222] opacity-0 shadow-lg transition-opacity" />
         </div>
       ))}
       <style>{`
-        @keyframes ap-leg { from { transform: rotate(-24deg) } to { transform: rotate(24deg) } }
+        .ap-ant img { animation: ap-walk .16s ease-in-out infinite alternate; }
+        @keyframes ap-walk { from { transform: rotate(-3deg) scaleY(.96) } to { transform: rotate(3deg) scaleY(1.04) } }
         .ap-ant * { animation-play-state: var(--ap, running) !important; }
       `}</style>
     </FullscreenPrank>

@@ -37,7 +37,7 @@ export default function Win11DesktopScreen() {
         </div>
       )}
       {toast && <div className="absolute bottom-[64px] right-4 z-50 w-[300px] rounded-lg border border-white/10 bg-[#2b2b2b] p-4 text-[13px] text-white shadow-xl">{toast}</div>}
-      <div onClick={() => setMenu((m) => !m)}><Win11Taskbar dark /></div>
+      <div onClick={() => setMenu((m) => !m)}><Win11Taskbar dark={false} /></div>
     </FullscreenPrank>
   )
 }

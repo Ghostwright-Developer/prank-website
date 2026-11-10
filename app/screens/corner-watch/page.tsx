@@ -2,38 +2,47 @@
 
 import { useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { fx } from "@/lib/fx"
+import { fx, speak, stopSpeaking, preloadSpeech } from "@/lib/fx"
 import { sfx } from "@/lib/sfx"
+
+/** A = Bob (play-by-play), B = Tracy (colour). The generator pre-renders every A()/B() line. */
+const A = (t: string) => t
+const B = (t: string) => t
 
 const LOGO_W = 280
 const LOGO_H = 96
 const COLORS = ["#ff3d71", "#00e5ff", "#ffd400", "#7cff4d", "#c77dff", "#ff8a00", "#ffffff"]
 
 const WALL_LINES = [
-  "Left wall. That's the third wall in a row. Strong wall performance.",
-  "Right wall. Perfectly fine. Nobody asked for a corner.",
-  "It hits the top. The top has never been in better shape.",
-  "Floor contact. Textbook. We love to see it.",
-  "Another bounce. The logo is simply doing its job.",
-  "And that's a wall. Walls everywhere tonight, folks.",
-  "Changing color. Bold choice. Risky. Pays off.",
-  "It's just bouncing out there. Beautiful. Not going anywhere.",
-  "No corner yet. Patience is the whole sport.",
-  "Fans in the arena have not looked away for 40 minutes.",
+  A("Left wall. That's the third wall in a row. Strong wall performance."),
+  A("Right wall. Perfectly fine. Nobody asked for a corner."),
+  A("It hits the top. The top has never been in better shape."),
+  A("Floor contact. Textbook. We love to see it."),
+  A("Another bounce. The logo is simply doing its job."),
+  A("And that's a wall. Walls everywhere tonight, folks."),
+  A("Changing color. Bold choice. Risky. Pays off."),
+  A("It's just bouncing out there. Beautiful. Not going anywhere."),
+  A("No corner yet. Patience is the whole sport."),
+  A("Fans in the arena have not looked away for 40 minutes."),
 ]
 const MISS_LINES = [
-  "SO CLOSE. A hair off the corner. Somebody's crying in section 12.",
-  "OH! Did you see that?! Eleven pixels!! ELEVEN!!",
-  "NO NO NO NO. It was RIGHT THERE.",
-  "That one hurt. That one will be in the dreams tonight.",
-  "Absolutely robbed. Somebody call the referee.",
+  A("SO CLOSE. A hair off the corner. Somebody's crying in section 12."),
+  A("OH! Did you see that?! Eleven pixels!! ELEVEN!!"),
+  A("NO NO NO NO. It was RIGHT THERE."),
+  A("That one hurt. That one will be in the dreams tonight."),
+  A("Absolutely robbed. Somebody call the referee."),
 ]
 const TENSION = [
-  "Hold on... hold on... the angle is... it's lining up...",
-  "Everyone in the building is standing. Nobody is breathing.",
-  "This could be it. This could be THE ONE.",
+  A("Hold on... hold on... the angle is... it's lining up..."),
+  A("Everyone in the building is standing. Nobody is breathing."),
+  A("This could be it. This could be THE ONE."),
 ]
-const HIT_LINES = ["CORNER!!! CORNER!!! CORNER!!!", "IT HAPPENED. I HAVE WAITED MY WHOLE LIFE FOR THIS.", "Put it in the museum. Put it in the museum RIGHT NOW."]
+const HIT_LINES = [A("CORNER!!! CORNER!!! CORNER!!!"), A("IT HAPPENED. I HAVE WAITED MY WHOLE LIFE FOR THIS."), A("Put it in the museum. Put it in the museum RIGHT NOW.")]
+
+const REACT_MISS = [B("Bob, I need a minute. I need a minute, Bob."), B("I am physically shaking right now."), B("That is the closest I have ever seen, and I have seen a lot of logos.")]
+const REACT_HIT = [B("Is this real? Bob, is this real life?!"), B("I'm crying. Don't look at me. I'm CRYING."), B("My grandmother waited forty years for this and she missed it by one week.")]
+const REACT_TENSE = [B("Bob, I can't look. Tell me when it's over."), B("My hands are cold. Why are my hands so cold?")]
+const OPENING = A("Welcome to the arena. We are live. The logo is warming up.")
 
 interface Plan { sx: number; sy: number }
 
@@ -71,7 +80,7 @@ export default function CornerWatch() {
   const cornerGlow = useRef<(HTMLDivElement | null)[]>([])
   const [hud, setHud] = useState({ hits: 0, miss: 0, walls: 0, secs: 0, prox: 999, viewers: 412938 })
   const [color, setColor] = useState(COLORS[0])
-  const [line, setLine] = useState("Welcome to the arena. We are LIVE. The logo is warming up.")
+  const [line, setLine] = useState(OPENING)
   const [flash, setFlash] = useState<null | { text: string; kind: "miss" | "hit" | "tense" }>(null)
   const [alert, setAlert] = useState(false)
 
@@ -94,7 +103,17 @@ export default function CornerWatch() {
     const sparks: Spark[] = []
     let raf = 0
 
-    const say = (t: string) => { lastLine = performance.now(); setLine(t) }
+    let talking = false
+    const voiceLine = (t: string, who: "bob" | "tracy", force: boolean) => {
+      if (talking && !force) return
+      if (force) stopSpeaking()
+      talking = true
+      void speak(t, { voice: who }).then(() => { talking = false })
+    }
+    const say = (t: string, force = false) => { lastLine = performance.now(); setLine(t); voiceLine(t, "bob", force) }
+    const react = (t: string, delay: number) => setTimeout(() => { setLine(t); voiceLine(t, "tracy", true) }, delay)
+    preloadSpeech("bob", [OPENING, ...WALL_LINES.slice(0, 3)])
+    const openTimer = setTimeout(() => voiceLine(OPENING, "bob", false), 1200)
     const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)]
     const bounceColor = () => { colorIdx = (colorIdx + 1 + Math.floor(Math.random() * 5)) % COLORS.length; setColor(COLORS[colorIdx]) }
 
@@ -118,7 +137,7 @@ export default function CornerWatch() {
       burst()
       fx.airhorn(); fx.cheer(5); fx.confetti()
       setFlash({ text: "CORNER!!!", kind: "hit" })
-      say(pick(HIT_LINES))
+      say(pick(HIT_LINES), true); react(pick(REACT_HIT), 5200)
       setAlert(false)
       setTimeout(() => setFlash(null), 5200)
       plan = planHit(x, y, dx, dy, W, H, 85 + Math.random() * 50)
@@ -134,7 +153,7 @@ export default function CornerWatch() {
         miss++
         fx.groan()
         setFlash({ text: `SO CLOSE  (${Math.round(other)}px)`, kind: "miss" })
-        say(pick(MISS_LINES))
+        say(pick(MISS_LINES), true); react(pick(REACT_MISS), 4800)
         setTimeout(() => setFlash((f) => (f?.kind === "miss" ? null : f)), 1700)
       } else if (performance.now() - lastLine > 5500) say(pick(WALL_LINES))
     }
@@ -151,7 +170,7 @@ export default function CornerWatch() {
       plan = planHit(x, y, dx, dy, W, H, 9)
       tenseUntil = performance.now() + 9000
       setAlert(true)
-      say(pick(TENSION))
+      say(pick(TENSION), true); react(pick(REACT_TENSE), 4500)
       fx.murmur(8)
     }
     const evs = ["mousemove", "pointerdown", "keydown", "touchstart"] as const
@@ -214,7 +233,7 @@ export default function CornerWatch() {
     const idleTalk = setInterval(() => { if (performance.now() - lastLine > 12000 && paused <= 0) say(pick(WALL_LINES)) }, 4000)
 
     return () => {
-      cancelAnimationFrame(raf)
+      cancelAnimationFrame(raf); clearTimeout(openTimer); stopSpeaking()
       clearInterval(hudTimer); clearInterval(idleTalk)
       evs.forEach((e) => window.removeEventListener(e, onFirstInput))
       window.removeEventListener("resize", onResize)
@@ -226,7 +245,7 @@ export default function CornerWatch() {
   const hot = hud.prox < 200
 
   return (
-    <FullscreenPrank exitMessage="THE CORNER WAS NEVER IN DANGER - IT WAS A PRANK!" className="cursor-default bg-[#04050b] font-sans text-white">
+    <FullscreenPrank exitMessage="THE CORNER WAS NEVER IN DANGER - IT WAS A PRANK!" className="cursor-none bg-[#04050b] font-sans text-white">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,#0e1230,#04050b_70%)]" />
       <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
 
