@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: s.popular ? 0.9 : 0.8,
     })),
+    { url: absoluteUrl("/privacy"), lastModified, changeFrequency: "yearly", priority: 0.2 },
     { url: absoluteUrl("/contact"), lastModified, changeFrequency: "yearly", priority: 0.4 },
   ]
 }

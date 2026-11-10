@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { Check, Copy, Link2, Mail, MessageCircle, MessageSquare, Send, Share2, X } from "lucide-react"
 import { LinkCopier } from "@/components/link-copier"
+import { trackPrank } from "@/lib/track"
 
 interface Props {
   /** Prank to send. Omit to share PrankSims itself. */
@@ -59,8 +60,11 @@ export function ShareSheet({ slug, name, onClose }: Props) {
     )
   }
 
-  const doCopy = async () => { if (await copyText(url)) { setCopied(true); setTimeout(() => setCopied(false), 2200) } }
-  const nativeShare = async () => { try { await navigator.share({ text, url }) } catch { /* cancelled */ } }
+  const name_ = slug ?? "pranksims_site"
+  const attempt = (share_method: string) => trackPrank("prank_share_attempt", { prank_name: name_, share_method })
+  const copiedEv = (share_method: string) => trackPrank("prank_link_copy", { prank_name: name_, share_method })
+  const doCopy = async () => { if (await copyText(url)) { copiedEv("copy"); setCopied(true); setTimeout(() => setCopied(false), 2200) } }
+  const nativeShare = async () => { try { await navigator.share({ text, url }); attempt("native") } catch { /* cancelled */ } }
 
   return createPortal(
     <div className="fixed inset-0 z-[300] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Send this prank" onClick={onClose}>
@@ -79,7 +83,7 @@ export function ShareSheet({ slug, name, onClose }: Props) {
 
         <div className="grid grid-cols-4 gap-2 sm:grid-cols-4">
           {links.map((l) => (
-            <a key={l.label} href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="flex flex-col items-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-800 px-1 py-3 text-xs text-zinc-100 hover:border-zinc-400">
+            <a key={l.label} href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" onClick={() => attempt(l.label.toLowerCase())} className="flex flex-col items-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-800 px-1 py-3 text-xs text-zinc-100 hover:border-zinc-400">
               <span className={`grid h-10 w-10 place-items-center rounded-full text-white ${l.color}`}>{l.icon}</span>{l.label}
             </a>
           ))}
@@ -95,7 +99,7 @@ export function ShareSheet({ slug, name, onClose }: Props) {
         </div>
         <p className="mt-2 text-center text-[11px] text-zinc-400">Hidden link: type your own words and paste them into email or a doc so the address never shows.</p>
       </div>
-      {hyperlink && <LinkCopier getUrl={() => url} onClose={() => setHyperlink(false)} />}
+      {hyperlink && <LinkCopier getUrl={() => url} onCopied={() => copiedEv("hidden_link")} onClose={() => setHyperlink(false)} />}
     </div>,
     document.body,
   )

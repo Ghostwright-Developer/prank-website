@@ -45,7 +45,7 @@ async function writeClipboard(html: string | null, plain: string) {
  * hidden behind them. Places that only take plain text (texts, Discord)
  * receive the plain link, so there is a second button for that.
  */
-export function LinkCopier({ getUrl, onClose }: { getUrl: () => string; onClose: () => void }) {
+export function LinkCopier({ getUrl, onClose, onCopied }: { getUrl: () => string; onClose: () => void; onCopied?: (kind: "rich" | "plain" | "md") => void }) {
   const [text, setText] = useState("")
   const [done, setDone] = useState<"rich" | "plain" | "md" | null>(null)
   const input = useRef<HTMLInputElement>(null)
@@ -66,6 +66,7 @@ export function LinkCopier({ getUrl, onClose }: { getUrl: () => string; onClose:
 
   const finish = (kind: "rich" | "plain" | "md", ok: boolean) => {
     if (!ok) return
+    onCopied?.(kind)
     remember()
     setDone(kind)
     setTimeout(onClose, 1400)

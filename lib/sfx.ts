@@ -31,6 +31,9 @@ export function unlockAudio(): void {
 
 const ready = () => !!ctx && ctx.state === "running" && sfxEnabled()
 
+/** For lib/fx.ts: the shared audio context once the viewer has interacted (else null). */
+export const audioCtx = (): AudioContext | null => (ready() ? ctx : null)
+
 interface ToneOpts { type?: OscillatorType; gain?: number; slideTo?: number; delay?: number }
 function tone(freq: number, dur: number, { type = "sine", gain = 0.12, slideTo, delay = 0 }: ToneOpts = {}) {
   if (!ready() || !ctx) return

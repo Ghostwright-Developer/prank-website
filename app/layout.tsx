@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Orbitron, Share_Tech_Mono, VT323 } from "next/font/google"
 import { Analytics } from "@/components/analytics"
+import { AnalyticsConsent } from "@/components/analytics-consent"
 import { EarlyFullscreen } from "@/components/early-fullscreen"
 import { ExitNotice } from "@/components/exit-notice"
 import { JsonLd } from "@/components/json-ld"
@@ -131,6 +132,7 @@ export default function RootLayout({
         {children}
         <ExitNotice />
         <Analytics />
+        <AnalyticsConsent />
       </body>
     </html>
   )

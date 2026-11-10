@@ -133,47 +133,53 @@ export const GUIDES: Record<string, Guide> = {
   ),
 
   // ---------- More comedy ----------
-  "keyboard-subscription": g(
-    "A pricing page announcing that your free trial of the keyboard has ended. Each key you press shows a toast: E is a Plus feature, the space bar is Pro, Shift is Ultimate. Plans are Free, Plus, Pro and Ultimate.",
-    "Subscription fatigue is universal, so a paywall on the letter E is instantly funny. The reaction is people mashing keys to see what else is locked.",
-    "Anyone annoyed by subscriptions, which is everyone.",
-    "Let them type. Every key has its own message and they will try them all.",
+  "corner-watch": g(
+    "A black screen with a glowing SCREENSAVER logo bouncing from wall to wall like an old DVD player, wrapped in a live sports broadcast: scoreboard, play-by-play commentary, a corner proximity meter and a crowd that groans at every near miss. When it finally hits the corner, the screen explodes with confetti and an airhorn.",
+    "Everyone has stared at a bouncing logo hoping it would land in the corner. This turns that tiny hope into a stadium event, so the reaction builds on its own. When the victim comes back to the screen, the corner is about eight seconds away.",
+    "Anyone who has ever watched a screensaver, which is everyone. Great for offices and gaming friends.",
+    "Leave it running and unmute the speakers. The crowd, the groan and the airhorn are half the joke.",
   ),
-  "update-delivery": g(
-    "A delivery-tracking app for your Windows update: a map, an ETA and a driver named Dave. The ETA keeps getting worse as Dave stops for gas, eats a gas station burrito, is pulled over, drops the update and delivers it to a neighbor named Steve.",
-    "Everyone knows the delivery app format, so the joke needs no explaining, and every update on the map makes the situation more absurd. You can call, message or tip Dave, and every answer is its own gag.",
-    "Anyone who has waited for a late delivery, or a Windows update.",
-    "Press Message and send Dave anything. His reply is the best line on the screen.",
+  "mouse-sports-network": g(
+    "A glowing arena with a scoreboard, a neon trail behind the cursor and two sports announcers who narrate every move: fast flicks, corner visits, clicks that do nothing, rage-clicking, hovering and even the keyboard. Instant replays show your last movement in slow motion.",
+    "It reacts to the viewer in real time, which is why it works. The first mouse move after the screen has been sitting there sets off the crowd and the line: he's back.",
+    "Anyone with a mouse and a sense of humor. Not for touchscreens.",
+    "Turn the sound on. The announcers use your browser's built-in voices and the voices vary by device, and the text appears on screen either way.",
   ),
-  "rogue-cursor": g(
-    "Their mouse cursor starts normal, then gets lazy, stares at them, falls asleep, shows up with a picket sign, eats cheese, dances and runs away when they chase it, with speech bubbles for everything.",
-    "Everyone has fought a stubborn cursor. This one has a personality, so moving the mouse becomes a game, and every click gets an answer.",
-    "Anyone sitting at a desktop with a mouse. It does not work on touchscreens.",
-    "Use a start delay and let them move the mouse for a while before it misbehaves: it behaves perfectly for the first seven seconds.",
+  "flooded-desktop": g(
+    "A normal desktop that slowly fills with water. The icons float away, a rubber duck drifts across the surface, fish swim by, bubbles rise, a pipe drips from the top and at the end a shark fin circles. Windows keeps showing calm dialogs about moisture.",
+    "It reads from across the room with no text at all, and the water level creeping up is a slow escalation. The calm warnings from Windows make it funnier.",
+    "Anyone. It works on kids, coworkers and people who care a lot about their monitor.",
+    "Click anywhere to make ripples, and click the duck.",
   ),
-  "autocomplete-gone-feral": g(
-    "A notes window with an AI autocomplete. As they type, it suggests the next words, and the suggestions are unhinged: geese, landlords, a man named Kyle. If they keep typing, it writes the rest of the letter itself.",
-    "Everyone expects autocomplete to be wrong, so a confident, personal, absurd suggestion is a surprise. The reveal that it has opinions about them is the punchline.",
-    "Anyone who writes a lot, and anyone who says AI will take their job.",
-    "Hand them the keyboard and say you're testing a new writing tool. Press Tab to accept suggestions.",
+  "gravity-update": g(
+    "A fake Windows update turns gravity on. The desktop icons and windows shake loose one by one, fall to the taskbar and pile up. Later, gravity points up, then left, then to the moon. You can grab anything and throw it.",
+    "The update dialog sells it, and then real physics takes over, which is more convincing than any animation. It keeps changing, so it stays funny.",
+    "People who like to play with things. Give them the mouse and watch.",
+    "Tell them to try to restore the Recycle Bin. It is the heaviest thing on the screen.",
   ),
-  "meeting-you-forgot": g(
-    "A video call grid where eleven people have been waiting for you, the host, who is muted: Greg slurps noodles, Brenda is frozen, a cat blocks Priya's camera and Marcus is driving. The CEO joins, everyone stares, and one by one they leave.",
-    "Showing up late to a meeting you forgot about is a universal fear. The tiles, the live captions and the chat play it out in detail.",
-    "Anyone who works remotely or sits through video calls.",
-    "Tell them 'I think the call started without you.' The Unmute, Share screen and Leave buttons all react.",
+  "departures-board": g(
+    "A clattering airport departures board with flaps that flip letter by letter. The flights are computer problems: Wi-Fi to Hope (cancelled), Your Motivation (last seen 2019), Reply All (too late). A pinned row reads Your Productivity: departed. A PA voice makes deadpan announcements.",
+    "Split-flap boards are satisfying to watch, and the joke format is instantly understood. The announcements add a second layer for anyone who has the sound on.",
+    "Frequent flyers, office workers and anyone who has seen a Monday.",
+    "Leave it on a second monitor. It looks great even without the joke.",
   ),
-  "free-trial-expired": g(
-    "A dark pricing screen: your 30-day free trial of this computer has ended, with monthly and yearly plans, a countdown to cold storage and buttons that fail in absurd ways.",
-    "Free trials that end and then charge you are a shared frustration. Applying one to hardware you own is the twist.",
-    "Anyone who has forgotten to cancel a trial.",
-    "The alarm sound adds urgency. Turn it off in Set up if you are somewhere quiet.",
+  "ant-parade": g(
+    "A line of tiny ants marches out of a hole in the desktop and carries your icons away, one at a time, four to six ants per icon. They argue about who is lifting. Later they bring everything back in the wrong places, then do it again.",
+    "Ants carrying something much bigger than themselves is universally funny, and the icons are a perfect size for it. Move the mouse near them and they scatter.",
+    "Anyone who has found ants in the kitchen.",
+    "Watch the Recycle Bin: it takes six ants and every one of them has an opinion.",
   ),
-  "windows-wants-to-talk": g(
-    "A Windows feedback box titled 'We need to talk' that reveals your habits one by one: 94 open tabs, 412 'Remind me tomorrow' clicks, a file named final_FINAL_v3_reallyfinal. Three buttons let you reply.",
-    "Being called out for habits you know are true is funnier than being scared. The tone is a polite, disappointed system.",
-    "Friends and coworkers who live in 94 tabs.",
-    "Send it right after you notice them with an absurd number of tabs open.",
+  "on-hold": g(
+    "A phone call screen: a call timer, a queue position of #3,201, an estimated wait of 47 minutes and elevator music. A polite robot voice says your call is important. Pressing any key makes your position worse.",
+    "Everyone has been on hold. The robot voice, the cheesy music and the queue number that keeps getting worse are all painfully familiar.",
+    "Anyone who has called a cable company.",
+    "Press keys to make it worse. Each key press gets a different apology.",
+  ),
+  "the-fly": g(
+    "A boring budget document with a very realistic fly on it. It walks in stops and starts, rubs its hands together, takes off with a buzz when the mouse comes close and lands somewhere else. More flies arrive every minute or so.",
+    "People instinctively try to flick or swat a fly on a screen. It does not matter that they know it is fake. After a few clicks it asks them to stop hitting their monitor.",
+    "Everyone, especially people who hate bugs.",
+    "Turn the sound on for the buzz. Do not tell them it is fake.",
   ),
 
   // ---------- Other OS ----------
@@ -433,7 +439,7 @@ export const GUIDES: Record<string, Guide> = {
   // ---------- Comedy ----------
   "cats-took-over": g(
     "A screen taken over by cats, with a slow, endless news ticker at the bottom reporting increasingly ridiculous headlines.",
-    "A comedy screen built for laughing, not scaring. The ticker keeps changing, so it is worth leaving on for a while.",
+    "A comedy screen built for laughing, not scaring. Cats peek in from the bottom of the screen one by one, paw prints walk across, a cat knocks a stat off the screen while looking right at you, and the ticker keeps changing, so it is worth leaving on for a while.",
     "Cat lovers and anyone who needs a laugh.",
     "Leave it on a shared screen in the office and see who reads the ticker.",
   ),
@@ -628,15 +634,15 @@ export const CATEGORY_GUIDES: Record<CategorySlug, CategoryGuide> = {
   },
   comedy: {
     about: [
-      "Not every prank needs to be scary. The comedy screens are built to make people laugh: cats that take over the computer with an endless news ticker, an over-enthusiastic paperclip assistant, a Minecraft update that goes wrong and a printer that always wins.",
+      "Not every prank needs to be scary. The comedy screens are built to make people laugh: a bouncing logo that a crowd is desperate to see hit the corner, announcers narrating your mouse, a desktop that floods, icons that fall, ants carrying them away, a fly that will not leave, and cats that take over the computer.",
       "They are the best choice for children, family and anyone who does not enjoy a fright.",
       "Everything runs in the browser and can be closed with Esc or Q.",
     ],
     tips: [
       "Leave the cats screen on for a while. The ticker keeps changing.",
-      "Let people press keys on the Keyboard+ paywall. Every key has its own message.",
+      "Turn the sound on for Corner Watch, Mouse Sports Network and the Departures Board. The crowd and the voices do half the work.",
+      "Click the duck on the flooded desktop, and grab the falling icons on Gravity Update.",
       "Use the printer error just before an important print job.",
-      "Show the Minecraft update to someone about to play.",
     ],
     faq: [
       { question: "Are these suitable for kids?", answer: "Yes. The comedy screens have no scary content." },

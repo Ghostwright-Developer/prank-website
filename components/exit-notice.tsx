@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { EXIT_MESSAGE_KEY, LAST_SCREEN_KEY } from "@/components/fullscreen-prank"
 import { ShareSheet } from "@/components/share-sheet"
 import { SCREENS } from "@/lib/screens"
+import { trackPrank } from "@/lib/track"
 
 const VISIBLE_MS = 2200
 const FADE_MS = 700
@@ -54,6 +55,7 @@ export function ExitNotice() {
 
   const lastScreen = SCREENS.find((x) => x.slug === last)
   const another = () => {
+    if (last) trackPrank("prank_next", { prank_name: last })
     const pool = SCREENS.filter((x) => x.slug !== last)
     router.push(`/screens/${pool[Math.floor(Math.random() * pool.length)].slug}`)
   }

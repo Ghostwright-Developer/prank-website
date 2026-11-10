@@ -6,6 +6,7 @@ import { ScreenCard } from "@/components/screen-card"
 import { SiteShareButton } from "@/components/share-sheet"
 import { SurpriseButton } from "@/components/surprise-button"
 import { JsonLd } from "@/components/json-ld"
+import { CookieSettingsLink } from "@/components/analytics-consent"
 import { homeJsonLd } from "@/lib/jsonld"
 import {
   CATEGORIES,
@@ -321,6 +322,8 @@ export default function Home() {
             </p>
             <p className="mt-4 text-zinc-500">
               <Link href="/contact" className="hover:text-cyan-400 transition-colors">Contact</Link>
+              {" · "}<Link href="/privacy" className="hover:text-cyan-400 transition-colors">Privacy</Link>
+              <CookieSettingsLink className="hover:text-cyan-400 transition-colors before:content-[' · ']" />
               {" · "}&copy; {new Date().getFullYear()} {SITE_NAME}
             </p>
           </div>

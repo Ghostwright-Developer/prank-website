@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef } from "react"
+import { trackPrank } from "@/lib/track"
 import { useRouter } from "next/navigation"
 import { startLoop, unlockAudio, type LoopName } from "@/lib/sfx"
 
@@ -57,6 +58,8 @@ export function FullscreenPrank({
   const router = useRouter()
   const exitingRef = useRef(false)
   const mountedRef = useRef(false)
+  const startedAtRef = useRef(0)
+  const engagedTimerRef = useRef<number | undefined>(undefined)
   const exitMessageRef = useRef(exitMessage)
   exitMessageRef.current = exitMessage
 
@@ -68,6 +71,12 @@ export function FullscreenPrank({
   const exitPrank = useCallback(() => {
     if (exitingRef.current) return
     exitingRef.current = true
+    const exitedSlug = location.pathname.split("/")[2]
+    window.clearInterval(engagedTimerRef.current)
+    if (exitedSlug && startedAtRef.current) {
+      const secs = Math.round((Date.now() - startedAtRef.current) / 1000)
+      trackPrank("prank_exit", { prank_name: exitedSlug, duration_s: Math.min(secs, 3600) })
+    }
     try {
       sessionStorage.setItem(
         EXIT_MESSAGE_KEY,
@@ -84,6 +93,22 @@ export function FullscreenPrank({
 
   useEffect(() => {
     mountedRef.current = true
+    if (!startedAtRef.current) {
+      startedAtRef.current = Date.now()
+      const s = location.pathname.split("/")[2]
+      if (s) {
+        trackPrank("prank_start", { prank_name: s })
+        // Engagement milestone: 10 seconds with this prank on screen AND the tab visible.
+        let visibleSecs = 0
+        engagedTimerRef.current = window.setInterval(() => {
+          if (location.pathname.split("/")[2] !== s) { window.clearInterval(engagedTimerRef.current); return }
+          if (document.visibilityState === "visible" && ++visibleSecs >= 10) {
+            window.clearInterval(engagedTimerRef.current)
+            trackPrank("prank_engaged", { prank_name: s })
+          }
+        }, 1000)
+      }
+    }
     let wasFullscreen = !!getFullscreenElement()
 
     const requestFullscreen = () => {
