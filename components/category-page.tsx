@@ -4,6 +4,7 @@ import { CategoryIcon } from "@/components/category-icon"
 import { ScreenCard } from "@/components/screen-card"
 import { JsonLd } from "@/components/json-ld"
 import { SiteHeader } from "@/components/site-header"
+import { SupportButton } from "@/components/support-button"
 import { categoryFaqJsonLd, categoryJsonLd } from "@/lib/jsonld"
 import { CATEGORY_GUIDES } from "@/lib/guides"
 import {
@@ -142,6 +143,7 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
             <kbd className="rounded bg-zinc-800 px-1.5 py-0.5 text-zinc-400 font-mono">Q</kbd> to exit any prank.
           </p>
         </nav>
+        <SupportButton className="mb-2 mt-12" />
       </div>
     </div>
   )

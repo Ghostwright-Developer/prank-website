@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { BrowseGrid } from "@/components/browse-grid"
 import { SiteHeader } from "@/components/site-header"
+import { SupportButton } from "@/components/support-button"
 import { SurpriseButton } from "@/components/surprise-button"
 import { CATEGORIES, SCREENS, TOTAL_SCREENS, getCategory } from "@/lib/screens"
 import { pageMetadata } from "@/lib/seo"
@@ -31,6 +32,7 @@ export default function AllScreensPage() {
           <div className="mt-5"><SurpriseButton slugs={SCREENS.map((s) => s.slug)} /></div>
         </header>
         <BrowseGrid items={items} categories={CATEGORIES.map((c) => ({ slug: c.slug, name: c.shortName }))} />
+        <SupportButton className="mb-2 mt-14 border-t border-zinc-800/50 pt-10" />
       </div>
     </main>
   )

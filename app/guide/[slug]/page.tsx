@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react"
 import { GuideActions } from "@/components/guide-actions"
 import { JsonLd } from "@/components/json-ld"
 import { ScreenCard } from "@/components/screen-card"
+import { SupportButton } from "@/components/support-button"
 import { GUIDES } from "@/lib/guides"
 import { guideJsonLd } from "@/lib/jsonld"
 import { guideFaq, guideMetadata } from "@/lib/seo"
@@ -102,6 +103,8 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             <p className="mt-5"><Link href={categoryPath(category.slug)} className="text-cyan-300 hover:underline">See all {category.name}</Link> · <Link href="/screens" className="text-cyan-300 hover:underline">Browse every screen</Link></p>
           </section>
         )}
+
+        <SupportButton className="mb-4 mt-14 border-t border-zinc-800/50 pt-10" />
       </div>
     </main>
   )

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { ChevronDown, Menu, Search, Shuffle, X } from "lucide-react"
 import { CATEGORIES, FAMILIES, SCREENS, TOTAL_SCREENS, categoryPath, getCategory, guidePath } from "@/lib/screens"
 import { SiteShareButton } from "@/components/share-sheet"
+import { SupportLink } from "@/components/support-button"
 
 /** Sticky site header: logo, a Browse menu grouped into families, instant search, Surprise me. */
 export function SiteHeader() {
@@ -89,7 +90,7 @@ export function SiteHeader() {
           <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">PRANK</span><span className="text-white">SIMS</span>
         </Link>
 
-        <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label="Main">
+        <nav className="ml-4 hidden items-center gap-1 whitespace-nowrap md:flex" aria-label="Main">
           <button onClick={() => setMenu((v) => !v)} aria-expanded={menu} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-zinc-100 hover:bg-zinc-800">
             Browse <ChevronDown className={`h-4 w-4 transition-transform ${menu ? "rotate-180" : ""}`} />
           </button>
@@ -98,9 +99,11 @@ export function SiteHeader() {
           <Link href="/#faq" className="rounded-lg px-3 py-2 text-sm font-semibold text-zinc-100 hover:bg-zinc-800">FAQ</Link>
         </nav>
 
-        <div className="ml-auto hidden w-64 md:block">{searchBox}</div>
+        <div className="ml-auto hidden w-44 md:block xl:w-64">{searchBox}</div>
         <button onClick={surprise} className="hidden items-center gap-1.5 rounded-lg border border-pink-400/60 bg-pink-500/15 px-3 py-2 text-sm font-semibold text-pink-100 hover:bg-pink-500/30 md:inline-flex"><Shuffle className="h-4 w-4" /> Surprise</button>
-        <SiteShareButton className="hidden rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-semibold text-white hover:border-zinc-300 lg:inline-flex" />
+        <SiteShareButton className="hidden rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-semibold text-white hover:border-zinc-300 2xl:inline-flex" />
+
+        <SupportLink size="sm" label="Support" className="max-md:hidden" />
 
         <button onClick={() => setMobile((v) => !v)} aria-label={mobile ? "Close menu" : "Open menu"} className="ml-auto rounded-lg border border-zinc-600 p-2 text-white md:hidden">
           {mobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -120,6 +123,10 @@ export function SiteHeader() {
             <Link href="/screens" onClick={() => setMobile(false)} className="inline-flex flex-1 items-center justify-center rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-2 text-sm font-semibold text-white">All screens</Link>
           </div>
           {browse}
+          <div className="mt-5 border-t border-zinc-700/60 pt-4 text-center">
+            <p className="mb-2 text-sm text-zinc-300">Enjoyed the chaos? Help keep PrankSims free and ad-free.</p>
+            <SupportLink />
+          </div>
         </div>
       )}
     </header>

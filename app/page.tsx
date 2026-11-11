@@ -4,6 +4,7 @@ import { Zap } from "lucide-react"
 import { CategoryIcon } from "@/components/category-icon"
 import { ScreenCard } from "@/components/screen-card"
 import { SiteHeader } from "@/components/site-header"
+import { SupportButton } from "@/components/support-button"
 import { SurpriseButton } from "@/components/surprise-button"
 import { JsonLd } from "@/components/json-ld"
 import { CookieSettingsLink } from "@/components/analytics-consent"
@@ -279,6 +280,7 @@ export default function Home() {
               </div>
             ))}
           </nav></details>
+          <SupportButton className="mb-10 mt-2" />
           <div className="text-center">
             <p className="mb-2">All screens are harmless pranks. No actual system damage occurs.</p>
             <p className="text-zinc-500">
