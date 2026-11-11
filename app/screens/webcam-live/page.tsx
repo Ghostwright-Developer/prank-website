@@ -19,6 +19,8 @@ export default function WebcamLive() {
   const [ip, setIp] = useState("0.0.0.0")
   const [box, setBox] = useState({ x: 50, y: 42, s: 1 })
   const stream = useRef<MediaStream | null>(null)
+  // The permission prompt can pull the browser out of fullscreen: that must not count as "leaving".
+  const holdUntil = useRef(Date.now() + 120000)
 
   useEffect(() => {
     setIp(`${oct()}.${oct()}.${oct()}.${oct()}`)
@@ -29,9 +31,11 @@ export default function WebcamLive() {
         const st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
         if (dead) { st.getTracks().forEach((t) => t.stop()); return }
         stream.current = st
+        holdUntil.current = Date.now() + 4000
         if (video.current) { video.current.srcObject = st; void video.current.play().catch(() => {}) }
         setState("live"); sfx.click()
       } catch {
+        holdUntil.current = Date.now() + 4000
         if (!dead) setState("denied")
       }
     })()
@@ -47,7 +51,7 @@ export default function WebcamLive() {
   }, [state])
 
   return (
-    <FullscreenPrank exitMessage="THE CAMERA WAS ONLY EVER SHOWING YOU TO YOU - IT WAS A PRANK!" className="bg-black font-mono text-white">
+    <FullscreenPrank holdFullscreen={() => Date.now() < holdUntil.current} exitMessage="THE CAMERA WAS ONLY EVER SHOWING YOU TO YOU - IT WAS A PRANK!" className="bg-black font-mono text-white">
       <video ref={video} playsInline muted className={`absolute inset-0 h-full w-full -scale-x-100 object-cover ${state === "live" ? "opacity-100" : "opacity-0"}`} />
       {state === "live" && (
         <>

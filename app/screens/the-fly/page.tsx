@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import { FullscreenPrank } from "@/components/fullscreen-prank"
-import { fx } from "@/lib/fx"
 
 const MAX_FLIES = 4
 
@@ -56,7 +55,6 @@ export default function TheFly() {
       f.fx1 = tx; f.fy1 = ty!
       const d = Math.hypot(f.fx1 - f.fx0, f.fy1 - f.fy0)
       f.fdur = Math.max(0.7, d / 520 + 0.3); f.ft0 = T; f.amp = 30 + Math.random() * 70; f.freq = 2 + Math.random() * 3
-      fx.buzz(f.fdur)
     }
     const onDown = (e: PointerEvent) => {
       const T = performance.now() / 1000

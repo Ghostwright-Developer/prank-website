@@ -18,10 +18,10 @@ const SAY = [
   "Nobody tell the queen.", "Watch the corner!", "My back, Linda.", "On three. One. Two. Three. HEAVE.", "This is a four ant job. There are three of us.",
 ]
 const SCOUTS = 5
-const POOL = 34
+const POOL = 46
 
 interface Ant {
-  x: number; y: number; h: number; active: boolean; mode: "idle" | "toSlot" | "carry" | "leave" | "scout" | "pause"
+  x: number; y: number; h: number; active: boolean; mode: "idle" | "toSlot" | "carry" | "leave" | "scout" | "pause" | "backup" | "hold" | "watch"
   task: number; slot: number; tx: number; ty: number; wait: number; say: number
   wrap: HTMLDivElement | null; svg: HTMLDivElement | null; bub: HTMLDivElement | null; spd: number
 }
@@ -39,6 +39,7 @@ export default function AntParade() {
   const bubEls = useRef<(HTMLDivElement | null)[]>([])
   const iconEls = useRef<(HTMLDivElement | null)[]>([])
   const hole = useRef<HTMLDivElement>(null)
+  const cur = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let W = innerWidth, H = innerHeight
@@ -55,6 +56,16 @@ export default function AntParade() {
     let mx = -999, my = -999
     const onMove = (e: PointerEvent) => { mx = e.clientX; my = e.clientY }
     addEventListener("pointermove", onMove, { passive: true })
+    // Trying to stop the ants: hovering over the icon they carry, or poking it, gets you detained.
+    let blockT = 0, pokes = 0, warned = false, cooldownUntil = 10, saidT = 0
+    const det = { phase: "none" as "none" | "call" | "swarm" | "haul" | "sink" | "gone" | "emerge", t: 0, cx: 0, cy: 0, scale: 1, ants: [] as number[] }
+    const NOCURSOR = "ap-nocursor"
+    const HAUL = ["Got him!", "Nobody panic.", "He's squirming.", "Stop clicking, it's fine.", "Steve, get the legs.", "Heavier than the Recycle Bin.", "Left a bit.", "Almost at the hole."]
+    const say = (a: Ant, txt: string, secs = 3) => { if (a.bub) { a.bub.textContent = txt; a.say = secs } }
+    const onDown = (e: PointerEvent) => {
+      if (tasks.some((t) => (t.state === "carry" || t.state === "grow") && Math.hypot(t.pos.x - e.clientX, t.pos.y - e.clientY) < 55)) pokes++
+    }
+    addEventListener("pointerdown", onDown, { passive: true })
     const resize = () => { W = innerWidth; H = innerHeight }
     addEventListener("resize", resize)
 
@@ -137,6 +148,70 @@ export default function AntParade() {
         }
       })
 
+      // the mouse gets arrested
+      if (det.phase === "none") {
+        if (T > cooldownUntil) {
+          const near = tasks.find((t) => (t.state === "carry" || t.state === "grow") && Math.hypot(t.pos.x - mx, t.pos.y - my) < 60)
+          if (near) {
+            blockT += dt
+            if (!warned && blockT > 0.7) {
+              warned = true
+              const a = ants[near.ants[0]]
+              if (a) say(a, "Sir, you're in the way.", 2.6)
+            }
+          } else { blockT = Math.max(0, blockT - dt * 0.5); if (blockT < 0.2) warned = false }
+          if (blockT > 2.4 || pokes >= 2) {
+            blockT = 0; pokes = 0; warned = false
+            det.ants = []
+            for (let k = 0; k < 12; k++) { const a = free(); if (!a) break; spawn(a, "backup"); a.wait = k * 0.22; det.ants.push(ants.indexOf(a)) }
+            if (det.ants.length >= 6) {
+              det.phase = "call"; det.t = 0
+              if (near) near.ants.slice(0, 2).forEach((ai, k) => say(ants[ai], k ? "Call it in." : "BACKUP! BACKUP!", 2.4))
+              fx.scurry()
+            } else { det.ants.forEach((i) => { ants[i].mode = "leave" }); det.ants = [] }
+          }
+        }
+      } else {
+        det.t += dt
+        const lead = (n: number) => ants[det.ants[n]]
+        if (det.phase === "call") {
+          if (det.t > 1.4) { det.phase = "swarm"; det.t = 0 }
+        } else if (det.phase === "swarm") {
+          const holders = det.ants.filter((i) => ants[i].mode === "hold").length
+          if (holders >= 5 || det.t > 6) {
+            det.phase = "haul"; det.t = 0; det.cx = mx < 0 ? W / 2 : mx; det.cy = my < 0 ? H / 2 : my; det.scale = 1; saidT = 0
+            document.documentElement.classList.add(NOCURSOR)
+            det.ants.forEach((i, k) => { const a = ants[i]; a.mode = "hold"; a.slot = (k / det.ants.length) * 6.2832; a.wait = 0 })
+            say(lead(0), "Got the mouse!", 2.6); fx.scurry()
+          }
+        } else if (det.phase === "haul") {
+          const dx = h.x - det.cx, dy = h.y - det.cy, d = Math.hypot(dx, dy)
+          if (d < 14) { det.phase = "sink"; det.t = 0 } else { det.cx += (dx / d) * 52 * dt; det.cy += (dy / d) * 52 * dt }
+          saidT -= dt
+          if (saidT <= 0) { say(lead(Math.floor(Math.random() * det.ants.length)), HAUL[Math.floor(Math.random() * HAUL.length)], 2.4); saidT = 1.7 }
+        } else if (det.phase === "sink") {
+          det.scale = Math.max(0, 1 - det.t / 0.9)
+          if (det.t > 0.9) {
+            det.phase = "gone"; det.t = 0; fx.pop()
+            det.ants.forEach((i, k) => { const a = ants[i]; if (k < 2) { a.mode = "watch"; a.slot = k ? 1 : -1; say(a, k ? "Nobody tell him." : "Mouse secured.", 3) } else a.mode = "leave" })
+          }
+        } else if (det.phase === "gone") {
+          if (det.t > 3.8) { det.phase = "emerge"; det.t = 0; det.cx = h.x; det.cy = h.y; det.ants.slice(0, 2).forEach((i, k) => say(ants[i], k ? "Act natural." : "...He's back.", 2.4)) }
+        } else if (det.phase === "emerge") {
+          det.scale = Math.min(1, det.t / 0.8)
+          if (det.t > 1.6) {
+            document.documentElement.classList.remove(NOCURSOR)
+            det.ants.forEach((i) => { if (ants[i].mode === "watch") ants[i].mode = "leave" })
+            det.phase = "none"; det.ants = []; cooldownUntil = T + 28
+          }
+        }
+      }
+      if (cur.current) {
+        const vis = det.phase === "haul" || det.phase === "sink" || det.phase === "emerge"
+        cur.current.style.opacity = vis ? "1" : "0"
+        cur.current.style.transform = `translate(${det.cx}px, ${det.cy}px) scale(${det.scale}) rotate(${det.phase === "haul" ? Math.sin(now / 90) * 7 : 0}deg)`
+      }
+
       // ants
       let sayCooldown = nextSay
       ants.forEach((a, ai) => {
@@ -170,6 +245,20 @@ export default function AntParade() {
         } else if (a.mode === "leave") {
           const d = goTo(a, h.x, h.y, dt, 85)
           if (d < 12) { a.active = false; a.mode = "idle" }
+        } else if (a.mode === "backup") {
+          if (a.wait <= 0) {
+            const d = goTo(a, mx < 0 ? W / 2 : mx, my < 0 ? H / 2 : my, dt, 135)
+            if (d < 32) { a.mode = "hold"; a.slot = Math.atan2(a.y - my, a.x - mx) }
+          }
+        } else if (a.mode === "hold") {
+          if (det.phase === "haul" || det.phase === "sink") {
+            const tx = det.cx + Math.cos(a.slot) * 26, ty = det.cy + Math.sin(a.slot) * 24
+            a.x += (tx - a.x) * Math.min(1, dt * 10); a.y += (ty - a.y) * Math.min(1, dt * 10)
+            a.h = a.slot + Math.PI
+          } else turn(a, Math.atan2(my - a.y, mx - a.x), dt, 10)
+        } else if (a.mode === "watch") {
+          const d = goTo(a, h.x + a.slot * 70, h.y + 30, dt, 90)
+          if (d < 6) turn(a, Math.atan2(h.y - a.y, h.x - a.x), dt)
         } else if (a.mode === "scout") {
           if (near) { turn(a, Math.atan2(a.y - my, a.x - mx), dt, 14); a.x += Math.cos(a.h) * 150 * dt; a.y += Math.sin(a.h) * 150 * dt }
           else if (a.wait > 0) { /* resting */ }
@@ -183,7 +272,7 @@ export default function AntParade() {
         a.wrap.style.transform = `translate(${a.x - 15}px, ${a.y - 15}px)`
         if (a.svg) {
           a.svg.style.transform = `rotate(${a.h + Math.PI / 2}rad)`
-          const moving = a.mode !== "pause" && !(a.mode === "scout" && a.wait > 0) && !(a.mode === "toSlot" && a.wait > 0)
+          const moving = a.mode !== "pause" && !(a.mode === "hold" && det.phase !== "haul" && det.phase !== "sink") && !(a.mode === "scout" && a.wait > 0) && !(a.mode === "toSlot" && a.wait > 0)
           a.svg.style.setProperty("--ap", moving ? "running" : "paused")
         }
         if (a.bub) { a.bub.style.opacity = a.say > 0 ? "1" : "0"; if (a.say > 0) a.say -= dt }
@@ -201,7 +290,7 @@ export default function AntParade() {
       raf = requestAnimationFrame(frame)
     }
     raf = requestAnimationFrame(frame)
-    return () => { cancelAnimationFrame(raf); removeEventListener("pointermove", onMove); removeEventListener("resize", resize) }
+    return () => { cancelAnimationFrame(raf); removeEventListener("pointermove", onMove); removeEventListener("pointerdown", onDown); removeEventListener("resize", resize); document.documentElement.classList.remove("ap-nocursor") }
   }, [])
 
   return (
@@ -225,7 +314,11 @@ export default function AntParade() {
           <div ref={(el) => { bubEls.current[i] = el }} className="absolute -top-9 left-1/2 w-max max-w-[210px] -translate-x-1/2 rounded-lg bg-white px-2 py-1 text-[12px] leading-tight text-[#222] opacity-0 shadow-lg transition-opacity" />
         </div>
       ))}
+      <div ref={cur} className="pointer-events-none absolute left-0 top-0 z-[30] opacity-0 will-change-transform [transform-origin:0_0]">
+        <svg width="20" height="28" viewBox="0 0 12 17" className="drop-shadow-[1px_2px_1px_rgba(0,0,0,.35)]"><path d="M.5.5v13.2l3-2.9 2 4.7 2-.9-2-4.6h4.2z" fill="#fff" stroke="#000" strokeLinejoin="round" /></svg>
+      </div>
       <style>{`
+        .ap-nocursor, .ap-nocursor * { cursor: none !important; }
         .ap-ant img { animation: ap-walk .16s ease-in-out infinite alternate; }
         @keyframes ap-walk { from { transform: rotate(-3deg) scaleY(.96) } to { transform: rotate(3deg) scaleY(1.04) } }
         .ap-ant * { animation-play-state: var(--ap, running) !important; }

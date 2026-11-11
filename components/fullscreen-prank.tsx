@@ -19,6 +19,8 @@ interface FullscreenPrankProps {
   exitMessage?: string | (() => string)
   /** Called once when the viewer leaves (Esc, Q, leaving fullscreen), just before we navigate away. */
   onExit?: () => void
+  /** While this returns true, the browser leaving fullscreen (e.g. a camera permission prompt) does not end the prank. Esc and Q still do. */
+  holdFullscreen?: () => boolean
   /** Unused (kept so existing screens compile). */
   secondary?: string
   /** Optional ambient sound loop (synthesized, starts after the first click/tap/key). */
@@ -57,6 +59,7 @@ export function FullscreenPrank({
   className = "",
   exitMessage,
   onExit,
+  holdFullscreen,
   sound,
 }: FullscreenPrankProps) {
   const router = useRouter()
@@ -68,6 +71,8 @@ export function FullscreenPrank({
   exitMessageRef.current = exitMessage
   const onExitRef = useRef(onExit)
   onExitRef.current = onExit
+  const holdRef = useRef(holdFullscreen)
+  holdRef.current = holdFullscreen
 
   /**
    * Single exit path, used by Esc, Q and "viewer left fullscreen". Guarded so
@@ -152,6 +157,9 @@ export function FullscreenPrank({
       if (getFullscreenElement()) {
         wasFullscreen = true
       } else if (wasFullscreen) {
+        // A permission prompt can knock the page out of fullscreen: stay on the prank, and
+        // go fullscreen again on the next click.
+        if (holdRef.current?.()) { wasFullscreen = false; return }
         exitPrank()
       }
     }
