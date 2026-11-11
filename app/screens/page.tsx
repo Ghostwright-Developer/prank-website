@@ -20,7 +20,7 @@ export default function AllScreensPage() {
     categoryName: getCategory(s.category).shortName,
   }))
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-white">
+    <main className="cy min-h-screen bg-[#0a0a0f] text-white">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-5 py-10">
         <Link href="/" className="mb-8 inline-flex items-center gap-2 text-zinc-300 hover:text-cyan-300"><ArrowLeft className="h-4 w-4" /> Back to Home</Link>

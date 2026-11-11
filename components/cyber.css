@@ -1,0 +1,123 @@
+/*
+ * Neon cyberpunk theme for the public site (home, categories, guides, contact, privacy, popups).
+ * Everything is scoped to .cy / .cyv so the prank screens themselves, which imitate real
+ * operating systems, are never touched.
+ *   .cyv = palette only (popups and dialogs)   .cy = palette + background effects (page roots)
+ */
+.cy, .cyv {
+  /* Tailwind's zinc / cyan / pink scales retuned to neon noir: every existing utility picks this up. */
+  --color-zinc-50: #fbfaff; --color-zinc-100: #f1eeff; --color-zinc-200: #e2dcfb; --color-zinc-300: #c9c1ee;
+  --color-zinc-400: #a79dd6; --color-zinc-500: #8479b8; --color-zinc-600: #3d3078; --color-zinc-700: #281f55;
+  --color-zinc-800: #171230; --color-zinc-900: #0d0a1c; --color-zinc-950: #060410;
+  --color-cyan-300: #86fcff; --color-cyan-400: #00f0ff; --color-cyan-500: #00dcf0; --color-cyan-600: #00b8d4;
+  --color-pink-300: #ff9ff0; --color-pink-400: #ff4fe0; --color-pink-500: #ff2bd6; --color-pink-600: #e015bf;
+  --color-yellow-400: #fff44f; --color-yellow-500: #fcee0a;
+  --color-blue-500: #5b6cff; --color-blue-600: #8a3dff;
+  --cy-cyan: #00f0ff; --cy-pink: #ff2bd6; --cy-yellow: #fcee0a; --cy-purple: #9d4dff; --cy-bg: #06040f;
+  color-scheme: dark;
+}
+
+.cy.cy { background: var(--cy-bg); isolation: isolate; position: relative; }
+.cy ::selection, .cyv ::selection { background: var(--cy-pink); color: #05030a; }
+
+/* backdrop: scanlines, vignette and a faint neon grid ... */
+.cy::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(157,77,255,.28), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(255,43,214,.16), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 0% 100%, rgba(0,240,255,.13), transparent 70%),
+    linear-gradient(rgba(0,240,255,.045) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(90deg, rgba(255,43,214,.04) 1px, transparent 1px) 0 0 / 56px 56px,
+    var(--cy-bg);
+}
+/* ... and a glowing synthwave floor along the bottom edge */
+.cy::after {
+  content: ""; position: fixed; left: -20%; right: -20%; bottom: 0; height: 34vh; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(255,43,214,.16), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,43,214,.5) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(0,240,255,.42) 0 1px, transparent 1px 38px);
+  transform: perspective(380px) rotateX(62deg); transform-origin: bottom;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 85%); mask-image: linear-gradient(to top, #000, transparent 85%);
+  opacity: .85;
+}
+
+/* header */
+.cy header.sticky {
+  background: rgba(6,4,15,.84); border-bottom: 1px solid rgba(0,240,255,.38);
+  box-shadow: 0 1px 0 rgba(255,43,214,.35), 0 8px 30px -8px rgba(0,240,255,.25);
+}
+.cy header.sticky a[aria-label="PrankSims home"] { filter: drop-shadow(0 0 7px rgba(0,240,255,.55)) drop-shadow(0 0 14px rgba(255,43,214,.35)); }
+.cy header.sticky [class*="bg-[#0d0d14]"] { background: rgba(8,6,20,.97); border-color: rgba(0,240,255,.3); }
+
+/* headings: neon tube glow */
+.cy h1, .cy h2 { text-shadow: 0 0 10px rgba(0,240,255,.35), 0 0 28px rgba(0,240,255,.25); }
+.cy h2 { letter-spacing: .02em; }
+.cy h3 { text-shadow: 0 0 10px rgba(255,43,214,.25); }
+.cy h1 [aria-hidden="true"] { filter: drop-shadow(0 0 14px rgba(0,240,255,.45)) drop-shadow(0 0 30px rgba(255,43,214,.3)); animation: cy-glitch 7s steps(1) infinite; }
+.cy h1 .bg-clip-text { text-shadow: none; }
+@keyframes cy-glitch {
+  0%, 93%, 100% { transform: none; }
+  94% { transform: translate(2px, 0); filter: drop-shadow(-3px 0 #00f0ff) drop-shadow(3px 0 #ff2bd6); }
+  95% { transform: translate(-2px, 1px); filter: drop-shadow(3px 0 #00f0ff) drop-shadow(-3px 0 #ff2bd6); }
+  96% { transform: none; }
+}
+.cy .text-cyan-400, .cy .text-cyan-300 { text-shadow: 0 0 12px rgba(0,240,255,.45); }
+.cy .w-1\.5.shrink-0 { box-shadow: 0 0 14px currentColor; filter: saturate(1.4); }
+
+/* cards: chamfered corners, neon edge, glow that follows the pointer */
+.cy article {
+  border-radius: 3px !important; border-color: rgba(0,240,255,.6) !important;
+  background: linear-gradient(155deg, rgba(25,17,52,.88), rgba(8,6,20,.94)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,43,214,.06), inset 0 0 34px rgba(0,240,255,.09), 0 0 0 transparent;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.cy article:hover {
+  border-color: rgba(255,43,214,.85) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,43,214,.25), inset 0 0 36px rgba(255,43,214,.16);
+}
+.cy article::before { content: ""; position: absolute; left: 0; right: 16px; top: 0; height: 2px; z-index: 6; pointer-events: none; background: linear-gradient(90deg, var(--cy-cyan), var(--cy-pink) 60%, transparent); box-shadow: 0 0 10px var(--cy-cyan); }
+.cy article::after { content: ""; position: absolute; right: 0; top: 0; width: 16px; height: 16px; z-index: 6; pointer-events: none; background: linear-gradient(225deg, transparent 49%, var(--cy-pink) 50% 56%, transparent 57%); }
+.cy article img { filter: saturate(1.15) contrast(1.05); }
+
+/* buttons */
+.cy a[class*="bg-cyan-"], .cy button[class*="bg-cyan-"], .cy a[class*="from-cyan-500"] {
+  box-shadow: 0 0 16px rgba(0,240,255,.55), inset 0 0 0 1px rgba(255,255,255,.25); text-transform: uppercase; letter-spacing: .04em;
+}
+.cy a[class*="bg-cyan-"]:hover, .cy button[class*="bg-cyan-"]:hover { box-shadow: 0 0 26px rgba(0,240,255,.9), inset 0 0 0 1px rgba(255,255,255,.4); }
+.cy a[class*="bg-pink-"], .cy .cyv a[class*="bg-pink-"], .cyv a[class*="bg-pink-"] {
+  box-shadow: 0 0 16px rgba(255,43,214,.6), inset 0 0 0 1px rgba(255,255,255,.25); text-transform: uppercase; letter-spacing: .05em;
+}
+.cy a[class*="bg-pink-"]:hover, .cyv a[class*="bg-pink-"]:hover { box-shadow: 0 0 28px rgba(255,43,214,.95); }
+.cy button[class*="border-pink-"] { border-color: rgba(255,43,214,.75); box-shadow: 0 0 12px rgba(255,43,214,.3), inset 0 0 12px rgba(255,43,214,.12); }
+.cy a[class*="bg-gradient-to-r"][class*="to-blue-600"] { background-image: linear-gradient(90deg, #00f0ff, #8a3dff, #ff2bd6) !important; color: #05030a !important; }
+.cy button[class*="border-zinc-"], .cy a[class*="border-zinc-"] { border-color: rgba(0,240,255,.4); }
+.cy button[class*="border-zinc-"]:hover, .cy a[class*="border-zinc-"]:hover { border-color: var(--cy-cyan); box-shadow: 0 0 14px rgba(0,240,255,.4); }
+.cy input { border-color: rgba(0,240,255,.4) !important; }
+.cy input:focus { box-shadow: 0 0 0 1px var(--cy-cyan), 0 0 18px rgba(0,240,255,.4); }
+
+/* small pieces */
+.cy a[class*="rounded-full"][class*="border"] { background: rgba(10,8,24,.6); }
+.cy a[class*="rounded-full"][class*="border"]:hover { box-shadow: 0 0 14px rgba(0,240,255,.4); }
+.cy [class*="rounded-full"][class*="border-cyan-500/30"] { box-shadow: 0 0 18px rgba(0,240,255,.25), inset 0 0 14px rgba(0,240,255,.12); font-family: var(--font-share-tech), ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.cy kbd { border: 1px solid rgba(0,240,255,.35); background: rgba(0,240,255,.08) !important; color: var(--cy-cyan) !important; }
+.cy details, .cy [class*="border-dashed"], .cy section[class*="rounded"] { border-color: rgba(255,43,214,.35); }
+.cy hr { border-color: rgba(0,240,255,.25); }
+.cy table, .cy th, .cy td { border-color: rgba(0,240,255,.25); }
+
+/* popups & dialogs rendered outside the page root */
+.cyv.cy-card, .cyd > div {
+  border-color: rgba(255,43,214,.7) !important; background: rgba(8,5,20,.96) !important;
+  box-shadow: 0 0 0 1px rgba(0,240,255,.25), 0 0 34px rgba(255,43,214,.3), inset 0 0 26px rgba(157,77,255,.12) !important;
+  border-radius: 4px !important;
+}
+.cyd > div { border-radius: 6px !important; }
+.cyd { background: rgba(3,2,10,.82) !important; }
+.cyd h2 { text-shadow: 0 0 12px rgba(0,240,255,.4); }
+.cyd button[class*="border-zinc-"] { border-color: rgba(0,240,255,.4); }
+.cyv a[class*="bg-cyan-"], .cyv button[class*="bg-cyan-"] { box-shadow: 0 0 16px rgba(0,240,255,.55); text-transform: uppercase; letter-spacing: .04em; }
+
+@media (prefers-reduced-motion: reduce) { .cy h1 [aria-hidden="true"] { animation: none; } }

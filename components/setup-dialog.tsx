@@ -94,7 +94,7 @@ export function SetupDialog({ slug, name, blurb, onClose }: Props) {
 
   return createPortal(
     <>
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Set up ${name}`} onClick={onClose}>
+    <div className="cyv cyd fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Set up ${name}`} onClick={onClose}>
       <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-zinc-600 bg-zinc-900 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>

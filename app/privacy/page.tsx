@@ -1,3 +1,4 @@
+import "@/components/cyber.css"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { CookieSettingsLink } from "@/components/analytics-consent"
@@ -11,7 +12,7 @@ export const metadata = pageMetadata({
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-zinc-200">
+    <main className="cy min-h-screen bg-[#0a0a0f] text-zinc-200">
       <div className="mx-auto max-w-2xl px-5 py-10">
         <Link href="/" className="mb-8 inline-flex items-center gap-2 text-zinc-300 hover:text-cyan-300"><ArrowLeft className="h-4 w-4" /> Back to Home</Link>
         <h1 className="font-[family-name:var(--font-orbitron)] text-3xl font-bold text-white">Privacy</h1>

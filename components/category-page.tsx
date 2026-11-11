@@ -24,7 +24,7 @@ export function CategoryPage({ slug }: { slug: CategorySlug }) {
   const others = CATEGORIES.filter((c) => c.slug !== slug)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
+    <div className="cy min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
       <SiteHeader />
       <JsonLd data={categoryJsonLd(slug)} />
       <JsonLd data={categoryFaqJsonLd(slug)} />

@@ -7,6 +7,7 @@ import { ChevronDown, Menu, Search, Shuffle, X } from "lucide-react"
 import { CATEGORIES, FAMILIES, SCREENS, TOTAL_SCREENS, categoryPath, getCategory, guidePath } from "@/lib/screens"
 import { SiteShareButton } from "@/components/share-sheet"
 import { SupportLink } from "@/components/support-button"
+import "@/components/cyber.css"
 
 /** Sticky site header: logo, a Browse menu grouped into families, instant search, Surprise me. */
 export function SiteHeader() {

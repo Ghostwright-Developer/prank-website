@@ -52,7 +52,7 @@ export default function Home() {
   const trending = trendingScreens()
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-zinc-100 relative overflow-x-clip">
+    <main className="cy min-h-screen bg-[#0a0a0f] text-zinc-100 relative overflow-x-clip">
       <JsonLd data={homeJsonLd()} />
       <SiteHeader />
 

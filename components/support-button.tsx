@@ -1,6 +1,7 @@
 "use client"
 
 import { Coffee } from "lucide-react"
+import "@/components/cyber.css"
 
 /** Where donations go (Ko-fi). */
 export const SUPPORT_URL = "https://ko-fi.com/pranksims"

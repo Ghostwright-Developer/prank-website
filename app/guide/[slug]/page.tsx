@@ -31,7 +31,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const related = screensInCategory(screen.category).filter((s) => s.slug !== slug).slice(0, 3)
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-white">
+    <main className="cy min-h-screen bg-[#0a0a0f] text-white">
       <JsonLd data={guideJsonLd(slug)} />
       <div className="mx-auto max-w-4xl px-5 py-10">
         <nav aria-label="Breadcrumb" className="mb-8 flex flex-wrap items-center gap-2 text-sm text-zinc-400">

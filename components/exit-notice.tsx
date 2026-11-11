@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { EXIT_MESSAGE_KEY, LAST_SCREEN_KEY } from "@/components/fullscreen-prank"
 import { ShareSheet } from "@/components/share-sheet"
 import { SupportLink } from "@/components/support-button"
+import "@/components/cyber.css"
 import { SCREENS } from "@/lib/screens"
 import { trackPrank } from "@/lib/track"
 
@@ -76,7 +77,7 @@ export function ExitNotice() {
     try { localStorage.setItem(SUPPORT_QUIET_KEY, String(Date.now() + QUIET_MS)) } catch { /* ignore */ }
   }
   const supportCard = support && !pathname.startsWith("/screens/") && (
-    <div role="dialog" aria-label="Support PrankSims" className="fixed right-3 top-[68px] z-[95] w-[min(330px,calc(100vw-24px))] rounded-2xl border border-pink-400/40 bg-zinc-900/95 p-4 shadow-[0_0_40px_rgba(236,72,153,.18)] backdrop-blur" style={{ animation: "pk-up .5s ease both" }}>
+    <div role="dialog" aria-label="Support PrankSims" className="cyv cy-card fixed right-3 top-[68px] z-[95] w-[min(330px,calc(100vw-24px))] rounded-2xl border border-pink-400/40 bg-zinc-900/95 p-4 shadow-[0_0_40px_rgba(236,72,153,.18)] backdrop-blur" style={{ animation: "pk-up .5s ease both" }}>
       <style>{`@keyframes pk-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}`}</style>
       <button onClick={closeSupport} aria-label="Dismiss" className="absolute right-2 top-2 rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"><X className="h-4 w-4" /></button>
       <p className="pr-6 font-semibold text-white">Enjoying the chaos?</p>
@@ -97,7 +98,7 @@ export function ExitNotice() {
   const card = lastScreen && (
     <div className="fixed inset-x-0 bottom-5 z-[90] flex justify-center px-4" style={{ animation: "pk-up .5s ease both" }}>
       <style>{`@keyframes pk-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}`}</style>
-      <div className="relative w-full max-w-xl rounded-2xl border border-cyan-400/50 bg-zinc-900/95 p-5 shadow-[0_0_40px_rgba(34,211,238,.2)] backdrop-blur">
+      <div className="cyv cy-card relative w-full max-w-xl rounded-2xl border border-cyan-400/50 bg-zinc-900/95 p-5 shadow-[0_0_40px_rgba(34,211,238,.2)] backdrop-blur">
         <button onClick={() => setLast(null)} aria-label="Dismiss" className="absolute right-3 top-3 rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"><X className="h-4 w-4" /></button>
         <p className="text-lg font-bold text-white">That was fun. Now send it to someone.</p>
         <p className="mt-1 text-sm text-zinc-300">One tap sends “{lastScreen.name}” by text, WhatsApp, email or a copied link. The message does not give it away.</p>
