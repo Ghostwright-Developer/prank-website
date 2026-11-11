@@ -2,6 +2,7 @@ import sys; sys.path.insert(0,'/tmp/work')
 import numpy as np
 from scipy import signal
 import crowd as C
+import applause as AP
 from crowd import SR, save, reverb, norm, interp
 
 def adsr(n,a,r,sus=1.0):
@@ -160,17 +161,17 @@ def ovation(seed,dur,N,peak):
     fem=C.voices(dur,int(N*0.6),env,['ah','ee'],200,320,lambda u:1+0.12*np.sin(np.pi*u),rng,0.18)
     cheer=(male+fem)
     cheer=cheer/(np.abs(cheer).max()+1e-9)*0.45
-    cl=distinct_claps(dur,[(0,0),(0.1,25),(peak,70),(0.85,35),(1,4)],seed+100,1.0)
-    cl=cl/(np.abs(cl).max()+1e-9)*0.9
+    cl=soft(AP.applause_real(seed+100,dur,110,4.5,sharp_gain=11.0))*0.9
     wh=C.whoops(dur,[dur*peak*rng.uniform(0.7,1.1)+rng.uniform(0,0.5) for _ in range(6)],rng,1.0); wh=wh/(np.abs(wh).max()+1e-9)*0.45
     ws=whistles(dur,[dur*rng.uniform(0.12,0.8) for _ in range(5)],rng,0.3)
     x=cheer+cl+wh+ws
     return reverb(x,1.1,0.18,rng)
+def soft(x,drive=1.9):
+    x=x/(np.abs(x).max()+1e-9); return np.tanh(x*drive)/np.tanh(drive)
 def applause_distinct(seed,dur,big):
-    d=45 if not big else 80
-    cl=distinct_claps(dur,[(0,0),(0.12,d*0.6),(0.3,d),(0.8,d*0.8),(1,2)],seed,1.0)
-    cl=cl/(np.abs(cl).max()+1e-9)
-    return reverb(cl,0.9,0.16)
+    """A dense wash of many hands, with sharp individual claps standing out the whole way through."""
+    M=130 if big and dur>8 else (100 if big else 70)
+    return soft(AP.applause_real(seed,dur,M,4.5 if big else 4.0,sharp_gain=13.0))
 
 if __name__=='__main__':
     save('horn-small',airhorn_clip(0.3,0.12,0.6,1.08))
